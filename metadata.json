@@ -1,0 +1,5 @@
+{
+  "name": "Caminho da Santidade",
+  "description": "Assistente espiritual católico para crescimento em virtudes, oração e vida sacramental.",
+  "requestFramePermissions": ["geolocation"]
+}
