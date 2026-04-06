@@ -1,0 +1,29 @@
+# Dependências
+node_modules/
+
+# Build
+dist/
+
+# Ambiente
+.env
+.env.local
+.env.production
+
+# Banco de dados local (NÃO subir para o GitHub)
+spiritual_path.db
+*.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# TypeScript
+*.tsbuildinfo
