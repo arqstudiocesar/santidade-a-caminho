@@ -1,8 +1,29 @@
+# Dependências
 node_modules/
-build/
-dist/
-coverage/
-.DS_Store
+
+# Build — NÃO ignorar dist/ para Vercel poder incluir no bundle
+# dist/
+
+# Ambiente — NUNCA subir para o GitHub
+.env
+.env.local
+.env.production
+
+# Banco de dados local (NÃO subir para o GitHub)
+spiritual_path.db
+*.db
+
+# Logs
 *.log
-.env*
-!.env.example
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# TypeScript
+*.tsbuildinfo

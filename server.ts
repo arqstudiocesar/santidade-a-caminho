@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import express from 'express';
-import { createServer as createViteServer } from 'vite';
+// vite é importado dinamicamente apenas em dev (abaixo)
 import Database from 'better-sqlite3';
 import crypto from 'crypto';
 
@@ -12,6 +12,8 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 dotenv.config({ path: path.resolve(__dirname, '.env.local') });
 
+// No Vercel, usar /tmp (único diretório gravável em serverless)
+// Nota: dados são efêmeros entre cold starts no Vercel
 const DB_PATH = process.env.DB_PATH || (process.env.VERCEL ? '/tmp/spiritual_path.db' : 'spiritual_path.db');
 const db = new Database(DB_PATH);
 
@@ -787,7 +789,8 @@ ${relevant}
 
 
   // ── Frontend ──────────────────────────────────────────────────────────────
-  if (process.env.NODE_ENV !== 'production') {
+  if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+    const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({ server: { middlewareMode: true }, appType: 'spa' });
     app.use(vite.middlewares);
   } else {
@@ -795,11 +798,8 @@ ${relevant}
     app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'dist', 'index.html')));
   }
 
-  // Para Vercel: exportar o app; para outros ambientes: app.listen
-  if (process.env.VERCEL) {
-    // No Vercel, o módulo deve exportar o handler
-    (global as any).__vercelApp = app;
-  } else {
+  // Iniciar servidor ou exportar para Vercel
+  if (!process.env.VERCEL) {
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`\n🕊️  Caminho da Santidade em http://localhost:${PORT}`);
       if (!GROQ_API_KEY) console.warn('⚠️  GROQ_API_KEY não configurada! Adicione no arquivo .env');
@@ -809,11 +809,20 @@ ${relevant}
   return app;
 }
 
-// Inicializar servidor (sempre, para qualquer ambiente)
-const appPromise = startServer();
+// Inicializar — singleton para reutilizar entre invocações Vercel
+let _appInstance: any = null;
+async function getApp() {
+  if (!_appInstance) {
+    _appInstance = await startServer();
+  }
+  return _appInstance;
+}
 
-// Export para Vercel Serverless Functions
+// Inicializar imediatamente (warm-up)
+getApp().catch(console.error);
+
+// Export padrão para Vercel Serverless
 export default async function handler(req: any, res: any) {
-  const app = await appPromise;
-  return (app as any)(req, res);
+  const app = await getApp();
+  return app(req, res);
 }
