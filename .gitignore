@@ -1,15 +1,16 @@
-# Dependências
+# Dependências — nunca subir
 node_modules/
 
-# Build — NÃO ignorar dist/ para Vercel poder incluir no bundle
-# dist/
+# Build — IMPORTANTE: NÃO ignorar dist/
+# O Vercel precisa do dist/ para servir o frontend!
+# dist/    <-- COMENTADO INTENCIONALMENTE
 
-# Ambiente — NUNCA subir para o GitHub
+# Variáveis de ambiente — NUNCA subir para o GitHub
 .env
 .env.local
 .env.production
 
-# Banco de dados local (NÃO subir para o GitHub)
+# Banco de dados local — não subir
 spiritual_path.db
 *.db
 
@@ -17,7 +18,7 @@ spiritual_path.db
 *.log
 npm-debug.log*
 
-# OS
+# Sistema operacional
 .DS_Store
 Thumbs.db
 
@@ -25,5 +26,8 @@ Thumbs.db
 .vscode/
 .idea/
 
-# TypeScript
+# TypeScript cache
 *.tsbuildinfo
+
+# Pasta tmp
+/tmp/
