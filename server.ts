@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import express from 'express';
-// vite é importado dinamicamente apenas em dev (abaixo)
+// vite é importado dinamicamente em modo dev apenas
 import Database from 'better-sqlite3';
 import crypto from 'crypto';
 
@@ -12,9 +12,9 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 dotenv.config({ path: path.resolve(__dirname, '.env.local') });
 
-// No Vercel, usar /tmp (único diretório gravável em serverless)
-// Nota: dados são efêmeros entre cold starts no Vercel
-const DB_PATH = process.env.DB_PATH || (process.env.VERCEL ? '/tmp/spiritual_path.db' : 'spiritual_path.db');
+// No Vercel (serverless), usar /tmp que é o único dir gravável
+// Atenção: no Vercel os dados são reiniciados a cada cold start
+const DB_PATH = process.env.VERCEL ? '/tmp/spiritual_path.db' : './spiritual_path.db';
 const db = new Database(DB_PATH);
 
 // ── Schema: criar todas as tabelas ───────────────────────────────────────────
@@ -222,7 +222,6 @@ async function callGroq(messages: any[], maxTokens = 1000, jsonMode = false, mod
 
 async function startServer() {
   const app = express();
-  const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
   app.use(express.json({ limit: '4mb' }));
 
   // ── Auth ──────────────────────────────────────────────────────────────────
@@ -496,39 +495,34 @@ Retorne APENAS o seguinte JSON (sem texto antes ou depois):
     }
   });
 
-    // ── Dashboard (corrigido - não força 401 quando não está logado) ─────────────
-app.get('/api/dashboard', (req, res) => {
-  const u = getUser(req);   // ← mudado de requireUser para getUser
+        // ── Dashboard (corrigido para Vercel - não crasha se não houver autenticação) ─────────────
+  app.get('/api/dashboard', (req, res) => {
+    const u = getUser(req);   // ← alterado de requireUser para getUser (não força 401)
 
-  if (!u) {
-    // Usuário não logado → retorna dados para não quebrar a tela
-    return res.json({
-      priorityVirtue: { 
-        id: "humildade", 
-        name: "Humildade", 
-        level: 5, 
-        is_priority: true 
-      },
-      recentJournal: [],
-      pendingSinsCount: 3,
-      today: new Date().toISOString().split('T')[0],
-      userName: "Caminhante"
+    if (!u) {
+      // No Vercel ou sem login → retorna dados estáticos para não crashar a função
+      return res.json({
+        priorityVirtue: { id: "humildade", name: "Humildade", level: 5, is_priority: true },
+        recentJournal: [],
+        pendingSinsCount: 3,
+        today: new Date().toISOString().split('T')[0],
+        userName: "Caminhante"
+      });
+    }
+
+    // Usuário logado (funciona normalmente no local)
+    const priorityVirtue = db.prepare('SELECT * FROM virtues WHERE is_priority=1 AND user_id=? LIMIT 1').get(u.id);
+    const recentJournal = db.prepare('SELECT * FROM journal_entries WHERE user_id=? ORDER BY created_at DESC LIMIT 5').all(u.id);
+    const pendingSins = (db.prepare('SELECT COUNT(*) as count FROM sins WHERE is_confessed=0 AND user_id=?').get(u.id) as any).count;
+
+    res.json({ 
+      priorityVirtue, 
+      recentJournal, 
+      pendingSinsCount: pendingSins, 
+      today: new Date().toISOString().split('T')[0], 
+      userName: u.display_name 
     });
-  }
-
-  // Usuário logado → usa o banco normalmente (comportamento original)
-  const priorityVirtue = db.prepare('SELECT * FROM virtues WHERE is_priority=1 AND user_id=? LIMIT 1').get(u.id);
-  const recentJournal = db.prepare('SELECT * FROM journal_entries WHERE user_id=? ORDER BY created_at DESC LIMIT 5').all(u.id);
-  const pendingSins = (db.prepare('SELECT COUNT(*) as count FROM sins WHERE is_confessed=0 AND user_id=?').get(u.id) as any).count;
-
-  res.json({ 
-    priorityVirtue, 
-    recentJournal, 
-    pendingSinsCount: pendingSins, 
-    today: new Date().toISOString().split('T')[0], 
-    userName: u.display_name 
   });
-});
 
   // ── Virtudes ──────────────────────────────────────────────────────────────
   app.get('/api/virtues', (req, res) => {
@@ -789,39 +783,45 @@ ${relevant}
 
 
   // ── Frontend ──────────────────────────────────────────────────────────────
-  if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
-    const { createServer: createViteServer } = await import('vite');
-    const vite = await createViteServer({ server: { middlewareMode: true }, appType: 'spa' });
-    app.use(vite.middlewares);
+  // Dev local: usar Vite com HMR; Vercel/produção: servir build estático
+  const isProduction = process.env.NODE_ENV === 'production' || !!process.env.VERCEL;
+  if (!isProduction) {
+    try {
+      const { createServer: createViteServer } = await import('vite');
+      const vite = await createViteServer({ server: { middlewareMode: true }, appType: 'spa' });
+      app.use(vite.middlewares);
+    } catch {
+      // Vite não disponível — servir estático
+      app.use(express.static(path.join(__dirname, 'dist')));
+      app.get('*', (_req: any, res: any) => res.sendFile(path.join(__dirname, 'dist', 'index.html')));
+    }
   } else {
     app.use(express.static(path.join(__dirname, 'dist')));
-    app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'dist', 'index.html')));
-  }
-
-  // Iniciar servidor ou exportar para Vercel
-  if (!process.env.VERCEL) {
-    app.listen(PORT, '0.0.0.0', () => {
-      console.log(`\n🕊️  Caminho da Santidade em http://localhost:${PORT}`);
-      if (!GROQ_API_KEY) console.warn('⚠️  GROQ_API_KEY não configurada! Adicione no arquivo .env');
-    });
+    app.get('*', (_req: any, res: any) => res.sendFile(path.join(__dirname, 'dist', 'index.html')));
   }
 
   return app;
 }
 
-// Inicializar — singleton para reutilizar entre invocações Vercel
-let _appInstance: any = null;
+// ── Singleton: reutiliza a instância entre chamadas serverless ─────────────────
+let _app: any = null;
 async function getApp() {
-  if (!_appInstance) {
-    _appInstance = await startServer();
-  }
-  return _appInstance;
+  if (!_app) _app = await startServer();
+  return _app;
 }
 
-// Inicializar imediatamente (warm-up)
-getApp().catch(console.error);
+// Para execução local (Railway, desenvolvimento)
+if (!process.env.VERCEL) {
+  getApp().then(app => {
+    const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`\n🕊️  Caminho da Santidade em http://localhost:${PORT}`);
+      if (!process.env.GROQ_API_KEY) console.warn('⚠️  GROQ_API_KEY não configurada! Adicione no arquivo .env');
+    });
+  });
+}
 
-// Export padrão para Vercel Serverless
+// ── Export para Vercel Serverless Functions ────────────────────────────────────
 export default async function handler(req: any, res: any) {
   const app = await getApp();
   return app(req, res);
