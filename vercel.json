@@ -1,17 +1,9 @@
 {
   "version": 2,
-  "buildCommand": "vite build",
-  "outputDirectory": "dist",
   "builds": [
     {
       "src": "server.ts",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": [
-          "dist/**",
-          "src/**"
-        ]
-      }
+      "use": "@vercel/node"
     }
   ],
   "routes": [
@@ -24,12 +16,12 @@
       "dest": "/dist/assets/$1"
     },
     {
-      "src": "/(.*\\.(js|css|ico|png|svg|woff|woff2|ttf|map))",
+      "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|map))",
       "dest": "/dist/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "/server.ts"
+      "dest": "/dist/index.html"
     }
   ]
 }
