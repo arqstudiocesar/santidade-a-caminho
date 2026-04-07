@@ -16,7 +16,7 @@
       "dest": "/dist/assets/$1"
     },
     {
-      "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|map))",
+      "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|map|webp))",
       "dest": "/dist/$1"
     },
     {
