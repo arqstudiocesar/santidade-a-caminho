@@ -13,6 +13,10 @@ const __dirname  = path.dirname(__filename);
 const DB_PATH = process.env.VERCEL ? '/tmp/caminho.db' : path.join(__dirname, 'spiritual_path.db');
 const db = new Database(DB_PATH);
 
+// Ativar WAL mode para melhor performance e robustez
+db.pragma('journal_mode = WAL');
+db.pragma('foreign_keys = ON');
+
 // ── Schema ────────────────────────────────────────────────────────────────────
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
@@ -118,19 +122,30 @@ function seedVirtues(userId: number) {
   ALL_VIRTUES.forEach(v => ins.run(virtueId(v), userId, v));
 }
 
-// ── Usuário padrão ────────────────────────────────────────────────────────────
-const userCount = (db.prepare('SELECT COUNT(*) as c FROM users').get() as any).c;
-if (userCount === 0) {
-  const hash = crypto.createHash('sha256').update('admin123caminho_salt_2026').digest('hex');
-  const r = db.prepare("INSERT INTO users (username, password_hash, display_name) VALUES ('admin',?,'Administrador')").run(hash);
-  seedVirtues(r.lastInsertRowid as number);
-} else {
-  (db.prepare('SELECT id FROM users').all() as any[]).forEach((u:any) => seedVirtues(u.id));
-}
-
 // ── Helpers Auth ──────────────────────────────────────────────────────────────
 const hashPwd = (p: string) => crypto.createHash('sha256').update(p + 'caminho_salt_2026').digest('hex');
 const genToken = () => crypto.randomBytes(32).toString('hex');
+
+// ── Seed do usuário admin (sempre que não existir) ────────────────────────────
+// IMPORTANTE: No Vercel, o banco /tmp é apagado a cada cold-start.
+// Por isso, verificamos SEMPRE se o admin existe e recriamos se necessário.
+function ensureAdminUser() {
+  const existing = db.prepare("SELECT id FROM users WHERE username='admin'").get() as any;
+  if (!existing) {
+    const hash = hashPwd('admin123');
+    const r = db.prepare("INSERT INTO users (username, password_hash, display_name) VALUES ('admin',?,'Administrador')").run(hash);
+    seedVirtues(r.lastInsertRowid as number);
+    console.log('✅ Usuário admin criado/recriado');
+  } else {
+    seedVirtues(existing.id);
+  }
+}
+
+// Garante admin ao iniciar
+ensureAdminUser();
+
+// Seed de todos os outros usuários existentes
+(db.prepare('SELECT id FROM users').all() as any[]).forEach((u:any) => seedVirtues(u.id));
 
 function getUser(req: express.Request) {
   const auth = (req.headers.authorization || req.query.token as string || '').replace('Bearer ','').trim();
@@ -172,8 +187,19 @@ async function callGroq(messages: any[], maxTokens = 1000, json = false, idx = 0
 const app = express();
 app.use(express.json({ limit: '4mb' }));
 
+// ── CORS para o Vercel ────────────────────────────────────────────────────────
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') return res.sendStatus(200);
+  next();
+});
+
 // ── Auth ──────────────────────────────────────────────────────────────────────
 app.post('/api/auth/register', (req, res) => {
+  // Garante que o banco está ok antes de qualquer operação
+  ensureAdminUser();
   const { username, password, display_name } = req.body;
   if (!username?.trim() || !password?.trim()) return res.status(400).json({ error: 'Usuário e senha obrigatórios' });
   if (username.trim().length < 3) return res.status(400).json({ error: 'Usuário deve ter ao menos 3 caracteres' });
@@ -187,6 +213,8 @@ app.post('/api/auth/register', (req, res) => {
 });
 
 app.post('/api/auth/login', (req, res) => {
+  // Garante que o banco está ok — recria admin se o /tmp foi apagado
+  ensureAdminUser();
   const { username, password } = req.body;
   if (!username?.trim() || !password?.trim()) return res.status(400).json({ error: 'Preencha todos os campos' });
   const user = db.prepare('SELECT * FROM users WHERE username=?').get(username.trim()) as any;
@@ -203,6 +231,8 @@ app.post('/api/auth/logout', (req, res) => {
 });
 
 app.get('/api/auth/me', (req, res) => {
+  // Se o banco foi apagado (cold-start Vercel), recria o admin antes de verificar
+  ensureAdminUser();
   const u = getUser(req);
   if (!u) return res.status(401).json({ error: 'Não autenticado' });
   res.json({ id: u.id, username: u.username, display_name: u.display_name });
@@ -222,12 +252,12 @@ app.put('/api/auth/profile', (req, res) => {
 
 // ── IA (Groq proxy) ───────────────────────────────────────────────────────────
 app.post('/api/ai/generate', async (req, res) => {
-  if (!GROQ_KEY) return res.status(500).json({ error: 'GROQ_API_KEY não configurada' });
+  if (!GROQ_KEY) return res.status(500).json({ error: 'GROQ_API_KEY não configurada', text: '' });
   const { messages, responseFormat, maxTokens } = req.body;
   if (!Array.isArray(messages)) return res.status(400).json({ error: 'messages deve ser array' });
   try {
     res.json({ text: await callGroq(messages, maxTokens || 1000, responseFormat === 'json') });
-  } catch (e: any) { res.status(502).json({ error: e.message }); }
+  } catch (e: any) { res.status(502).json({ error: e.message, text: '' }); }
 });
 
 // ── Dashboard ─────────────────────────────────────────────────────────────────
@@ -282,35 +312,68 @@ app.delete('/api/journal/:id', (req, res) => {
   db.prepare('DELETE FROM journal_entries WHERE id=? AND user_id=?').run(req.params.id, u.id);
   res.json({ success: true });
 });
-app.delete('/api/journal', (req, res) => {
+
+// ── Orações ───────────────────────────────────────────────────────────────────
+const DEFAULT_PRAYERS = [
+  { id:'morning',   name:'Oferecimento do Dia',    period:'morning' },
+  { id:'angelus',   name:'Angelus',                period:'afternoon' },
+  { id:'rosary',    name:'Santo Rosário',           period:'evening' },
+  { id:'compline',  name:'Completas (Oração Noturna)', period:'night' },
+  { id:'divine',    name:'Coroa Divina Misericórdia',  period:'afternoon' },
+  { id:'liturgy',   name:'Liturgia das Horas',     period:'morning' },
+];
+app.get('/api/prayers', (req, res) => {
   const u = requireUser(req, res); if (!u) return;
-  db.prepare('DELETE FROM journal_entries WHERE user_id=?').run(u.id);
+  const ins = db.prepare('INSERT OR IGNORE INTO prayers (id, user_id, name, period) VALUES (?,?,?,?)');
+  DEFAULT_PRAYERS.forEach(p => ins.run(p.id, u.id, p.name, p.period));
+  res.json(db.prepare('SELECT * FROM prayers WHERE user_id=?').all(u.id));
+});
+app.post('/api/prayers', (req, res) => {
+  const u = requireUser(req, res); if (!u) return;
+  const { id, name, period } = req.body;
+  db.prepare('INSERT OR REPLACE INTO prayers (id, user_id, name, period) VALUES (?,?,?,?)').run(id || genToken().slice(0,8), u.id, name, period);
+  res.json({ success: true });
+});
+app.put('/api/prayers/:id', (req, res) => {
+  const u = requireUser(req, res); if (!u) return;
+  const { is_completed, name, period } = req.body;
+  if (is_completed !== undefined) {
+    db.prepare('UPDATE prayers SET is_completed=?, last_completed=CURRENT_DATE WHERE id=? AND user_id=?').run(is_completed ? 1 : 0, req.params.id, u.id);
+  }
+  if (name !== undefined) db.prepare('UPDATE prayers SET name=?, period=? WHERE id=? AND user_id=?').run(name, period, req.params.id, u.id);
+  res.json({ success: true });
+});
+app.delete('/api/prayers/:id', (req, res) => {
+  const u = requireUser(req, res); if (!u) return;
+  db.prepare('DELETE FROM prayers WHERE id=? AND user_id=?').run(req.params.id, u.id);
   res.json({ success: true });
 });
 
 // ── Pecados ───────────────────────────────────────────────────────────────────
 app.get('/api/sins', (req, res) => {
   const u = requireUser(req, res); if (!u) return;
-  res.json(db.prepare('SELECT * FROM sins WHERE is_confessed=0 AND user_id=? ORDER BY created_at DESC').all(u.id));
+  res.json(db.prepare('SELECT * FROM sins WHERE user_id=? ORDER BY created_at DESC').all(u.id));
 });
 app.post('/api/sins', (req, res) => {
   const u = requireUser(req, res); if (!u) return;
-  db.prepare('INSERT INTO sins (content, user_id) VALUES (?,?)').run(req.body.content, u.id);
+  const sins: string[] = Array.isArray(req.body.sins) ? req.body.sins : [req.body.content];
+  const ins = db.prepare('INSERT INTO sins (content, user_id) VALUES (?,?)');
+  sins.forEach(s => { if (s?.trim()) ins.run(s.trim(), u.id); });
   res.json({ success: true });
 });
-app.delete('/api/sins/clear-all', (req, res) => {
+app.put('/api/sins/:id', (req, res) => {
   const u = requireUser(req, res); if (!u) return;
-  db.prepare('DELETE FROM sins WHERE user_id=?').run(u.id);
-  res.json({ success: true });
-});
-app.post('/api/sins/confess-all', (req, res) => {
-  const u = requireUser(req, res); if (!u) return;
-  db.prepare('UPDATE sins SET is_confessed=1 WHERE is_confessed=0 AND user_id=?').run(u.id);
+  db.prepare('UPDATE sins SET is_confessed=? WHERE id=? AND user_id=?').run(req.body.is_confessed ? 1 : 0, req.params.id, u.id);
   res.json({ success: true });
 });
 app.delete('/api/sins/:id', (req, res) => {
   const u = requireUser(req, res); if (!u) return;
   db.prepare('DELETE FROM sins WHERE id=? AND user_id=?').run(req.params.id, u.id);
+  res.json({ success: true });
+});
+app.delete('/api/sins', (req, res) => {
+  const u = requireUser(req, res); if (!u) return;
+  db.prepare('DELETE FROM sins WHERE user_id=?').run(u.id);
   res.json({ success: true });
 });
 
@@ -324,21 +387,9 @@ app.post('/api/purposes', (req, res) => {
   const r = db.prepare('INSERT INTO confession_purposes (content, user_id) VALUES (?,?)').run(req.body.content, u.id);
   res.json({ success: true, id: r.lastInsertRowid });
 });
-app.put('/api/purposes/:id/toggle', (req, res) => {
+app.put('/api/purposes/:id', (req, res) => {
   const u = requireUser(req, res); if (!u) return;
-  db.prepare('UPDATE confession_purposes SET is_fulfilled=NOT is_fulfilled WHERE id=? AND user_id=?').run(req.params.id, u.id);
-  res.json({ success: true });
-});
-app.delete('/api/purposes/clear-all', (req, res) => {
-  const u = requireUser(req, res); if (!u) return;
-  db.prepare('DELETE FROM confession_purposes WHERE user_id=?').run(u.id);
-  res.json({ success: true });
-});
-app.post('/api/purposes/delete-multiple', (req, res) => {
-  const u = requireUser(req, res); if (!u) return;
-  const { ids } = req.body;
-  if (!Array.isArray(ids) || ids.length === 0) return res.status(400).json({ error: 'ids inválidos' });
-  db.prepare(`DELETE FROM confession_purposes WHERE id IN (${ids.map(()=>'?').join(',')}) AND user_id=?`).run(...ids, u.id);
+  db.prepare('UPDATE confession_purposes SET is_fulfilled=? WHERE id=? AND user_id=?').run(req.body.is_fulfilled ? 1 : 0, req.params.id, u.id);
   res.json({ success: true });
 });
 app.delete('/api/purposes/:id', (req, res) => {
@@ -346,17 +397,23 @@ app.delete('/api/purposes/:id', (req, res) => {
   db.prepare('DELETE FROM confession_purposes WHERE id=? AND user_id=?').run(req.params.id, u.id);
   res.json({ success: true });
 });
+app.delete('/api/purposes', (req, res) => {
+  const u = requireUser(req, res); if (!u) return;
+  db.prepare('DELETE FROM confession_purposes WHERE user_id=?').run(u.id);
+  res.json({ success: true });
+});
 
 // ── Modelos de Exame ──────────────────────────────────────────────────────────
 app.get('/api/exam-models', (req, res) => {
   const u = requireUser(req, res); if (!u) return;
-  const models = db.prepare('SELECT * FROM custom_exam_models WHERE user_id=? ORDER BY created_at DESC').all(u.id) as any[];
-  res.json(models.map(m => ({ ...m, questions: JSON.parse(m.questions) })));
+  const rows = db.prepare('SELECT * FROM custom_exam_models WHERE user_id=? ORDER BY created_at DESC').all(u.id) as any[];
+  res.json(rows.map(r => ({ ...r, questions: JSON.parse(r.questions) })));
 });
 app.post('/api/exam-models', (req, res) => {
   const u = requireUser(req, res); if (!u) return;
-  db.prepare('INSERT INTO custom_exam_models (name, questions, user_id) VALUES (?,?,?)').run(req.body.name, JSON.stringify(req.body.questions), u.id);
-  res.json({ success: true });
+  const { name, questions } = req.body;
+  const r = db.prepare('INSERT INTO custom_exam_models (name, questions, user_id) VALUES (?,?,?)').run(name, JSON.stringify(questions), u.id);
+  res.json({ success: true, id: r.lastInsertRowid });
 });
 app.delete('/api/exam-models/:id', (req, res) => {
   const u = requireUser(req, res); if (!u) return;
@@ -365,57 +422,20 @@ app.delete('/api/exam-models/:id', (req, res) => {
 });
 
 // ── Lectio Divina ─────────────────────────────────────────────────────────────
-app.get('/api/lectio-history', (req, res) => {
+app.get('/api/lectio', (req, res) => {
   const u = requireUser(req, res); if (!u) return;
   res.json(db.prepare('SELECT * FROM lectio_history WHERE user_id=? ORDER BY created_at DESC').all(u.id));
 });
-app.post('/api/lectio-history', (req, res) => {
+app.post('/api/lectio', (req, res) => {
   const u = requireUser(req, res); if (!u) return;
-  const { book,chapter,start_verse,end_verse,content,meditation,prayer,contemplation,action,type } = req.body;
-  const r = db.prepare('INSERT INTO lectio_history (book,chapter,start_verse,end_verse,content,meditation,prayer,contemplation,action,type,user_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)')
-    .run(book,chapter,start_verse,end_verse,content||'',meditation||'',prayer||'',contemplation||'',action||'',type||'guided',u.id);
+  const { book, chapter, start_verse, end_verse, content, meditation, prayer, contemplation, action, type } = req.body;
+  const r = db.prepare('INSERT INTO lectio_history (book, chapter, start_verse, end_verse, content, meditation, prayer, contemplation, action, type, user_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)')
+    .run(book, chapter, start_verse, end_verse, content, meditation, prayer, contemplation, action, type||'guided', u.id);
   res.json({ success: true, id: r.lastInsertRowid });
 });
-app.post('/api/lectio-history/delete-multiple', (req, res) => {
-  const u = requireUser(req, res); if (!u) return;
-  const { ids } = req.body;
-  if (!Array.isArray(ids) || ids.length === 0) return res.status(400).json({ error: 'ids inválidos' });
-  db.prepare(`DELETE FROM lectio_history WHERE id IN (${ids.map(()=>'?').join(',')}) AND user_id=?`).run(...ids, u.id);
-  res.json({ success: true });
-});
-app.delete('/api/lectio-history/:id', (req, res) => {
+app.delete('/api/lectio/:id', (req, res) => {
   const u = requireUser(req, res); if (!u) return;
   db.prepare('DELETE FROM lectio_history WHERE id=? AND user_id=?').run(req.params.id, u.id);
-  res.json({ success: true });
-});
-app.delete('/api/lectio-history', (req, res) => {
-  const u = requireUser(req, res); if (!u) return;
-  db.prepare('DELETE FROM lectio_history WHERE user_id=?').run(u.id);
-  res.json({ success: true });
-});
-
-// ── Orações ───────────────────────────────────────────────────────────────────
-app.get('/api/prayers', (req, res) => {
-  const u = requireUser(req, res); if (!u) return;
-  res.json(db.prepare('SELECT * FROM prayers WHERE user_id=? ORDER BY period, name').all(u.id));
-});
-app.post('/api/prayers', (req, res) => {
-  const u = requireUser(req, res); if (!u) return;
-  db.prepare('INSERT OR REPLACE INTO prayers (id, name, period, user_id) VALUES (?,?,?,?)').run(req.body.id, req.body.name, req.body.period, u.id);
-  res.json({ success: true });
-});
-app.put('/api/prayers/:id/toggle', (req, res) => {
-  const u = requireUser(req, res); if (!u) return;
-  const prayer = db.prepare('SELECT * FROM prayers WHERE id=? AND user_id=?').get(req.params.id, u.id) as any;
-  if (!prayer) return res.status(404).json({ error: 'Não encontrado' });
-  const today = new Date().toISOString().split('T')[0];
-  const done  = prayer.last_completed === today;
-  db.prepare('UPDATE prayers SET is_completed=?, last_completed=? WHERE id=? AND user_id=?').run(done?0:1, done?null:today, req.params.id, u.id);
-  res.json({ success: true });
-});
-app.delete('/api/prayers/:id', (req, res) => {
-  const u = requireUser(req, res); if (!u) return;
-  db.prepare('DELETE FROM prayers WHERE id=? AND user_id=?').run(req.params.id, u.id);
   res.json({ success: true });
 });
 
@@ -429,9 +449,9 @@ app.post('/api/intentions', (req, res) => {
   const r = db.prepare('INSERT INTO prayer_intentions (content, user_id) VALUES (?,?)').run(req.body.content, u.id);
   res.json({ success: true, id: r.lastInsertRowid });
 });
-app.put('/api/intentions/:id/toggle', (req, res) => {
+app.put('/api/intentions/:id', (req, res) => {
   const u = requireUser(req, res); if (!u) return;
-  db.prepare('UPDATE prayer_intentions SET is_answered=NOT is_answered WHERE id=? AND user_id=?').run(req.params.id, u.id);
+  db.prepare('UPDATE prayer_intentions SET is_answered=? WHERE id=? AND user_id=?').run(req.body.is_answered ? 1 : 0, req.params.id, u.id);
   res.json({ success: true });
 });
 app.delete('/api/intentions/:id', (req, res) => {
@@ -440,15 +460,16 @@ app.delete('/api/intentions/:id', (req, res) => {
   res.json({ success: true });
 });
 
-// ── Configurações ─────────────────────────────────────────────────────────────
+// ── Configurações do usuário ──────────────────────────────────────────────────
 app.get('/api/settings', (req, res) => {
   const u = requireUser(req, res); if (!u) return;
-  res.json(db.prepare('SELECT * FROM user_settings WHERE user_id=?').get(u.id) || {});
+  const s = db.prepare('SELECT * FROM user_settings WHERE user_id=?').get(u.id);
+  res.json(s || { user_id: u.id, name: u.display_name });
 });
 app.post('/api/settings', (req, res) => {
   const u = requireUser(req, res); if (!u) return;
   const { name, last_confession, next_confession } = req.body;
-  db.prepare(`INSERT INTO user_settings (user_id,name,last_confession,next_confession) VALUES (?,?,?,?)
+  db.prepare(`INSERT INTO user_settings (user_id, name, last_confession, next_confession) VALUES (?,?,?,?)
     ON CONFLICT(user_id) DO UPDATE SET name=excluded.name, last_confession=excluded.last_confession, next_confession=excluded.next_confession`)
     .run(u.id, name, last_confession, next_confession);
   res.json({ success: true });

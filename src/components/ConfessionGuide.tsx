@@ -152,12 +152,31 @@ export default function ConfessionGuide() {
   }, []);
 
   const fetchCustomModels = async () => {
-    const res = await apiFetch('/api/exam-models');
-    setCustomModels(await res.json());
+    try {
+      const res = await apiFetch('/api/exam-models');
+      if (!res.ok) return;
+      const data = await res.json();
+      setCustomModels(Array.isArray(data) ? data : []);
+    } catch { setCustomModels([]); }
   };
 
-  const fetchSins = () => apiFetch('/api/sins').then(r => r.json()).then(setSins);
-  const fetchPurposes = () => apiFetch('/api/purposes').then(r => r.json()).then(setPurposes);
+  const fetchSins = async () => {
+    try {
+      const res = await apiFetch('/api/sins');
+      if (!res.ok) return;
+      const data = await res.json();
+      setSins(Array.isArray(data) ? data : []);
+    } catch { setSins([]); }
+  };
+
+  const fetchPurposes = async () => {
+    try {
+      const res = await apiFetch('/api/purposes');
+      if (!res.ok) return;
+      const data = await res.json();
+      setPurposes(Array.isArray(data) ? data : []);
+    } catch { setPurposes([]); }
+  };
 
   const addCustomModel = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -181,7 +200,7 @@ export default function ConfessionGuide() {
   };
 
   const clearAllSins = async () => {
-    await apiFetch('/api/sins/clear-all', { method: 'DELETE' });
+    await apiFetch('/api/sins', { method: 'DELETE' });
     setIsClearingAll(false); fetchSins();
   };
 
@@ -203,7 +222,9 @@ export default function ConfessionGuide() {
   };
 
   const togglePurposeFulfilled = async (id: number) => {
-    await apiFetch(`/api/purposes/${id}/toggle`, { method: 'PUT' });
+    const p = purposes.find(x => x.id === id);
+    if (!p) return;
+    await apiFetch(`/api/purposes/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ is_fulfilled: p.is_fulfilled ? 0 : 1 }) });
     fetchPurposes();
   };
 
@@ -214,12 +235,12 @@ export default function ConfessionGuide() {
 
   const deleteSelectedPurposes = async () => {
     if (selectedPurposeIds.length === 0) return;
-    await apiFetch('/api/purposes/delete-multiple', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ids: selectedPurposeIds }) });
+    for (const id of selectedPurposeIds) await apiFetch(`/api/purposes/${id}`, { method: 'DELETE' });
     setSelectedPurposeIds([]); setPurposeSelectMode(false); fetchPurposes();
   };
 
   const clearAllPurposes = async () => {
-    await apiFetch('/api/purposes/clear-all', { method: 'DELETE' });
+    await apiFetch('/api/purposes', { method: 'DELETE' });
     setIsClearingPurposes(false); fetchPurposes();
   };
 
