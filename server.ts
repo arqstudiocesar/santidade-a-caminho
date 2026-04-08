@@ -582,11 +582,13 @@ app.get('/api/catholic-news', async (req, res) => {
   } catch (e: any) { res.json({ success: false, error: e.message }); }
 });
 
-// ── Frontend: servir o build estático ─────────────────────────────────────────
-app.use(express.static(path.join(__dirname, 'dist')));
-app.get('*', (_req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-});
+// ── Frontend: servir build estático (local apenas; no Vercel a CDN faz isso) ──
+if (!process.env.VERCEL) {
+  app.use(express.static(path.join(__dirname, 'dist')));
+  app.get('*', (_req, res) => {
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+  });
+}
 
 // ── Export para Vercel Serverless (obrigatório) ───────────────────────────────
 export default app;
