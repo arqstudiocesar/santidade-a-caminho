@@ -6,9 +6,7 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
-    alias: {
-      '@': path.resolve(__dirname, '.'),
-    },
+    alias: { '@': path.resolve(__dirname, '.') },
   },
   build: {
     outDir: 'dist',
@@ -16,10 +14,7 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/api': {
-        target: 'http://localhost:3000',
-        changeOrigin: true,
-      },
+      '/api': { target: 'http://localhost:3000', changeOrigin: true },
     },
   },
 });
