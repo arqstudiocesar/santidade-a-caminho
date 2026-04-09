@@ -388,6 +388,29 @@ JSON: { "title": "...", "sections": [ { "name": "...", "content": "..." }, ... ]
       const isFeast = !!celebrationName && celebrationRank !== 'ferial';
       const psalmFull = useR.psalmAntiphon ? `${useR.psalm} — ${useR.psalmAntiphon}` : useR.psalm;
 
+      // Constrói título completo da leitura a partir do tipo + referência + primeiro parágrafo do texto
+      const buildReadingTitle = (type: string, reference: string, text: string): string => {
+        // Extrair a primeira linha do texto que contenha "Leitura" ou "Proclamação"
+        const lines = (text || '').split('\n');
+        const headerLine = lines.find(l => 
+          l.trim().startsWith('Leitura') || 
+          l.trim().startsWith('Proclamação') ||
+          l.trim().startsWith('Responsório')
+        );
+        if (headerLine && headerLine.trim().length > 5) {
+          const h = headerLine.trim();
+          // Se a referência já está no cabeçalho, retornar como está
+          if (reference && h.includes(reference.split(',')[0])) return h;
+          // Senão, acrescentar referência
+          return reference ? `${h} (${reference})` : h;
+        }
+        // Fallback: construir a partir do tipo e referência
+        if (type.includes('Evangelho')) return reference ? `Evangelho de Jesus Cristo (${reference})` : 'Evangelho';
+        if (type.includes('Salmo')) return reference ? `Responsório — ${reference}` : 'Salmo Responsorial';
+        if (type.includes('2ª')) return reference ? `Segunda Leitura (${reference})` : '2ª Leitura';
+        return reference ? `Primeira Leitura (${reference})` : '1ª Leitura';
+      };
+
       const buildResult = (readingsList: any[]) => ({
         title: `Liturgia Diária — ${datePT}`,
         feast_checked: true,
@@ -398,16 +421,20 @@ JSON: { "title": "...", "sections": [ { "name": "...", "content": "..." }, ... ]
         readings: readingsList,
       });
 
-      const applyEngineRefs = (rawReadings: any[]) => rawReadings.map((sr: any) => ({
-        type: sr.type,
-        reference:
+      const applyEngineRefs = (rawReadings: any[]) => rawReadings.map((sr: any) => {
+        const ref =
           sr.type.includes('1ª') ? (useR.firstReading || sr.reference) :
           sr.type.includes('Salmo') ? (psalmFull || sr.reference) :
           sr.type.includes('2ª') ? (useR.secondReading || sr.reference) :
           (sr.type.toLowerCase().includes('vangelho') || sr.type.includes('Evangelho'))
-            ? (useR.gospel || sr.reference) : sr.reference,
-        text: sr.text,
-      }));
+            ? (useR.gospel || sr.reference) : sr.reference;
+        return {
+          type: sr.type,
+          reference: ref,
+          title: buildReadingTitle(sr.type, ref, sr.text || ''),
+          text: sr.text,
+        };
+      });
 
       // ── 3. Claude API com web search ─────────────────────────────────────
       try {
@@ -496,10 +523,10 @@ JSON:
 
       // Fallback final: referências sem texto
       return buildResult([
-        useR.firstReading && { type: '1ª Leitura', reference: useR.firstReading, text: 'Texto não disponível. Verifique sua conexão.' },
-        psalmFull && { type: 'Salmo Responsorial', reference: psalmFull, text: 'Texto não disponível.' },
-        useR.secondReading && { type: '2ª Leitura', reference: useR.secondReading, text: 'Texto não disponível.' },
-        useR.gospel && { type: 'Evangelho', reference: useR.gospel, text: 'Texto não disponível.' },
+        useR.firstReading && { type: '1ª Leitura', reference: useR.firstReading, title: `Primeira Leitura (${useR.firstReading})`, text: 'Texto não disponível. Verifique sua conexão.' },
+        psalmFull && { type: 'Salmo Responsorial', reference: psalmFull, title: `Responsório — ${psalmFull}`, text: 'Texto não disponível.' },
+        useR.secondReading && { type: '2ª Leitura', reference: useR.secondReading, title: `Segunda Leitura (${useR.secondReading})`, text: 'Texto não disponível.' },
+        useR.gospel && { type: 'Evangelho', reference: useR.gospel, title: `Evangelho (${useR.gospel})`, text: 'Texto não disponível.' },
       ].filter(Boolean) as any[]);
 
     } catch (e) {

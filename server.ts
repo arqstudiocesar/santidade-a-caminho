@@ -312,6 +312,11 @@ app.delete('/api/journal/:id', (req, res) => {
   db.prepare('DELETE FROM journal_entries WHERE id=? AND user_id=?').run(req.params.id, u.id);
   res.json({ success: true });
 });
+app.delete('/api/journal', (req, res) => {
+  const u = requireUser(req, res); if (!u) return;
+  db.prepare('DELETE FROM journal_entries WHERE user_id=?').run(u.id);
+  res.json({ success: true });
+});
 
 // ── Orações ───────────────────────────────────────────────────────────────────
 const DEFAULT_PRAYERS = [
@@ -376,6 +381,16 @@ app.delete('/api/sins', (req, res) => {
   db.prepare('DELETE FROM sins WHERE user_id=?').run(u.id);
   res.json({ success: true });
 });
+app.delete('/api/sins/clear-all', (req, res) => {
+  const u = requireUser(req, res); if (!u) return;
+  db.prepare('DELETE FROM sins WHERE user_id=?').run(u.id);
+  res.json({ success: true });
+});
+app.post('/api/sins/confess-all', (req, res) => {
+  const u = requireUser(req, res); if (!u) return;
+  db.prepare("UPDATE sins SET is_confessed=1 WHERE user_id=?").run(u.id);
+  res.json({ success: true });
+});
 
 // ── Propósitos ────────────────────────────────────────────────────────────────
 app.get('/api/purposes', (req, res) => {
@@ -402,6 +417,17 @@ app.delete('/api/purposes', (req, res) => {
   db.prepare('DELETE FROM confession_purposes WHERE user_id=?').run(u.id);
   res.json({ success: true });
 });
+app.delete('/api/purposes/clear-all', (req, res) => {
+  const u = requireUser(req, res); if (!u) return;
+  db.prepare('DELETE FROM confession_purposes WHERE user_id=?').run(u.id);
+  res.json({ success: true });
+});
+// Toggle fulfilled
+app.put('/api/purposes/:id/toggle', (req, res) => {
+  const u = requireUser(req, res); if (!u) return;
+  db.prepare('UPDATE confession_purposes SET is_fulfilled=NOT is_fulfilled WHERE id=? AND user_id=?').run(req.params.id, u.id);
+  res.json({ success: true });
+});
 
 // ── Modelos de Exame ──────────────────────────────────────────────────────────
 app.get('/api/exam-models', (req, res) => {
@@ -422,22 +448,37 @@ app.delete('/api/exam-models/:id', (req, res) => {
 });
 
 // ── Lectio Divina ─────────────────────────────────────────────────────────────
-app.get('/api/lectio', (req, res) => {
+// Suporta ambos os nomes: /api/lectio (novo) e /api/lectio-history (legado)
+const lectioGet = (req: any, res: any) => {
   const u = requireUser(req, res); if (!u) return;
   res.json(db.prepare('SELECT * FROM lectio_history WHERE user_id=? ORDER BY created_at DESC').all(u.id));
-});
-app.post('/api/lectio', (req, res) => {
+};
+const lectioPost = (req: any, res: any) => {
   const u = requireUser(req, res); if (!u) return;
   const { book, chapter, start_verse, end_verse, content, meditation, prayer, contemplation, action, type } = req.body;
   const r = db.prepare('INSERT INTO lectio_history (book, chapter, start_verse, end_verse, content, meditation, prayer, contemplation, action, type, user_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)')
     .run(book, chapter, start_verse, end_verse, content, meditation, prayer, contemplation, action, type||'guided', u.id);
   res.json({ success: true, id: r.lastInsertRowid });
-});
-app.delete('/api/lectio/:id', (req, res) => {
+};
+const lectioDeleteOne = (req: any, res: any) => {
   const u = requireUser(req, res); if (!u) return;
   db.prepare('DELETE FROM lectio_history WHERE id=? AND user_id=?').run(req.params.id, u.id);
   res.json({ success: true });
-});
+};
+const lectioDeleteAll = (req: any, res: any) => {
+  const u = requireUser(req, res); if (!u) return;
+  db.prepare('DELETE FROM lectio_history WHERE user_id=?').run(u.id);
+  res.json({ success: true });
+};
+// Rotas novas e legadas
+app.get('/api/lectio', lectioGet);
+app.get('/api/lectio-history', lectioGet);
+app.post('/api/lectio', lectioPost);
+app.post('/api/lectio-history', lectioPost);
+app.delete('/api/lectio/:id', lectioDeleteOne);
+app.delete('/api/lectio-history/:id', lectioDeleteOne);
+app.delete('/api/lectio', lectioDeleteAll);
+app.delete('/api/lectio-history', lectioDeleteAll);
 
 // ── Intenções de Oração ───────────────────────────────────────────────────────
 app.get('/api/intentions', (req, res) => {

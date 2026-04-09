@@ -46,9 +46,19 @@ const MARCH_2026_INTENTION: PapalIntention = {
   source: 'https://redemundialdeoracaodopapa.pt/intencoes_mensais/marco-2026-intencao-do-papa/',
 };
 
+// Intenção de abril/2026
+const APRIL_2026_INTENTION: PapalIntention = {
+  month: 'abril de 2026',
+  pope_name: 'Papa Leão XIV',
+  general: 'Pelos sacerdotes em crise — Rezemos para que os sacerdotes que atravessam momentos de crise na sua vocação encontrem o acompanhamento necessário e para que as comunidades os apoiem com compreensão e oração.',
+  missionary: 'Rezemos para que os missionários e missionárias, impulsionados pelo amor de Cristo, anunciem o Evangelho com alegria e esperança aos povos que ainda não o conhecem.',
+  source: 'https://redemundialdeoracaodopapa.pt/intencoes_mensais/abril-2026-intencao-do-papa/',
+};
+
 // Map of known intentions by "month-year"
 const KNOWN_INTENTIONS: Record<string, PapalIntention> = {
   '3-2026': MARCH_2026_INTENTION,
+  '4-2026': APRIL_2026_INTENTION,
 };
 
 function todayStr() {
