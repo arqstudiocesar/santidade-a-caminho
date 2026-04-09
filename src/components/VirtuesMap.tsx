@@ -19,7 +19,7 @@ const VIRTUE_DATA: Record<string, {
   practices: string[];
   quote: string;
 }> = {
-  fé: {
+  fe: {
     category: 'teologais',
     description: 'A fé é a virtude teologal pela qual cremos em Deus e em tudo o que Ele nos disse e revelou, e que a Santa Igreja nos propõe acreditar. Ela é um dom gratuito de Deus e um ato humano livre.',
     catechism: 'CIC §1814–1816: "A fé é um dom de Deus, uma virtude sobrenatural infundida por Ele."',
@@ -32,7 +32,7 @@ const VIRTUE_DATA: Record<string, {
     ],
     quote: '"A fé sem obras é morta." — São Tiago 2,17',
   },
-  esperança: {
+  esperanca: {
     category: 'teologais',
     description: 'A esperança é a virtude teologal pela qual desejamos o Reino dos céus e a vida eterna como nossa felicidade, esperando as promessas de Cristo e apoiando-nos na graça do Espírito Santo.',
     catechism: 'CIC §1817–1821: "A esperança é a virtude teologal pela qual desejamos o Reino dos céus."',
@@ -58,7 +58,7 @@ const VIRTUE_DATA: Record<string, {
     ],
     quote: '"A medida do amor é amar sem medida." — Santo Agostinho',
   },
-  prudência: {
+  prudencia: {
     category: 'cardeais',
     description: 'A prudência é a virtude que dispõe a razão prática a discernir em qualquer circunstância o nosso verdadeiro bem e a escolher os meios adequados para realizá-lo. É a auriga das virtudes.',
     catechism: 'CIC §1806: "A prudência dispõe a razão prática para discernir o verdadeiro bem e escolher os meios retos de o realizar."',
@@ -71,7 +71,7 @@ const VIRTUE_DATA: Record<string, {
     ],
     quote: '"Age de tal modo que possas querer que todos ajam da mesma forma." — São Tomás de Aquino',
   },
-  justiça: {
+  justica: {
     category: 'cardeais',
     description: 'A justiça é a virtude moral que consiste na vontade constante e firme de dar a Deus e ao próximo o que lhes é devido. Ela é a virtude social por excelência.',
     catechism: 'CIC §1807: "A justiça é a vontade constante de dar a Deus e ao próximo o que lhes é devido."',
@@ -97,7 +97,7 @@ const VIRTUE_DATA: Record<string, {
     ],
     quote: '"O cristão não se define por suas qualidades, mas pela força que Deus deposita nele." — São João Paulo II',
   },
-  temperança: {
+  temperanca: {
     category: 'cardeais',
     description: 'A temperança é a virtude moral que modera a atração pelos prazeres e assegura o domínio da vontade sobre os instintos. Ela orienta para o equilíbrio no uso dos bens criados.',
     catechism: 'CIC §1809: "A temperança assegura o domínio da vontade sobre os instintos e mantém os desejos dentro dos limites da honestidade."',
@@ -123,7 +123,7 @@ const VIRTUE_DATA: Record<string, {
     ],
     quote: '"A humildade é a base de todas as outras virtudes no coração humano." — Santa Teresa de Ávila',
   },
-  paciência: {
+  paciencia: {
     category: 'humanas',
     description: 'A paciência é a virtude de suportar os sofrimentos, contrariedades e esperas com serenidade e perseverança, por amor a Deus. É um fruto do Espírito Santo e expressão da fortaleza cristã.',
     catechism: 'CIC §1832: a paciência é listada como fruto do Espírito Santo. CIC §1808 relaciona-a à fortaleza.',
@@ -149,7 +149,7 @@ const VIRTUE_DATA: Record<string, {
     ],
     quote: '"Guardai os vossos corpos em santidade." — São Paulo (1Ts 4,4)',
   },
-  obediência: {
+  obediencia: {
     category: 'humanas',
     description: 'A obediência é a virtude que nos dispõe a conformar a nossa vontade à vontade dos nossos superiores legítimos, em tudo o que não contraria a lei de Deus, por amor a Ele.',
     catechism: 'CIC §1897–1900: toda autoridade legítima vem de Deus; a obediência é um dever moral. CIC §2216: honrar os pais inclui obediência.',
@@ -405,13 +405,13 @@ export default function VirtuesMap() {
   const [activeCategory, setActiveCategory] = useState<string>('all');
 
   useEffect(() => {
-    apiFetch('/api/virtues').then(r => r.json()).then(setVirtues);
+    apiFetch('/api/virtues').then(r => r.json()).then(d => { if (Array.isArray(d)) setVirtues(d); });
   }, []);
 
   const togglePriority = async (id: string) => {
     await apiFetch(`/api/virtues/${id}/toggle-priority`, { method: 'POST' });
     setVirtues(prev => prev.map(v => v.id === id ? { ...v, is_priority: !v.is_priority } : { ...v, is_priority: v.id === id ? true : (id === v.id ? false : v.is_priority) }));
-    apiFetch('/api/virtues').then(r => r.json()).then(setVirtues);
+    apiFetch('/api/virtues').then(r => r.json()).then(d => { if (Array.isArray(d)) setVirtues(d); });
   };
 
   const updateLevel = async (id: string, newLevel: number) => {

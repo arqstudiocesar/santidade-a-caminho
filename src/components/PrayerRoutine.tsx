@@ -65,6 +65,32 @@ function formatReadingText(text: string, type: string): React.ReactNode[] {
   return [...elements, ...endingDiv];
 }
 
+// Extrai o título litúrgico da primeira linha do texto (se existir)
+// Ex: "Leitura dos Atos dos Apóstolos.\n\nNaqueles dias..."
+// => título: "Leitura dos Atos dos Apóstolos."  |  corpo: "Naqueles dias..."
+function extractLiturgicalTitle(text: string, type: string): { title: string; body: string } {
+  if (!text) return { title: '', body: text };
+  const lines = text.trim().split('\n');
+  const first = lines[0].trim();
+  // É título se a primeira linha:
+  // - começa com "Leitura d" ou "Proclamação" ou "Responsório"
+  // - NÃO começa com "R." (antífona do salmo)
+  // - É curta (menos de 120 chars) e termina com ponto final
+  const isLiturgicalTitle =
+    (/^Leitura d/i.test(first) ||
+     /^Proclama/i.test(first) ||
+     /^Responsório/i.test(first) ||
+     /^Do (livro|Evangelho|primeiro|segundo|terceiro)/i.test(first)) &&
+    first.length < 120 &&
+    !first.startsWith('R.');
+  if (isLiturgicalTitle) {
+    // Remover a primeira linha e linhas em branco seguintes
+    let rest = lines.slice(1).join('\n').replace(/^\s*\n+/, '').trim();
+    return { title: first, body: rest };
+  }
+  return { title: '', body: text };
+}
+
 function ReadingBlock({ reading, bgClass, borderClass, titleClass }: {
   reading: { type: string; reference: string; text: string };
   bgClass?: string;
@@ -72,13 +98,21 @@ function ReadingBlock({ reading, bgClass, borderClass, titleClass }: {
   titleClass?: string;
 }) {
   const isPsalm = reading.type.toLowerCase().includes('salmo') || reading.type.toLowerCase().includes('responsorial');
-  return React.createElement('div', { className: 'space-y-4' },
+  const { title: litTitle, body: litBody } = extractLiturgicalTitle(reading.text, reading.type);
+
+  return React.createElement('div', { className: 'space-y-3' },
+    // Linha de referência (ex: "At 3,11-26")
     React.createElement('p', {
       className: `text-xs font-bold uppercase tracking-widest ${titleClass || 'text-[#1A1A1A]/40'}`,
     }, reading.reference),
+    // Título litúrgico separado (ex: "Leitura dos Atos dos Apóstolos.")
+    litTitle ? React.createElement('p', {
+      className: `text-sm font-bold italic ${titleClass ? titleClass.replace('/40', '/80') : 'text-[#5A5A40]'} mb-1`,
+    }, litTitle) : null,
+    // Corpo do texto
     React.createElement('div', {
       className: `p-6 lg:p-8 ${bgClass || 'bg-[#F5F2ED]'} rounded-[2rem] border ${borderClass || 'border-[#5A5A40]/5'} space-y-1 ${isPsalm ? 'bg-opacity-70' : ''}`,
-    }, formatReadingText(reading.text, reading.type))
+    }, formatReadingText(litTitle ? litBody : reading.text, reading.type))
   );
 }
 
