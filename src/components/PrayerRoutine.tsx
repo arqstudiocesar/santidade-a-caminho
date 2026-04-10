@@ -70,24 +70,47 @@ function formatReadingText(text: string, type: string): React.ReactNode[] {
 // => título: "Leitura dos Atos dos Apóstolos."  |  corpo: "Naqueles dias..."
 function extractLiturgicalTitle(text: string, type: string): { title: string; body: string } {
   if (!text) return { title: '', body: text };
+
+  // Caso 1: título separado por quebra de linha (caso normal)
   const lines = text.trim().split('\n');
   const first = lines[0].trim();
-  // É título se a primeira linha:
-  // - começa com "Leitura d" ou "Proclamação" ou "Responsório"
-  // - NÃO começa com "R." (antífona do salmo)
-  // - É curta (menos de 120 chars) e termina com ponto final
-  const isLiturgicalTitle =
-    (/^Leitura d/i.test(first) ||
-     /^Proclama/i.test(first) ||
-     /^Responsório/i.test(first) ||
-     /^Do (livro|Evangelho|primeiro|segundo|terceiro)/i.test(first)) &&
-    first.length < 120 &&
-    !first.startsWith('R.');
-  if (isLiturgicalTitle) {
-    // Remover a primeira linha e linhas em branco seguintes
-    let rest = lines.slice(1).join('\n').replace(/^\s*\n+/, '').trim();
-    return { title: first, body: rest };
+  const titlePrefixes = [
+    /^Leitura d/i,
+    /^Proclama/i,
+    /^Responsório/i,
+    /^Do (livro|Evangelho|primeiro|segundo|terceiro)/i,
+  ];
+  const hasTitlePrefix = titlePrefixes.some(re => re.test(first));
+
+  if (hasTitlePrefix && !first.startsWith('R.')) {
+    if (lines.length > 1) {
+      // Tem quebra de linha — título é a primeira linha inteira
+      const rest = lines.slice(1).join('\n').replace(/^\s*\n+/, '').trim();
+      return { title: first, body: rest };
+    }
+
+    // Caso 2: título e texto na MESMA linha (sem quebra de linha)
+    // Ex: "Leitura dos Atos dos Apóstolos. Naqueles dias, 11 como o paralítico..."
+    // Detectar: prefixo de título + ponto final + espaço + texto do corpo
+    // O título termina no primeiro ponto que é seguido de espaço e letra maiúscula
+    // após uma palavra de livro/capítulo conhecida
+    const singleLine = first;
+    // Padrão: "Leitura de [livro]. [corpo]" ou "Leitura do [livro]. [corpo]"
+    const splitMatch = singleLine.match(
+      /^((?:Leitura d[aeo]?[^.]*(?:\([^)]+\))?|Proclamação do Evangelho[^.]*(?:\([^)]+\))?)[.])\s+(.+)$/is
+    );
+    if (splitMatch && splitMatch[1] && splitMatch[2]) {
+      return { title: splitMatch[1].trim(), body: splitMatch[2].trim() };
+    }
+
+    // Padrão alternativo: qualquer prefixo de título seguido de ponto e corpo
+    // "Responsório — Sl 8. R. Ó Senhor..." -> não aplicar (salmo)
+    const altMatch = singleLine.match(/^([^.]{10,100}\.)\s+([A-ZÁÉÍÓÚÂÊÎÔÛÀÃÕÇ].+)$/s);
+    if (altMatch && hasTitlePrefix && !type.toLowerCase().includes('salmo')) {
+      return { title: altMatch[1].trim(), body: altMatch[2].trim() };
+    }
   }
+
   return { title: '', body: text };
 }
 

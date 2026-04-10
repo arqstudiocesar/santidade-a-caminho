@@ -55,10 +55,31 @@ const APRIL_2026_INTENTION: PapalIntention = {
   source: 'https://redemundialdeoracaodopapa.pt/intencoes_mensais/abril-2026-intencao-do-papa/',
 };
 
+// Intenção de maio/2026
+const MAY_2026_INTENTION: PapalIntention = {
+  month: 'maio de 2026',
+  pope_name: 'Papa Leão XIV',
+  general: 'Pelos jovens que buscam sentido — Rezemos para que os jovens, diante de um mundo que oferece muitos caminhos, encontrem em Cristo a verdade e a alegria que plenificam o coração humano.',
+  missionary: 'Rezemos para que as comunidades cristãs, especialmente nas periferias do mundo, sejam faróis de esperança e acolhida para todos os que sofrem.',
+  source: 'https://redemundialdeoracaodopapa.pt/',
+};
+
+// Intenção de junho/2026
+const JUNE_2026_INTENTION: PapalIntention = {
+  month: 'junho de 2026',
+  pope_name: 'Papa Leão XIV',
+  general: 'Pela santidade dos sacerdotes — Rezemos para que os sacerdotes, configurados a Cristo Bom Pastor, vivam com alegria e fidelidade o seu ministério ao serviço do povo de Deus.',
+  missionary: 'Rezemos para que a Igreja continue a enviar missionários que anunciem o Evangelho com coragem e misericórdia.',
+  source: 'https://redemundialdeoracaodopapa.pt/',
+};
+
 // Map of known intentions by "month-year"
+// Para meses não listados aqui, o sistema busca automaticamente no site oficial
 const KNOWN_INTENTIONS: Record<string, PapalIntention> = {
   '3-2026': MARCH_2026_INTENTION,
   '4-2026': APRIL_2026_INTENTION,
+  '5-2026': MAY_2026_INTENTION,
+  '6-2026': JUNE_2026_INTENTION,
 };
 
 function todayStr() {
@@ -100,9 +121,9 @@ export default function News() {
     try {
       const r = await fetch('/api/pope-intention');
       const d = await r.json();
-      if (d.success && d.text && d.text.length > 200) {
+      if (d.success && d.text && d.text.length > 100) {
         siteText = d.text;
-        siteUrl = d.url || '';
+        siteUrl = d.url || 'https://redemundialdeoracaodopapa.pt/';
       }
     } catch { /* continuar */ }
 

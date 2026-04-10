@@ -276,6 +276,25 @@ function ConsecrationTab() {
   const [openWeek, setOpenWeek] = useState<number | null>(null);
   const [openDay, setOpenDay] = useState<number | null>(null);
 
+  // Dias marcados como concluídos — persiste no localStorage
+  const [completedDays, setCompletedDays] = useState<Set<number>>(() => {
+    try {
+      const saved = localStorage.getItem('consecration_33days');
+      if (saved) return new Set(JSON.parse(saved) as number[]);
+    } catch {}
+    return new Set<number>();
+  });
+
+  const toggleDay = (dayNumber: number) => {
+    setCompletedDays(prev => {
+      const next = new Set(prev);
+      if (next.has(dayNumber)) next.delete(dayNumber);
+      else next.add(dayNumber);
+      try { localStorage.setItem('consecration_33days', JSON.stringify([...next])); } catch {}
+      return next;
+    });
+  };
+
   const weekBg: Record<string, string> = {
     gray: 'bg-gray-50 border-gray-200', blue: 'bg-blue-50 border-blue-200',
     rose: 'bg-rose-50 border-rose-200', green: 'bg-green-50 border-green-200',
@@ -324,14 +343,55 @@ function ConsecrationTab() {
       </div>
 
       <div>
-        <h4 className="font-bold text-lg mb-4">Cronograma de 33 Dias</h4>
+        <div className="flex items-center justify-between mb-4">
+          <h4 className="font-bold text-lg">Cronograma de 33 Dias</h4>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-[#5A5A40]">{completedDays.size}/33 dias</span>
+            {completedDays.size > 0 && (
+              <button
+                onClick={() => {
+                  if (window.confirm('Deseja limpar todo o progresso do cronograma?')) {
+                    setCompletedDays(new Set());
+                    try { localStorage.removeItem('consecration_33days'); } catch {}
+                  }
+                }}
+                className="text-[10px] text-red-400 hover:text-red-600 font-bold"
+              >Limpar</button>
+            )}
+          </div>
+        </div>
+        {completedDays.size > 0 && (
+          <div className="mb-4">
+            <div className="h-2 bg-[#F5F2ED] rounded-full overflow-hidden">
+              <div
+                className="h-full bg-[#5A5A40] rounded-full transition-all duration-500"
+                style={{ width: `${(completedDays.size / 33) * 100}%` }}
+              />
+            </div>
+            <p className="text-[10px] text-[#1A1A1A]/40 mt-1 text-right">
+              {completedDays.size === 33 ? '🎉 Cronograma concluído!' : `${Math.round((completedDays.size / 33) * 100)}% concluído`}
+            </p>
+          </div>
+        )}
         <div className="space-y-3">
           {consecrationSchedule.map((week, wi) => (
             <div key={wi} className={`rounded-[2rem] border overflow-hidden ${weekBg[week.color]}`}>
               <button onClick={() => setOpenWeek(openWeek === wi ? null : wi)}
                 className="w-full flex items-center justify-between p-5 text-left">
-                <div>
-                  <p className={`font-bold ${weekTitle[week.color]}`}>{week.week}</p>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <p className={`font-bold ${weekTitle[week.color]}`}>{week.week}</p>
+                    {(() => {
+                      const doneCount = week.days.filter(d => completedDays.has(d.day)).length;
+                      const total = week.days.length;
+                      const allDone = doneCount === total;
+                      return (
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${allDone ? 'bg-green-100 text-green-700' : 'bg-white/70 text-[#1A1A1A]/50'}`}>
+                          {doneCount}/{total}
+                        </span>
+                      );
+                    })()}
+                  </div>
                   <p className="text-xs text-[#1A1A1A]/50 mt-0.5 italic">{week.theme}</p>
                 </div>
                 {openWeek === wi ? <ChevronUp className="w-5 h-5 flex-shrink-0" /> : <ChevronDown className="w-5 h-5 flex-shrink-0" />}
@@ -343,13 +403,29 @@ function ConsecrationTab() {
                       {week.days.map((day, di) => {
                         const key = wi * 10 + di;
                         return (
-                          <div key={di} className="bg-white/80 rounded-2xl overflow-hidden">
-                            <button onClick={() => setOpenDay(openDay === key ? null : key)}
-                              className="w-full flex items-center gap-3 p-3 text-left hover:bg-white transition-colors">
-                              <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center text-xs font-bold text-[#5A5A40] border border-[#5A5A40]/20 flex-shrink-0">{day.day}</div>
-                              <span className="font-semibold text-sm flex-1">{day.subtheme}</span>
-                              {openDay === key ? <ChevronUp className="w-3.5 h-3.5 flex-shrink-0" /> : <ChevronDown className="w-3.5 h-3.5 flex-shrink-0" />}
-                            </button>
+                          <div key={di} className={`rounded-2xl overflow-hidden transition-colors ${completedDays.has(day.day) ? 'bg-green-50/80' : 'bg-white/80'}`}>
+                            <div className="flex items-center">
+                              {/* Botão de marcar como feito */}
+                              <button
+                                onClick={e => { e.stopPropagation(); toggleDay(day.day); }}
+                                title={completedDays.has(day.day) ? 'Desmarcar' : 'Marcar como realizado'}
+                                className="flex-shrink-0 pl-3 pr-1 py-3 flex items-center"
+                              >
+                                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all ${
+                                  completedDays.has(day.day)
+                                    ? 'bg-green-500 border-green-500 text-white'
+                                    : 'bg-white border-[#5A5A40]/30 text-[#5A5A40]'
+                                }`}>
+                                  {completedDays.has(day.day) ? '✓' : day.day}
+                                </div>
+                              </button>
+                              {/* Botão de abrir detalhes */}
+                              <button onClick={() => setOpenDay(openDay === key ? null : key)}
+                                className="flex items-center gap-2 flex-1 p-3 text-left hover:bg-white/60 transition-colors min-w-0">
+                                <span className={`font-semibold text-sm flex-1 ${completedDays.has(day.day) ? 'line-through text-[#1A1A1A]/40' : ''}`}>{day.subtheme}</span>
+                                {openDay === key ? <ChevronUp className="w-3.5 h-3.5 flex-shrink-0 text-[#5A5A40]" /> : <ChevronDown className="w-3.5 h-3.5 flex-shrink-0 text-[#1A1A1A]/30" />}
+                              </button>
+                            </div>
                             <AnimatePresence>
                               {openDay === key && (
                                 <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} className="overflow-hidden">
