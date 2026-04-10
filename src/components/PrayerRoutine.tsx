@@ -68,12 +68,14 @@ function formatReadingText(text: string, type: string): React.ReactNode[] {
 // Extrai o título litúrgico da primeira linha do texto (se existir)
 // Ex: "Leitura dos Atos dos Apóstolos.\n\nNaqueles dias..."
 // => título: "Leitura dos Atos dos Apóstolos."  |  corpo: "Naqueles dias..."
+// Ex linha única: "Leitura dos Atos dos Apóstolos. Naqueles dias, 11 como o paralítico..."
+// => título: "Leitura dos Atos dos Apóstolos."  |  corpo: "Naqueles dias, 11 como o paralítico..."
 function extractLiturgicalTitle(text: string, type: string): { title: string; body: string } {
   if (!text) return { title: '', body: text };
 
-  // Caso 1: título separado por quebra de linha (caso normal)
   const lines = text.trim().split('\n');
   const first = lines[0].trim();
+
   const titlePrefixes = [
     /^Leitura d/i,
     /^Proclama/i,
@@ -83,31 +85,25 @@ function extractLiturgicalTitle(text: string, type: string): { title: string; bo
   const hasTitlePrefix = titlePrefixes.some(re => re.test(first));
 
   if (hasTitlePrefix && !first.startsWith('R.')) {
+    // Caso 1: título separado por quebra de linha
     if (lines.length > 1) {
-      // Tem quebra de linha — título é a primeira linha inteira
       const rest = lines.slice(1).join('\n').replace(/^\s*\n+/, '').trim();
-      return { title: first, body: rest };
+      if (rest.length > 0) {
+        return { title: first, body: rest };
+      }
     }
 
-    // Caso 2: título e texto na MESMA linha (sem quebra de linha)
-    // Ex: "Leitura dos Atos dos Apóstolos. Naqueles dias, 11 como o paralítico..."
-    // Detectar: prefixo de título + ponto final + espaço + texto do corpo
-    // O título termina no primeiro ponto que é seguido de espaço e letra maiúscula
-    // após uma palavra de livro/capítulo conhecida
-    const singleLine = first;
-    // Padrão: "Leitura de [livro]. [corpo]" ou "Leitura do [livro]. [corpo]"
-    const splitMatch = singleLine.match(
-      /^((?:Leitura d[aeo]?[^.]*(?:\([^)]+\))?|Proclamação do Evangelho[^.]*(?:\([^)]+\))?)[.])\s+(.+)$/is
-    );
-    if (splitMatch && splitMatch[1] && splitMatch[2]) {
-      return { title: splitMatch[1].trim(), body: splitMatch[2].trim() };
-    }
-
-    // Padrão alternativo: qualquer prefixo de título seguido de ponto e corpo
-    // "Responsório — Sl 8. R. Ó Senhor..." -> não aplicar (salmo)
-    const altMatch = singleLine.match(/^([^.]{10,100}\.)\s+([A-ZÁÉÍÓÚÂÊÎÔÛÀÃÕÇ].+)$/s);
-    if (altMatch && hasTitlePrefix && !type.toLowerCase().includes('salmo')) {
-      return { title: altMatch[1].trim(), body: altMatch[2].trim() };
+    // Caso 2: título e texto na MESMA linha — separar no primeiro ponto seguido de espaço + letra maiúscula
+    // Cobre: "Leitura dos Atos dos Apóstolos. Naqueles dias..."
+    // Cobre: "Leitura do Evangelho segundo João (Jo 3,16). Naquele tempo..."
+    const dotSplit = first.match(/^(.+?[.!?])\s+([A-ZÁÉÍÓÚÂÊÎÔÛÀÃÕÇ\d].+)$/s);
+    if (dotSplit && dotSplit[1] && dotSplit[2]) {
+      const potentialTitle = dotSplit[1].trim();
+      const potentialBody = dotSplit[2].trim();
+      // Confirma que a parte do título começa com prefixo litúrgico
+      if (titlePrefixes.some(re => re.test(potentialTitle)) && potentialBody.length > 10) {
+        return { title: potentialTitle, body: potentialBody };
+      }
     }
   }
 

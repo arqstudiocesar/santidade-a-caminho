@@ -407,7 +407,9 @@ function ConsecrationTab() {
                             <div className="flex items-center">
                               {/* Botão de marcar como feito */}
                               <button
-                                onClick={e => { e.stopPropagation(); toggleDay(day.day); }}
+                                onClick={e => { e.preventDefault(); e.stopPropagation(); toggleDay(day.day); }}
+                                onMouseDown={e => { e.preventDefault(); e.stopPropagation(); }}
+                                onPointerDown={e => { e.preventDefault(); e.stopPropagation(); }}
                                 title={completedDays.has(day.day) ? 'Desmarcar' : 'Marcar como realizado'}
                                 className="flex-shrink-0 pl-3 pr-1 py-3 flex items-center"
                               >
@@ -420,7 +422,7 @@ function ConsecrationTab() {
                                 </div>
                               </button>
                               {/* Botão de abrir detalhes */}
-                              <button onClick={() => setOpenDay(openDay === key ? null : key)}
+                              <button onClick={e => { e.preventDefault(); e.stopPropagation(); setOpenDay(openDay === key ? null : key); }}
                                 className="flex items-center gap-2 flex-1 p-3 text-left hover:bg-white/60 transition-colors min-w-0">
                                 <span className={`font-semibold text-sm flex-1 ${completedDays.has(day.day) ? 'line-through text-[#1A1A1A]/40' : ''}`}>{day.subtheme}</span>
                                 {openDay === key ? <ChevronUp className="w-3.5 h-3.5 flex-shrink-0 text-[#5A5A40]" /> : <ChevronDown className="w-3.5 h-3.5 flex-shrink-0 text-[#1A1A1A]/30" />}
