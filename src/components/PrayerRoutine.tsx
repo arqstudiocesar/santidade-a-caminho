@@ -709,20 +709,7 @@ JSON:
                   <span className="text-xs text-[#1A1A1A]/40 font-sans">{todayLit.seasonLabel}</span>
                   <span className="text-xs text-[#5A5A40] font-bold font-sans">Ano {todayLit.liturgicalYear} · Ciclo {todayLit.ferialCycle}</span>
                 </div>
-                {/* Referências das leituras — do motor litúrgico */}
-                {!isLoadingLiturgy && (() => {
-                  const r = (todayLit.hasProperReadings && todayLit.feastReadings) ? todayLit.feastReadings : todayLit.readings;
-                  const hasRealRefs = r.firstReading && !r.firstReading.startsWith('Lecionário Ferial');
-                  if (!hasRealRefs) return null;
-                  return (
-                    <div className="mt-3 pt-3 border-t border-[#1A1A1A]/5 grid grid-cols-1 sm:grid-cols-2 gap-1">
-                      {r.firstReading && <p className="text-xs text-[#1A1A1A]/50">📖 <span className="font-semibold">1ª Leitura:</span> {r.firstReading}</p>}
-                      {r.psalm && <p className="text-xs text-[#1A1A1A]/50">🎵 <span className="font-semibold">Salmo:</span> {r.psalm}</p>}
-                      {r.secondReading && <p className="text-xs text-[#1A1A1A]/50">📖 <span className="font-semibold">2ª Leitura:</span> {r.secondReading}</p>}
-                      {r.gospel && <p className="text-xs text-[#5A5A40] font-bold">✝ <span>Evangelho:</span> {r.gospel}</p>}
-                    </div>
-                  );
-                })()}
+
               </div>
               <div className="p-8 overflow-y-auto custom-scrollbar flex-1 space-y-8">
                 {isLoadingLiturgy ? (

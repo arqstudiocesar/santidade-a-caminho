@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, BookOpen, Heart, Star } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { ChevronDown, ChevronUp, BookOpen, Heart, Star, Search, Plus, X, Save } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 type SubTab = 'daily' | 'adoration' | 'consecration';
@@ -24,6 +24,17 @@ const habituais: PrayerItem[] = [
   { title: 'Consagração a Nossa Senhora (Breve)', text: 'Ó Maria, Virgem poderosíssima\ne Mãe misericordiosa,\nrefúgio e auxílio dos pecadores:\nEu vos consagro minha alma, minha vida,\nminha morte e minha eternidade.\nProtegei-me durante toda a minha vida,\ne especialmente na hora da morte.\nAmém.' },
   { title: 'Veni Creator', text: 'Vinde, Espírito Criador,\nvisitai as almas dos vossos fiéis;\ncobri com a vossa graça\nos corações que criastes.\n\nVós que sois chamado Paráclito,\ndon de Deus altíssimo,\nágua viva, fogo, amor,\ne unção espiritual.\n\nVós que sois o dom setiforme,\ndedo da mão de Deus Pai,\nvós prometido pelo Pai,\nque inspiraes a nossa língua.\n\nIluminai os nossos sentidos,\ninfundi amor em nossos corações;\ncom força perpétua\nfortalecei nossa fraqueza.\n\nAfastai o inimigo longe\ne dai-nos logo a paz;\nassim, tendo vós por guia,\nevitemos todo o mal.\n\nDai-nos por vós conhecer o Pai\ne conhecer também o Filho;\ne a vós, Espírito de ambos,\ncreiamos em todo o tempo.\nAmém.' },
   { title: 'Angelus', text: 'V. O Anjo do Senhor anunciou a Maria.\nR. E ela concebeu pelo Espírito Santo.\n\nAve Maria...\n\nV. Eis a escrava do Senhor.\nR. Faça-se em mim segundo a vossa palavra.\n\nAve Maria...\n\nV. E o Verbo se fez carne.\nR. E habitou entre nós.\n\nAve Maria...\n\nV. Rogai por nós, Santa Mãe de Deus.\nR. Para que sejamos dignos das promessas de Cristo.\n\nOremos: Derramai, Senhor, a vossa graça em nossas almas, para que nós, que conhecemos, pelo anúncio do Anjo, a Encarnação de Cristo vosso Filho, cheguemos, pela sua Paixão e Cruz, à glória da Ressurreição. Por Cristo Nosso Senhor. Amém.' },
+  { title: 'Magnificat', text: 'Minha alma glorifica ao Senhor,\ne o meu espírito se alegra em Deus, meu Salvador,\nporque olhou para a humildade de sua serva.\nDaí em diante todas as gerações me chamarão bem-aventurada,\nporque o Todo-Poderoso fez grandes coisas em meu favor.\nSanto é o seu nome,\ne sua misericórdia se estende de geração em geração\nsobre os que o temem.\nMostrou a força do seu braço,\ndispersou os que se orgulhavam de coração.\nDerrubou do trono os poderosos\ne exaltou os humildes.\nEncheu de bens os famintos\ne despediu os ricos de mãos vazias.\nAcolheu Israel, seu servo,\nlembrado de sua misericórdia,\ncomo prometeu a nossos pais,\nem favor de Abraão e de sua descendência para sempre.\nGlória ao Pai, ao Filho e ao Espírito Santo,\nAssim como era no princípio, agora e sempre,\ne por todos os séculos dos séculos. Amém.' },
+  { title: 'Sub Tua Praesidium (Português)', text: 'Sob a vossa proteção nos acolhemos,\nSanta Mãe de Deus.\nNão desprezeis as nossas súplicas\nnas nossas necessidades,\nmas livrai-nos sempre de todos os perigos,\nó Virgem gloriosa e bendita.' },
+  { title: 'Sub Tua Praesidium (Latim)', text: 'Sub tuum praesidium confugimus,\nSancta Dei Genitrix.\nNostras deprecationes ne despicias\nin necessitatibus nostris,\nsed a periculis cunctis\nlibera nos semper,\nVirgo gloriosa et benedicta.' },
+  { title: 'Coroazinha de Nossa Senhora', text: 'Por cada Ave Maria, dizer a antífona:\n"Ó Maria, concebida sem pecado, rogai por nós que recorremos a Vós."\n\n3 Pai Nosso em honra da Santíssima Trindade\n12 Ave Maria (em grupos de 3) em honra dos 12 privilégios de Maria\n\nAo final:\nV. Ó Maria, concebida sem pecado.\nR. Rogai por nós que recorremos a Vós.\n\nOremos: Ó Deus, cujo Filho Unigênito, pela Sua vida, morte e ressurreição, nos obteve o prêmio da salvação eterna: concedei-nos, suplicamos, que meditando estes mistérios no Santíssimo Rosário da Bem-aventurada Virgem Maria, imitemos o que eles contêm e obtenhamos o que prometem. Por Cristo Nosso Senhor. Amém.' },
+  { title: 'Oração de Santo Agostinho', text: 'Tarde vos amei, Formosura tão antiga e tão nova,\ntarde Vos amei!\nE eis que estáveis dentro de mim e eu lá fora,\ne assim procurava a Vós.\nInforme como era, lançava-me sobre as formosas coisas\nque criastes.\nEstáveis comigo e eu não estava convosco.\nLonge de Vós me retinham essas criaturas,\nque não existiriam se não existissem em Vós.\nChamastes e clamastes\ne rompestes a minha surdez.\nRelampejastes e brilhastes\ne fugiu a minha cegueira.\nEspalhastes o vosso perfume\ne respirei e por Vós anseio.\nGustei-Vos e tenho fome e sede de Vós.\nTocastes-me e inflamei-me no desejo da vossa paz.\nAmém.' },
+  { title: 'Ave Estrela do Mar (Ave Maris Stella)', text: 'Ave, Estrela do Mar,\nMãe de Deus, Virgem Pura,\nPorta do Céu aberta,\nPorto de segura ventura.\n\nTu que recebeste a saudação de Gabriel,\nEstabelece-nos em paz,\nMudando o nome de Eva.\n\nSolta as cadeias dos cativos,\nDá luz aos cegos,\nAfugenta os males,\nPede todos os bens.\n\nMostra-te Mãe,\nReceba por ti as nossas preces,\nAquele que por nós nasceu,\nQuis ser teu Filho.\n\nVirgem incomparável,\nMansa entre todas,\nSolta-nos de pecados,\nFazei-nos mansos e puros.\n\nDá-nos vida casta,\nPrepara-nos o caminho seguro,\nPara que, vendo a Jesus,\nNos alegremos com Ele sempre.\n\nSeja honra a Deus Pai,\nAo Altíssimo Cristo,\nAo Espírito Santo,\nGlória a um só Deus. Amém.' },
+  { title: 'Coroa de Nossa Senhora (15 Mistérios)', text: 'Início:\nV. Ó Deus, vinde em minha ajuda.\nR. Senhor, dai-me pressa em socorrer-me.\nGlória ao Pai...\n\nMistérios Gozosos (2ª e 6ª feira):\n1. A Anunciação — Ave Maria × 10\n2. A Visitação — Ave Maria × 10\n3. O Nascimento de Jesus — Ave Maria × 10\n4. A Apresentação no Templo — Ave Maria × 10\n5. Jesus encontrado no Templo — Ave Maria × 10\n\nMistérios Luminosos (5ª feira):\n1. O Batismo no Jordão — Ave Maria × 10\n2. As Bodas de Caná — Ave Maria × 10\n3. O Anúncio do Reino — Ave Maria × 10\n4. A Transfiguração — Ave Maria × 10\n5. A Instituição da Eucaristia — Ave Maria × 10\n\nMistérios Dolorosos (3ª e 6ª feira):\n1. A Agonia no Horto — Ave Maria × 10\n2. A Flagelação — Ave Maria × 10\n3. A Coroação de Espinhos — Ave Maria × 10\n4. Jesus carrega a Cruz — Ave Maria × 10\n5. A Crucificação — Ave Maria × 10\n\nMistérios Gloriosos (4ª feira e domingo):\n1. A Ressurreição — Ave Maria × 10\n2. A Ascensão — Ave Maria × 10\n3. Pentecostes — Ave Maria × 10\n4. A Assunção de Maria — Ave Maria × 10\n5. A Coroação de Maria — Ave Maria × 10\n\nAo final: Salve Rainha.' },
+  { title: 'Oração de Renúncia a Satanás', text: 'Senhor Jesus Cristo, em Vosso Santo Nome e pelo poder da Vossa Cruz e Sangue Precioso, renuncio a Satanás, a todos os seus anjos, a todas as suas obras, a todas as suas vaidades, a todos os seus enganos e a todas as suas pompas.\n\nRenuncio a todas as influências ocultas, ao espiritismo, à magia, ao ocultismo, à New Age e a qualquer outra prática contrária à lei de Deus.\n\nConságro-me inteiramente a Vós, Senhor Jesus Cristo, e aceito-Vos como meu único Senhor e Redentor.\n\nSanta Maria, Mãe de Deus, São Miguel Arcanjo e todos os Santos, intercedei por nós. Amém.' },
+  { title: 'Renúncia 1 — Ao espírito do mundo', text: 'Em nome de Jesus Cristo, Filho do Deus vivo,\ne pelo poder do Seu Sangue precioso,\nrenuncio ao espírito do mundo:\nà sua vaidade, ao seu orgulho,\nao amor desordenado das riquezas e dos prazeres,\nao espírito de competição e ambição,\nà indiferença religiosa e ao relativismo moral.\n\nReceio a Vós, Senhor Jesus, como meu único bem,\ne escolho viver segundo o Vosso Evangelho.\nAmém.' },
+  { title: 'Renúncia 2 — Às influências hereditárias e maldições', text: 'Senhor Jesus Cristo,\nem Vosso Santo Nome renuncio a toda maldição,\na todo feitiço, a toda ligação espiritual maligna\nque possa ter entrado na minha família\npor gerações passadas,\npor pecados cometidos por meus antepassados,\npor práticas de ocultismo, maçonaria ou religiões pagãs.\n\nPelo poder do Vosso Sangue Precioso,\nquebro toda corrente e todo laço espiritual maligno\nherdado ou adquirido.\nDecreta-me livre em Vosso Nome.\nAmém.' },
+  { title: 'Renúncia 3 — Oração de libertação pessoal', text: 'Pai Eterno, em nome de Jesus Cristo,\npelo poder do Seu Sangue Precioso\ne pela intercessão de Nossa Senhora,\npresenteio-me diante de Vós pedindo libertação\nde tudo que me aprisiona e separa de Vós.\n\nRenuncio a todo pecado, hábito ou vício\nque escraviza minha alma.\nRenuncio ao espírito de medo, de angústia,\nde depressão e de desesperança.\nRenuncio a toda amargura e falta de perdão.\n\nRecebo Vossa paz, Vossa liberdade e Vossa alegria.\nQue o Espírito Santo preencha todos os espaços vazios\nda minha alma com Vossa presença divina.\nAmém.' },
   { title: 'Adoro Te Devote', text: 'Adoro-te devotamente, Divindade oculta,\nque sob estas aparências te escondes verdadeiramente;\na ti se submete o meu coração totalmente,\nporque, contemplando-te, tudo desfalece.\n\nA vista, o tato e o gosto enganam-se em ti;\nmas o ouvido firme faz crer o que ouviu;\ncreio em tudo o que disse o Filho de Deus;\nnão há nada mais verdadeiro que esta Palavra de Verdade.\n\nNa Cruz estava oculta somente a Divindade;\naqui também está oculta a Humanidade;\nmas crendo e confessando ambas,\npeço o que pediu o ladrão arrependido.\n\nNão vejo as chagas como Tomé viu,\nmas confesso-te meu Deus;\nfazei-me crer cada vez mais em vós,\nneste vós esperar e vos amar.\n\nÓ Memória da morte do Senhor,\nPão vivo que dais vida ao homem:\nconcedei que a minha alma viva de vós\ne sempre saboreie de vós a doçura.\n\nAmém. (São Tomás de Aquino)' },
 ];
 
@@ -224,21 +235,76 @@ function PrayerCard({ prayer }: { prayer: PrayerItem }) {
 }
 
 // ── Sub-abas ──────────────────────────────────────────────────────────────────
-function DailyPrayers() {
+function DailyPrayers({ searchTerm, userPrayers, onDeleteUserPrayer }: {
+  searchTerm: string;
+  userPrayers: PrayerItem[];
+  onDeleteUserPrayer: (index: number) => void;
+}) {
+  const q = searchTerm.toLowerCase().trim();
+
+  const filterPrayers = (prayers: PrayerItem[]) =>
+    q ? prayers.filter(p => p.title.toLowerCase().includes(q) || p.text.toLowerCase().includes(q)) : prayers;
+
+  const filtHabituais = filterPrayers([...habituais, ...userPrayers]);
+  const filtLadainhas = filterPrayers(ladainhas);
+  const filtFormais   = filterPrayers(formais);
+
+  const total = filtHabituais.length + filtLadainhas.length + filtFormais.length;
+
+  if (q && total === 0) {
+    return (
+      <div className="text-center py-12 bg-white rounded-[2rem] border border-dashed border-[#1A1A1A]/10">
+        <Search className="w-8 h-8 text-[#1A1A1A]/20 mx-auto mb-3" />
+        <p className="text-[#1A1A1A]/40 italic text-sm">Nenhuma oração encontrada para "{searchTerm}".</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
-      <div className="space-y-3">
-        <h3 className="text-xs font-bold uppercase tracking-widest text-[#5A5A40] px-1">Orações Habituais</h3>
-        <div className="space-y-2">{habituais.map((p, i) => <PrayerCard key={i} prayer={p} />)}</div>
-      </div>
-      <div className="space-y-3">
-        <h3 className="text-xs font-bold uppercase tracking-widest text-[#5A5A40] px-1">Ladainhas</h3>
-        <div className="space-y-2">{ladainhas.map((p, i) => <PrayerCard key={i} prayer={p} />)}</div>
-      </div>
-      <div className="space-y-3">
-        <h3 className="text-xs font-bold uppercase tracking-widest text-[#5A5A40] px-1">Orações Formais</h3>
-        <div className="space-y-2">{formais.map((p, i) => <PrayerCard key={i} prayer={p} />)}</div>
-      </div>
+      {filtHabituais.length > 0 && (
+        <div className="space-y-3">
+          <h3 className="text-xs font-bold uppercase tracking-widest text-[#5A5A40] px-1">
+            Orações Habituais {q && <span className="text-[#1A1A1A]/30 font-normal normal-case">({filtHabituais.length})</span>}
+          </h3>
+          <div className="space-y-2">
+            {filtHabituais.map((p, i) => {
+              const isUser = i >= habituais.length;
+              const userIdx = isUser ? i - habituais.length : -1;
+              return (
+                <div key={i} className="relative group">
+                  <PrayerCard prayer={p} />
+                  {isUser && (
+                    <button
+                      onClick={() => onDeleteUserPrayer(userIdx)}
+                      title="Remover oração"
+                      className="absolute top-2 right-2 p-1.5 bg-red-50 text-red-400 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-100 z-10"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+      {filtLadainhas.length > 0 && (
+        <div className="space-y-3">
+          <h3 className="text-xs font-bold uppercase tracking-widest text-[#5A5A40] px-1">
+            Ladainhas {q && <span className="text-[#1A1A1A]/30 font-normal normal-case">({filtLadainhas.length})</span>}
+          </h3>
+          <div className="space-y-2">{filtLadainhas.map((p, i) => <PrayerCard key={i} prayer={p} />)}</div>
+        </div>
+      )}
+      {filtFormais.length > 0 && (
+        <div className="space-y-3">
+          <h3 className="text-xs font-bold uppercase tracking-widest text-[#5A5A40] px-1">
+            Orações Formais {q && <span className="text-[#1A1A1A]/30 font-normal normal-case">({filtFormais.length})</span>}
+          </h3>
+          <div className="space-y-2">{filtFormais.map((p, i) => <PrayerCard key={i} prayer={p} />)}</div>
+        </div>
+      )}
     </div>
   );
 }
@@ -463,33 +529,146 @@ function ConsecrationTab() {
 }
 
 // ── Componente Principal ──────────────────────────────────────────────────────
+const USER_PRAYERS_KEY = 'caminho_user_prayers';
+
 export default function Prayers() {
   const [sub, setSub] = useState<SubTab>('daily');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newTitle, setNewTitle] = useState('');
+  const [newText, setNewText] = useState('');
+  const [userPrayers, setUserPrayers] = useState<PrayerItem[]>(() => {
+    try {
+      const raw = localStorage.getItem(USER_PRAYERS_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch { return []; }
+  });
+
+  const saveUserPrayer = () => {
+    if (!newTitle.trim() || !newText.trim()) return;
+    const updated = [...userPrayers, { title: newTitle.trim(), text: newText.trim() }];
+    setUserPrayers(updated);
+    try { localStorage.setItem(USER_PRAYERS_KEY, JSON.stringify(updated)); } catch {}
+    setNewTitle(''); setNewText(''); setShowAddModal(false);
+  };
+
+  const deleteUserPrayer = (index: number) => {
+    const updated = userPrayers.filter((_, i) => i !== index);
+    setUserPrayers(updated);
+    try { localStorage.setItem(USER_PRAYERS_KEY, JSON.stringify(updated)); } catch {}
+  };
+
   const tabs = [
     { id: 'daily' as SubTab, label: 'Orações Cotidianas', icon: <Heart className="w-4 h-4" /> },
     { id: 'adoration' as SubTab, label: 'Adoração Eucarística', icon: <Star className="w-4 h-4" /> },
     { id: 'consecration' as SubTab, label: 'Consagração a Jesus Cristo', icon: <BookOpen className="w-4 h-4" /> },
   ];
+
   return (
     <div className="space-y-8">
       <header>
         <h2 className="text-3xl font-bold">Orações</h2>
         <p className="text-[#1A1A1A]/60 italic">"Orai sem cessar." — 1Ts 5,17</p>
       </header>
-      <div className="flex flex-wrap gap-2 bg-white p-1.5 rounded-2xl border border-[#1A1A1A]/5 w-fit">
-        {tabs.map(t => (
-          <button key={t.id} onClick={() => setSub(t.id)}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${sub === t.id ? 'bg-[#5A5A40] text-white shadow-md' : 'text-[#1A1A1A]/50 hover:text-[#5A5A40]'}`}>
-            {t.icon} {t.label}
+
+      {/* Abas + Botão Adicionar */}
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap gap-2 bg-white p-1.5 rounded-2xl border border-[#1A1A1A]/5">
+          {tabs.map(t => (
+            <button key={t.id} onClick={() => setSub(t.id)}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${sub === t.id ? 'bg-[#5A5A40] text-white shadow-md' : 'text-[#1A1A1A]/50 hover:text-[#5A5A40]'}`}>
+              {t.icon} {t.label}
+            </button>
+          ))}
+        </div>
+        {sub === 'daily' && (
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="flex items-center gap-2 px-4 py-2.5 bg-[#5A5A40] text-white rounded-2xl text-xs font-bold hover:scale-105 transition-all shadow-md"
+          >
+            <Plus className="w-4 h-4" /> Adicionar Oração
           </button>
-        ))}
+        )}
       </div>
+
+      {/* Campo de busca (só na aba Cotidianas) */}
+      {sub === 'daily' && (
+        <div className="relative">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1A1A1A]/30" />
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            placeholder="Buscar por título ou trecho da oração..."
+            className="w-full pl-11 pr-10 py-3.5 bg-white border border-[#1A1A1A]/8 rounded-2xl text-sm focus:ring-2 focus:ring-[#5A5A40]/30 focus:outline-none"
+          />
+          {searchTerm && (
+            <button onClick={() => setSearchTerm('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#1A1A1A]/30 hover:text-[#1A1A1A]/60">
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+      )}
+
       <AnimatePresence mode="wait">
         <motion.div key={sub} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
-          {sub === 'daily' && <DailyPrayers />}
+          {sub === 'daily' && (
+            <DailyPrayers
+              searchTerm={searchTerm}
+              userPrayers={userPrayers}
+              onDeleteUserPrayer={deleteUserPrayer}
+            />
+          )}
           {sub === 'adoration' && <AdorationModelsTab />}
           {sub === 'consecration' && <ConsecrationTab />}
         </motion.div>
+      </AnimatePresence>
+
+      {/* Modal Adicionar Oração */}
+      <AnimatePresence>
+        {showAddModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setShowAddModal(false)} className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+            <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-lg bg-white rounded-[2.5rem] shadow-2xl p-8">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold">Nova Oração</h3>
+                <button onClick={() => setShowAddModal(false)} className="p-2 hover:bg-[#F5F2ED] rounded-full">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-widest text-[#5A5A40] mb-1 block">Título da Oração</label>
+                  <input
+                    type="text" value={newTitle} onChange={e => setNewTitle(e.target.value)}
+                    placeholder="Ex: Oração pela família..."
+                    className="w-full px-4 py-3 bg-[#F5F2ED] rounded-2xl border-none focus:ring-2 focus:ring-[#5A5A40]/30 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-widest text-[#5A5A40] mb-1 block">Texto da Oração</label>
+                  <textarea
+                    value={newText} onChange={e => setNewText(e.target.value)}
+                    placeholder="Digite o texto da oração aqui..."
+                    rows={8}
+                    className="w-full px-4 py-3 bg-[#F5F2ED] rounded-2xl border-none focus:ring-2 focus:ring-[#5A5A40]/30 text-sm resize-none font-serif"
+                  />
+                </div>
+                <button
+                  onClick={saveUserPrayer}
+                  disabled={!newTitle.trim() || !newText.trim()}
+                  className="w-full py-3.5 bg-[#5A5A40] text-white rounded-2xl font-bold flex items-center justify-center gap-2 disabled:opacity-40 hover:scale-[1.02] transition-all"
+                >
+                  <Save className="w-4 h-4" /> Salvar Oração
+                </button>
+                <p className="text-[10px] text-center text-[#1A1A1A]/30">Orações adicionadas ficam salvas no seu dispositivo.</p>
+              </div>
+            </motion.div>
+          </div>
+        )}
       </AnimatePresence>
     </div>
   );

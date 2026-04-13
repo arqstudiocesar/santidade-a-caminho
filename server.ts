@@ -371,16 +371,7 @@ app.put('/api/sins/:id', (req, res) => {
   db.prepare('UPDATE sins SET is_confessed=? WHERE id=? AND user_id=?').run(req.body.is_confessed ? 1 : 0, req.params.id, u.id);
   res.json({ success: true });
 });
-app.delete('/api/sins/:id', (req, res) => {
-  const u = requireUser(req, res); if (!u) return;
-  db.prepare('DELETE FROM sins WHERE id=? AND user_id=?').run(req.params.id, u.id);
-  res.json({ success: true });
-});
-app.delete('/api/sins', (req, res) => {
-  const u = requireUser(req, res); if (!u) return;
-  db.prepare('DELETE FROM sins WHERE user_id=?').run(u.id);
-  res.json({ success: true });
-});
+// Rotas específicas ANTES de :id (ordem importa no Express)
 app.delete('/api/sins/clear-all', (req, res) => {
   const u = requireUser(req, res); if (!u) return;
   db.prepare('DELETE FROM sins WHERE user_id=?').run(u.id);
@@ -389,6 +380,16 @@ app.delete('/api/sins/clear-all', (req, res) => {
 app.post('/api/sins/confess-all', (req, res) => {
   const u = requireUser(req, res); if (!u) return;
   db.prepare("UPDATE sins SET is_confessed=1 WHERE user_id=?").run(u.id);
+  res.json({ success: true });
+});
+app.delete('/api/sins', (req, res) => {
+  const u = requireUser(req, res); if (!u) return;
+  db.prepare('DELETE FROM sins WHERE user_id=?').run(u.id);
+  res.json({ success: true });
+});
+app.delete('/api/sins/:id', (req, res) => {
+  const u = requireUser(req, res); if (!u) return;
+  db.prepare('DELETE FROM sins WHERE id=? AND user_id=?').run(req.params.id, u.id);
   res.json({ success: true });
 });
 
@@ -407,9 +408,15 @@ app.put('/api/purposes/:id', (req, res) => {
   db.prepare('UPDATE confession_purposes SET is_fulfilled=? WHERE id=? AND user_id=?').run(req.body.is_fulfilled ? 1 : 0, req.params.id, u.id);
   res.json({ success: true });
 });
-app.delete('/api/purposes/:id', (req, res) => {
+// Rotas específicas ANTES de :id
+app.delete('/api/purposes/clear-all', (req, res) => {
   const u = requireUser(req, res); if (!u) return;
-  db.prepare('DELETE FROM confession_purposes WHERE id=? AND user_id=?').run(req.params.id, u.id);
+  db.prepare('DELETE FROM confession_purposes WHERE user_id=?').run(u.id);
+  res.json({ success: true });
+});
+app.put('/api/purposes/:id/toggle', (req, res) => {
+  const u = requireUser(req, res); if (!u) return;
+  db.prepare('UPDATE confession_purposes SET is_fulfilled=NOT is_fulfilled WHERE id=? AND user_id=?').run(req.params.id, u.id);
   res.json({ success: true });
 });
 app.delete('/api/purposes', (req, res) => {
@@ -417,15 +424,9 @@ app.delete('/api/purposes', (req, res) => {
   db.prepare('DELETE FROM confession_purposes WHERE user_id=?').run(u.id);
   res.json({ success: true });
 });
-app.delete('/api/purposes/clear-all', (req, res) => {
+app.delete('/api/purposes/:id', (req, res) => {
   const u = requireUser(req, res); if (!u) return;
-  db.prepare('DELETE FROM confession_purposes WHERE user_id=?').run(u.id);
-  res.json({ success: true });
-});
-// Toggle fulfilled
-app.put('/api/purposes/:id/toggle', (req, res) => {
-  const u = requireUser(req, res); if (!u) return;
-  db.prepare('UPDATE confession_purposes SET is_fulfilled=NOT is_fulfilled WHERE id=? AND user_id=?').run(req.params.id, u.id);
+  db.prepare('DELETE FROM confession_purposes WHERE id=? AND user_id=?').run(req.params.id, u.id);
   res.json({ success: true });
 });
 
