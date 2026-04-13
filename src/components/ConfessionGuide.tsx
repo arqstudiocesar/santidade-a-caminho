@@ -3,40 +3,71 @@ import { Shield, CheckCircle2, AlertCircle, Info, List, Book, Heart, Trash2, Plu
   Calendar as CalendarIcon, ChevronLeft, ChevronRight, Wind, Save, CheckSquare, Square, RotateCcw } from 'lucide-react';
 import { Sin, ConfessionPurpose } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
-import { apiFetch } from '../contexts/AuthContext';
+
+// ---------- helpers de localStorage ----------
+
+function getKey(base: string) {
+  // Isola os dados por usuário logado
+  try {
+    const s = localStorage.getItem('caminho_session');
+    const id = s ? JSON.parse(s).user?.id : 'anon';
+    return `${base}_${id}`;
+  } catch { return `${base}_anon`; }
+}
+
+function lsGet<T>(base: string, fallback: T): T {
+  try {
+    const raw = localStorage.getItem(getKey(base));
+    return raw ? JSON.parse(raw) : fallback;
+  } catch { return fallback; }
+}
+
+function lsSet(base: string, value: unknown) {
+  try { localStorage.setItem(getKey(base), JSON.stringify(value)); } catch {}
+}
+
+function nextId(items: { id: number }[]): number {
+  return items.length > 0 ? Math.max(...items.map(i => i.id)) + 1 : 1;
+}
+
+// ---------- Tipos locais ----------
+
+interface LocalSin { id: number; content: string; created_at: string; }
+interface LocalPurpose { id: number; content: string; is_fulfilled: number; created_at: string; }
+interface LocalExamModel { id: number; name: string; questions: string[]; }
+
+// ---------- Componente ----------
 
 export default function ConfessionGuide() {
-  const [sins, setSins] = useState<Sin[]>([]);
-  const [purposes, setPurposes] = useState<ConfessionPurpose[]>([]);
-  const [newSin, setNewSin] = useState('');
+  const [sins, setSins]         = useState<LocalSin[]>([]);
+  const [purposes, setPurposes] = useState<LocalPurpose[]>([]);
+  const [newSin, setNewSin]     = useState('');
   const [newPurpose, setNewPurpose] = useState('');
-  const [activeStep, setActiveStep] = useState(0);
+  const [activeStep, setActiveStep]   = useState(0);
   const [selectedModel, setSelectedModel] = useState<string | null>(null);
-  const [confessionDates, setConfessionDates] = useState<string[]>(['2026-03-15', '2026-04-12']);
+  const [confessionDates, setConfessionDates] = useState<string[]>([]);
   const [checklist, setChecklist] = useState<string[]>([]);
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [customModels, setCustomModels] = useState<any[]>([]);
-  const [isAddingModel, setIsAddingModel] = useState(false);
-  const [newModelName, setNewModelName] = useState('');
+  const [customModels, setCustomModels] = useState<LocalExamModel[]>([]);
+  const [isAddingModel, setIsAddingModel]   = useState(false);
+  const [newModelName, setNewModelName]     = useState('');
   const [newModelQuestions, setNewModelQuestions] = useState('');
-  const [deleteId, setDeleteId] = useState<number | null>(null);
-  const [isClearingAll, setIsClearingAll] = useState(false);
-  const [isChecklistSaved, setIsChecklistSaved] = useState(false);
+  const [deleteId, setDeleteId]   = useState<number | null>(null);
+  const [isClearingAll, setIsClearingAll]         = useState(false);
+  const [isChecklistSaved, setIsChecklistSaved]   = useState(false);
   const [selectedActOfContrition, setSelectedActOfContrition] = useState(0);
-  // purposes state
   const [selectedPurposeIds, setSelectedPurposeIds] = useState<number[]>([]);
-  const [purposeSelectMode, setPurposeSelectMode] = useState(false);
+  const [purposeSelectMode, setPurposeSelectMode]   = useState(false);
   const [isClearingPurposes, setIsClearingPurposes] = useState(false);
-  // sins select mode
-  const [selectedSinIds, setSelectedSinIds] = useState<number[]>([]);
-  const [sinSelectMode, setSinSelectMode] = useState(false);
+  const [selectedSinIds, setSelectedSinIds]   = useState<number[]>([]);
+  const [sinSelectMode, setSinSelectMode]     = useState(false);
 
   const steps = [
-    { title: 'Invocação', icon: Wind, description: 'Invoque o Espírito Santo para iluminar sua consciência.' },
-    { title: 'Exame', icon: List, description: 'Reveja suas ações à luz dos mandamentos e virtudes.' },
-    { title: 'Arrependimento', icon: Heart, description: 'Desperte a dor sincera por ter ofendido a Deus.' },
-    { title: 'Propósito', icon: Shield, description: 'Faça o firme propósito de não mais pecar.' },
-    { title: 'Confissão', icon: CheckCircle2, description: 'Apresente seus pecados ao sacerdote com humildade.' },
+    { title: 'Invocação',    icon: Wind,         description: 'Invoque o Espírito Santo para iluminar sua consciência.' },
+    { title: 'Exame',        icon: List,         description: 'Reveja suas ações à luz dos mandamentos e virtudes.' },
+    { title: 'Arrependimento', icon: Heart,      description: 'Desperte a dor sincera por ter ofendido a Deus.' },
+    { title: 'Propósito',    icon: Shield,       description: 'Faça o firme propósito de não mais pecar.' },
+    { title: 'Confissão',    icon: CheckCircle2, description: 'Apresente seus pecados ao sacerdote com humildade.' },
   ];
 
   const actsOfContrition = [
@@ -93,7 +124,7 @@ export default function ConfessionGuide() {
 
   const examModels: Record<string, string[]> = {
     'Pe. Duarte Lara — Para Jovens': ["1º MANDAMENTO — Adorar a Deus e amá-Lo sobre todas as coisas\nProcuro aumentar a minha fé e o meu amor a Deus Nosso Senhor? Rezo todos os dias ao levantar e ao deitar? Deixei de confessar pecados graves na confissão por vergonha? Comunguei sabendo que estava em pecado mortal? Respeitei o tempo do jejum (não tomar alimentos durante uma hora) antes de comungar? Pratiquei a superstição, magia, ou o espiritismo?", "2º MANDAMENTO — Não invocar o Santo nome de Deus em vão\nFalei sem respeito do nome de Deus, de Nossa Senhora, dos Santos, da Igreja, dos sacerdotes e das coisas sagradas? Jurei sem necessidade, e tenho esse mau costume? Fiz juramentos falsos? Fiz alguma promessa a Deus Nosso Senhor ou aos Santos, que ainda não cumpri?", "3º MANDAMENTO — Santificar os Domingos e festas de Guarda\nFaltei à Missa ao Domingo ou festa de Guarda por culpa minha? Creio em tudo o que a Santa Igreja Católica ensina? Confessei-me e comunguei ao menos uma vez ao ano?", "4º MANDAMENTO — Honrar pai e mãe e os outros legítimos superiores\nObedeci de boa vontade aos meus pais e às pessoas mais velhas? Disse mal deles ou tratei-os sem respeito? Entristeci-os com alguma coisa má que fiz? Procuro deixar arrumadas as minhas coisas? Estudo a sério em casa e na escola, reparando no esforço que os meus pais fazem por mim? Deixo-me levar pelo mau génio ou aborreço-me muitas vezes sem grandes motivos? Zanguei-me com os meus irmãos? Fui teimoso? Sou egoísta com as minhas coisas e custa-me emprestá-las aos meus irmãos? Rezei pelos meus pais, irmãos, familiares e companheiros?", "5º MANDAMENTO — Não matar nem causar dano no corpo ou na alma a si mesmo ou ao próximo\nProcurei não fazer troça dos outros, não brigar e não fazer sofrer ninguém? Zanguei-me quando perdi algum jogo, ou soube aceitar com alegria a derrota? Perdoei as ofensas que me fizeram? Atendi com delicadeza os meus irmãos, os meus companheiros, os meus amigos, as pessoas que me servem? Tenho inveja dos outros? Dei sempre bom exemplo, sem fazer pecar os outros? Venci o mau génio e o orgulho? Embriaguei-me ou tomei drogas? Preocupei-me pelo bem do próximo, avisando-o de algum grave perigo? Dei do meu dinheiro alguma esmola para os pobres?", "6º e 9º MANDAMENTOS — Guardar castidade nas palavras, obras, pensamentos e desejos\nProcurei afastar imediatamente todos os pensamentos desonestos? Consenti neles? Fiz ações desonestas, sozinho ou acompanhado? Tive conversas desonestas? Assisti a diversões que me colocaram em ocasião de pecar: filmes indecentes, certas festas, leituras, revistas ou companhias? Sou cuidadoso ao escolher os programas da TV?", "7º e 10º MANDAMENTOS — Não furtar nem injustamente reter os bens do próximo. Não cobiçar.\nRespeitei as coisas dos outros, não tirando nem querendo tirar dinheiro ou qualquer coisa a ninguém? Devolvi as coisas que me emprestaram ou encontrei? Estraguei por querer as minhas coisas ou as dos outros? Gastei mal o dinheiro que me deram? Joguei lealmente, sem fazer batota?", "8º MANDAMENTO — Não levantar falsos testemunhos nem de qualquer modo faltar à verdade\nDisse sempre a verdade? Quando não digo a verdade é por vaidade, para parecer mais do que sou, ou por cobardia? Minto habitualmente, dizendo que são coisas de pouca importância? Falei mal dos outros sem ser verdade? Deitei, com mentiras, as culpas para os outros? Falei sem necessidade das faltas dos outros? Julguei as ações dos outros com superficialidade? Descobri segredos? Copiei nos exames?"],
-    'Pe. Duarte Lara — Para Adultos': ["1º MANDAMENTO — Adorar a Deus e amá-Lo sobre todas as coisas\nDuvidei voluntariamente da existência de Deus Pai, Filho e Espírito Santo? Me rebelei contra Deus em meus sofrimentos? Deixei-me levar pelo desespero? Tive ódio de Deus? Esperei alcançar o Céu sem querer abandonar o pecado? Cometi pecados no intuito de confessá-los mais tarde, abusando da Misericórdia de Deus? Tenho orado diariamente com atenção e devoção? Frequentei os sacramentos de má vontade? Leio e medito na Palavra de Deus? Coloquei minha vontade, dinheiro, trabalho, prazer ou fama em primeiro lugar na minha vida? Adorei ou invoquei Satanás? Pratiquei a magia, o espiritismo, fui à bruxa, a médiuns, ou curandeiros? Pratiquei adivinhação: astrologia, tarô, pêndulo, leitura da palma da mão? Acreditei em horóscopos? Usei amuletos (ferradura, chifre, figas, cristais)? Acreditei nas energias, Nova Era, reencarnação, ou Reiki?", "2º MANDAMENTO — Não invocar o santo nome de Deus em vão\nBlasfemei ou falei sem respeito contra Deus, contra os Santos ou as coisas santas? Falei mal da Igreja, do Papa, dos Bispos ou dos Padres? Pronunciei levianamente o Nome de Deus, de Jesus, de Maria ou algum santo em anedotas? Jurei sabendo que era falso? Jurei fazer algo injusto ou ilícito? Roguei pragas a alguém? Deixei de cumprir algum voto ou promessa feita a Deus ou a um santo?", "3º MANDAMENTO — Santificar os domingos e festas de guarda\nFaltei à Missa no domingo ou em algum dia santo? Cheguei tarde à Missa por culpa própria? Trabalhei ou mandei trabalhar nesses dias sem grave necessidade? Dediquei, nesses dias, mais tempo a Deus, à família, aos pobres e ao descanso?", "4º MANDAMENTO — Honrar pai e mãe e os demais legítimos superiores\nExpresso a meus pais o devido amor, gratidão e respeito? Os ajudo espiritual e materialmente? Os abandone i na velhice ou na doença? Tenho transmitido a fé para meus filhos? Dei-lhes maus exemplos? Usei palavras duras com meu esposo(a)? Obedeço à Igreja, ou discuto seus preceitos? Mantive a abstinência de carne nas sextas-feiras? Guardei o jejum na Quarta-feira de Cinzas e Sexta-feira Santa? Confessei-me ao menos uma vez ao ano? Comunguei ao menos uma vez na época da Páscoa? Obedeci ao Papa, ao meu Bispo e ao meu Pastor?", "5º MANDAMENTO — Não matar ou causar dano no corpo ou na alma a si mesmo ou ao próximo\nCausei prejuízo ao próximo com palavras ou obras? Agredi alguém? Deixei-me levar pela ira? Alimentei pensamentos de vingança? Guardo ódio ou rancor no coração? Perdoei sinceramente as ofensas? Pratiquei, aconselhei ou facilitei o aborto? Fui gravemente imprudente ao volante? Alimento pensamentos de suicídio? Fiquei bêbado ou tomei drogas? Escandalizei o próximo incitando-o a pecar com minhas conversas ou modo de vestir?", "6º e 9º MANDAMENTOS — Guardar castidade nas palavras, obras, pensamentos e desejos\nConsenti em pensamentos ou desejos contra a castidade? Vi pornografia? Busquei o prazer sexual fora do ato conjugal? Tive liberdades no namoro? Vivo maritalmente com alguém com quem não sou casado pela Igreja? Usei o matrimônio indevidamente? Pratiquei a contracepção (pílula, camisinha, DIU, laqueadura)? Faltei à fidelidade conjugal por pensamentos ou ações?", "7º e 10º MANDAMENTOS — Não furtar ou reter injustamente os bens do próximo. Não cobiçar.\nRoubei algum objeto ou quantia em dinheiro? Tive inveja dos outros? Paguei salários justos aos meus funcionários? Paguei os impostos devidos? Desrespeitei direitos autorais copiando livros, softwares ou filmes? Aproveitei-me injustamente da desgraça alheia? Enganei o próximo cobrando mais do que o valor justo? Reparei as injustiças que cometi? Gastei mais do que minhas possibilidades permitem?", "8º MANDAMENTO — Não levantar falsos testemunhos nem de qualquer modo faltar à verdade\nDisse mentiras? Fiz julgamentos falsos ou temerários? Revelei, sem motivo justo, defeitos graves alheios que não eram conhecidos? Caluniei alguém? Falei mal dos outros baseando-se apenas em rumores? Semeei discórdias, inimizades ou falsas suspeitas? Exagerei os defeitos do próximo? Caio com facilidade na crítica?"],
+    'Pe. Duarte Lara — Para Adultos': ["1º MANDAMENTO — Adorar a Deus e amá-Lo sobre todas as coisas\nDuvidei voluntariamente da existência de Deus Pai, Filho e Espírito Santo? Me rebelei contra Deus em meus sofrimentos? Deixei-me levar pelo desespero? Tive ódio de Deus? Esperei alcançar o Céu sem querer abandonar o pecado? Cometi pecados no intuito de confessá-los mais tarde, abusando da Misericórdia de Deus? Tenho orado diariamente com atenção e devoção? Frequentei os sacramentos de má vontade? Leio e medito na Palavra de Deus? Coloquei minha vontade, dinheiro, trabalho, prazer ou fama em primeiro lugar na minha vida? Adorei ou invoquei Satanás? Pratiquei a magia, o espiritismo, fui à bruxa, a médiuns, ou curandeiros? Pratiquei adivinhação: astrologia, tarô, pêndulo, leitura da palma da mão? Acreditei em horóscopos? Usei amuletos (ferradura, chifre, figas, cristais)? Acreditei nas energias, Nova Era, reencarnação, ou Reiki?", "2º MANDAMENTO — Não invocar o santo nome de Deus em vão\nBlasfemei ou falei sem respeito contra Deus, contra os Santos ou as coisas santas? Falei mal da Igreja, do Papa, dos Bispos ou dos Padres? Pronunciei levianamente o Nome de Deus, de Jesus, de Maria ou algum santo em anedotas? Jurei sabendo que era falso? Jurei fazer algo injusto ou ilícito? Roguei pragas a alguém? Deixei de cumprir algum voto ou promessa feita a Deus ou a um santo?", "3º MANDAMENTO — Santificar os domingos e festas de guarda\nFaltei à Missa no domingo ou em algum dia santo? Cheguei tarde à Missa por culpa própria? Trabalhei ou mandei trabalhar nesses dias sem grave necessidade? Dediquei, nesses dias, mais tempo a Deus, à família, aos pobres e ao descanso?", "4º MANDAMENTO — Honrar pai e mãe e os demais legítimos superiores\nExpresso a meus pais o devido amor, gratidão e respeito? Os ajudo espiritual e materialmente? Os abandonei na velhice ou na doença? Tenho transmitido a fé para meus filhos? Dei-lhes maus exemplos? Usei palavras duras com meu esposo(a)? Obedeço à Igreja, ou discuto seus preceitos? Mantive a abstinência de carne nas sextas-feiras? Guardei o jejum na Quarta-feira de Cinzas e Sexta-feira Santa? Confessei-me ao menos uma vez ao ano? Comunguei ao menos uma vez na época da Páscoa? Obedeci ao Papa, ao meu Bispo e ao meu Pastor?", "5º MANDAMENTO — Não matar ou causar dano no corpo ou na alma a si mesmo ou ao próximo\nCausei prejuízo ao próximo com palavras ou obras? Agredi alguém? Deixei-me levar pela ira? Alimentei pensamentos de vingança? Guardo ódio ou rancor no coração? Perdoei sinceramente as ofensas? Pratiquei, aconselhei ou facilitei o aborto? Fui gravemente imprudente ao volante? Alimento pensamentos de suicídio? Fiquei bêbado ou tomei drogas? Escandalizei o próximo incitando-o a pecar com minhas conversas ou modo de vestir?", "6º e 9º MANDAMENTOS — Guardar castidade nas palavras, obras, pensamentos e desejos\nConsenti em pensamentos ou desejos contra a castidade? Vi pornografia? Busquei o prazer sexual fora do ato conjugal? Tive liberdades no namoro? Vivo maritalmente com alguém com quem não sou casado pela Igreja? Usei o matrimônio indevidamente? Pratiquei a contracepção (pílula, camisinha, DIU, laqueadura)? Faltei à fidelidade conjugal por pensamentos ou ações?", "7º e 10º MANDAMENTOS — Não furtar ou reter injustamente os bens do próximo. Não cobiçar.\nRoubei algum objeto ou quantia em dinheiro? Tive inveja dos outros? Paguei salários justos aos meus funcionários? Paguei os impostos devidos? Desrespeitei direitos autorais copiando livros, softwares ou filmes? Aproveitei-me injustamente da desgraça alheia? Enganei o próximo cobrando mais do que o valor justo? Reparei as injustiças que cometi? Gastei mais do que minhas possibilidades permitem?", "8º MANDAMENTO — Não levantar falsos testemunhos nem de qualquer modo faltar à verdade\nDisse mentiras? Fiz julgamentos falsos ou temerários? Revelei, sem motivo justo, defeitos graves alheios que não eram conhecidos? Caluniei alguém? Falei mal dos outros baseando-se apenas em rumores? Semeei discórdias, inimizades ou falsas suspeitas? Exagerei os defeitos do próximo? Caio com facilidade na crítica?"],
     'Dez Mandamentos': [
       "1. Amarás a Deus sobre todas as coisas: Dei a Deus o primeiro lugar? Rezei diariamente? Participei de superstições ou espiritismo?",
       "2. Não tomarás seu santo nome em vão: Usei o nome de Deus sem respeito? Jurei falso? Blasfemei?",
@@ -145,129 +176,147 @@ export default function ConfessionGuide() {
     ]
   };
 
+  // ---------- Carrega dados do localStorage ao montar ----------
   useEffect(() => {
-    fetchSins();
-    fetchCustomModels();
-    fetchPurposes();
+    setSins(lsGet<LocalSin[]>('sins', []));
+    setPurposes(lsGet<LocalPurpose[]>('purposes', []));
+    setCustomModels(lsGet<LocalExamModel[]>('exam_models', []));
+    setConfessionDates(lsGet<string[]>('confession_dates', ['2026-03-15', '2026-04-12']));
   }, []);
 
-  const fetchCustomModels = async () => {
-    try {
-      const res = await apiFetch('/api/exam-models');
-      if (!res.ok) return;
-      const data = await res.json();
-      setCustomModels(Array.isArray(data) ? data : []);
-    } catch { setCustomModels([]); }
-  };
+  // ---------- Pecados ----------
 
-  const fetchSins = async () => {
-    try {
-      const res = await apiFetch('/api/sins');
-      if (!res.ok) return;
-      const data = await res.json();
-      setSins(Array.isArray(data) ? data : []);
-    } catch { setSins([]); }
-  };
-
-  const fetchPurposes = async () => {
-    try {
-      const res = await apiFetch('/api/purposes');
-      if (!res.ok) return;
-      const data = await res.json();
-      setPurposes(Array.isArray(data) ? data : []);
-    } catch { setPurposes([]); }
-  };
-
-  const addCustomModel = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newModelName.trim() || !newModelQuestions.trim()) return;
-    const questions = newModelQuestions.split('\n').filter(q => q.trim());
-    await apiFetch('/api/exam-models', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: newModelName, questions }) });
-    setNewModelName(''); setNewModelQuestions(''); setIsAddingModel(false);
-    fetchCustomModels();
-  };
-
-  const addSin = async (e: React.FormEvent) => {
+  const addSin = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newSin.trim()) return;
-    await apiFetch('/api/sins', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content: newSin }) });
-    setNewSin(''); fetchSins();
+    const updated = [...sins, { id: nextId(sins), content: newSin.trim(), created_at: new Date().toISOString() }];
+    setSins(updated);
+    lsSet('sins', updated);
+    setNewSin('');
   };
 
-  const deleteSin = async (id: number) => {
-    await apiFetch(`/api/sins/${id}`, { method: 'DELETE' });
-    setDeleteId(null); fetchSins();
+  const deleteSin = (id: number) => {
+    const updated = sins.filter(s => s.id !== id);
+    setSins(updated);
+    lsSet('sins', updated);
+    setDeleteId(null);
   };
 
-  const clearAllSins = async () => {
-    await apiFetch('/api/sins', { method: 'DELETE' });
-    setIsClearingAll(false); fetchSins();
-  };
-
-  const deleteSelectedSins = async () => {
+  const deleteSelectedSins = () => {
     if (selectedSinIds.length === 0) return;
-    for (const id of selectedSinIds) await apiFetch(`/api/sins/${id}`, { method: 'DELETE' });
-    setSelectedSinIds([]); setSinSelectMode(false); fetchSins();
+    const updated = sins.filter(s => !selectedSinIds.includes(s.id));
+    setSins(updated);
+    lsSet('sins', updated);
+    setSelectedSinIds([]);
+    setSinSelectMode(false);
+  };
+
+  const clearAllSins = () => {
+    setSins([]);
+    lsSet('sins', []);
+    setIsClearingAll(false);
   };
 
   const toggleSinSelect = (id: number) => {
     setSelectedSinIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
   };
 
-  const addPurpose = async (e: React.FormEvent) => {
+  // ---------- Propósitos ----------
+
+  const addPurpose = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newPurpose.trim()) return;
-    await apiFetch('/api/purposes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content: newPurpose }) });
-    setNewPurpose(''); fetchPurposes();
+    const updated = [...purposes, { id: nextId(purposes), content: newPurpose.trim(), is_fulfilled: 0, created_at: new Date().toISOString() }];
+    setPurposes(updated);
+    lsSet('purposes', updated);
+    setNewPurpose('');
   };
 
-  const togglePurposeFulfilled = async (id: number) => {
-    const p = purposes.find(x => x.id === id);
-    if (!p) return;
-    await apiFetch(`/api/purposes/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ is_fulfilled: p.is_fulfilled ? 0 : 1 }) });
-    fetchPurposes();
+  const togglePurposeFulfilled = (id: number) => {
+    const updated = purposes.map(p => p.id === id ? { ...p, is_fulfilled: p.is_fulfilled ? 0 : 1 } : p);
+    setPurposes(updated);
+    lsSet('purposes', updated);
   };
 
-  const deletePurpose = async (id: number) => {
-    await apiFetch(`/api/purposes/${id}`, { method: 'DELETE' });
-    fetchPurposes();
+  const deletePurpose = (id: number) => {
+    const updated = purposes.filter(p => p.id !== id);
+    setPurposes(updated);
+    lsSet('purposes', updated);
   };
 
-  const deleteSelectedPurposes = async () => {
+  const deleteSelectedPurposes = () => {
     if (selectedPurposeIds.length === 0) return;
-    for (const id of selectedPurposeIds) await apiFetch(`/api/purposes/${id}`, { method: 'DELETE' });
-    setSelectedPurposeIds([]); setPurposeSelectMode(false); fetchPurposes();
+    const updated = purposes.filter(p => !selectedPurposeIds.includes(p.id));
+    setPurposes(updated);
+    lsSet('purposes', updated);
+    setSelectedPurposeIds([]);
+    setPurposeSelectMode(false);
   };
 
-  const clearAllPurposes = async () => {
-    await apiFetch('/api/purposes', { method: 'DELETE' });
-    setIsClearingPurposes(false); fetchPurposes();
+  const clearAllPurposes = () => {
+    setPurposes([]);
+    lsSet('purposes', []);
+    setIsClearingPurposes(false);
   };
 
   const togglePurposeSelect = (id: number) => {
     setSelectedPurposeIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
   };
 
-  const saveChecklistToSins = async () => {
-    if (checklist.length === 0) return;
-    for (const item of checklist) await apiFetch('/api/sins', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content: item }) });
-    setChecklist([]); fetchSins(); setIsChecklistSaved(true);
-    setTimeout(() => setIsChecklistSaved(false), 3000);
-  };
+  // ---------- Checklist → Lista Privada ----------
 
   const toggleChecklist = (q: string) => setChecklist(prev => prev.includes(q) ? prev.filter(i => i !== q) : [...prev, q]);
 
-  const toggleConfessionDate = (date: string) => {
-    setConfessionDates(prev => prev.includes(date) ? prev.filter(d => d !== date) : [...prev, date]);
+  const saveChecklistToSins = () => {
+    if (checklist.length === 0) return;
+    const novos = checklist.map(item => ({ id: nextId([...sins, ...checklist.map((_, i) => ({ id: i }))]), content: item, created_at: new Date().toISOString() }));
+    // Recalcula IDs corretamente
+    let maxId = sins.length > 0 ? Math.max(...sins.map(s => s.id)) : 0;
+    const novosCorrigidos = checklist.map(item => ({ id: ++maxId, content: item, created_at: new Date().toISOString() }));
+    const updated = [...sins, ...novosCorrigidos];
+    setSins(updated);
+    lsSet('sins', updated);
+    setChecklist([]);
+    setIsChecklistSaved(true);
+    setTimeout(() => setIsChecklistSaved(false), 3000);
   };
 
-  // Calculate next confession countdown
+  // ---------- Modelos personalizados ----------
+
+  const addCustomModel = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newModelName.trim() || !newModelQuestions.trim()) return;
+    const questions = newModelQuestions.split('\n').filter(q => q.trim());
+    const updated = [...customModels, { id: nextId(customModels), name: newModelName.trim(), questions }];
+    setCustomModels(updated);
+    lsSet('exam_models', updated);
+    setNewModelName(''); setNewModelQuestions(''); setIsAddingModel(false);
+  };
+
+  const deleteCustomModel = (id: number) => {
+    const updated = customModels.filter(m => m.id !== id);
+    setCustomModels(updated);
+    lsSet('exam_models', updated);
+  };
+
+  // ---------- Datas de confissão ----------
+
+  const toggleConfessionDate = (date: string) => {
+    const updated = confessionDates.includes(date)
+      ? confessionDates.filter(d => d !== date)
+      : [...confessionDates, date];
+    setConfessionDates(updated);
+    lsSet('confession_dates', updated);
+  };
+
+  // ---------- Countdown ----------
   const today = new Date().toISOString().split('T')[0];
   const nextConfession = confessionDates.filter(d => d >= today).sort()[0];
   const daysUntilNext = nextConfession
     ? Math.round((new Date(nextConfession + 'T12:00:00').getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
     : null;
 
+  // ---------- Render ----------
   return (
     <div className="space-y-8">
       <header>
@@ -417,7 +466,7 @@ export default function ConfessionGuide() {
                           )}
                           <button onClick={() => togglePurposeFulfilled(p.id)}
                             className={`w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-all ${p.is_fulfilled ? 'border-green-500 bg-green-500' : 'border-[#5A5A40]/30 hover:border-[#5A5A40]'}`}>
-                            {p.is_fulfilled && <CheckCircle2 className="w-3 h-3 text-white" />}
+                            {p.is_fulfilled ? <CheckCircle2 className="w-3 h-3 text-white" /> : null}
                           </button>
                           <span className={`flex-1 text-sm ${p.is_fulfilled ? 'line-through text-[#1A1A1A]/40' : ''}`}>{p.content}</span>
                           {p.is_fulfilled && <span className="text-[10px] font-bold text-green-600 uppercase tracking-widest">Cumprido</span>}
@@ -440,7 +489,6 @@ export default function ConfessionGuide() {
             {/* CONFISSÃO */}
             {activeStep === 4 && (
               <div className="space-y-6">
-                {/* Countdown */}
                 {nextConfession && (
                   <div className={`p-6 rounded-2xl text-center ${daysUntilNext === 0 ? 'bg-green-50 border border-green-200' : daysUntilNext! <= 7 ? 'bg-amber-50 border border-amber-200' : 'bg-[#F5F2ED] border border-[#5A5A40]/10'}`}>
                     <p className="text-xs font-bold uppercase tracking-widest mb-1 text-[#5A5A40]">Próxima Confissão</p>
@@ -501,7 +549,7 @@ export default function ConfessionGuide() {
                     className={`w-full p-4 text-left rounded-xl transition-all font-bold text-sm ${selectedModel === m.name ? 'bg-[#5A5A40] text-white shadow-md' : 'bg-[#F5F2ED] hover:bg-[#5A5A40]/10'}`}>
                     {m.name}
                   </button>
-                  <button onClick={e => { e.stopPropagation(); apiFetch(`/api/exam-models/${m.id}`, { method: 'DELETE' }).then(fetchCustomModels); }}
+                  <button onClick={e => { e.stopPropagation(); deleteCustomModel(m.id); }}
                     className="absolute -top-2 -right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
                     <X className="w-3 h-3" />
                   </button>
@@ -517,7 +565,7 @@ export default function ConfessionGuide() {
 
         {/* Sidebar */}
         <div className="space-y-6">
-          {/* Private list */}
+          {/* Lista Privada */}
           <div className="bg-[#1A1A1A] text-white p-8 rounded-[2rem] shadow-xl">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold flex items-center gap-2">
@@ -543,8 +591,13 @@ export default function ConfessionGuide() {
 
             <form onSubmit={addSin} className="mb-4">
               <div className="relative">
-                <input type="text" value={newSin} onChange={e => setNewSin(e.target.value)} placeholder="Anotar pecado..."
-                  className="w-full bg-white/10 border-none rounded-xl py-3 px-4 text-sm placeholder:text-white/30 focus:ring-2 focus:ring-[#E6E6A0]" />
+                <input
+                  type="text"
+                  value={newSin}
+                  onChange={e => setNewSin(e.target.value)}
+                  placeholder="Anotar pecado..."
+                  className="w-full bg-white/10 border-none rounded-xl py-3 px-4 text-sm placeholder:text-white/30 focus:ring-2 focus:ring-[#E6E6A0] text-white"
+                />
                 <button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2 p-1 bg-[#E6E6A0] text-[#1A1A1A] rounded-lg">
                   <Plus className="w-4 h-4" />
                 </button>
@@ -723,7 +776,6 @@ export default function ConfessionGuide() {
                   const model = customModels.find(m => m.name === selectedModel);
                   const questions = model ? model.questions : examModels[selectedModel];
                   if (questions) return questions.map((q: string, i: number) => {
-                    // Split on first \n to separate commandment header from questions
                     const nlIdx = q.indexOf('\n');
                     const hasHeader = nlIdx !== -1;
                     const header = hasHeader ? q.slice(0, nlIdx) : null;
