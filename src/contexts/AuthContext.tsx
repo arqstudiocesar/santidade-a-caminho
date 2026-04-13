@@ -1,22 +1,12 @@
 /**
- * AuthContext.tsx — versão 100% localStorage (sem banco de dados, sem API)
- *
- * Funciona perfeitamente no Vercel + GitHub sem nenhum servidor externo.
- * Os usuários ficam salvos no navegador de cada dispositivo.
- * O token é simulado localmente para compatibilidade com o resto do código.
+ * AuthContext.tsx — versão híbrida (API + recuperação automática de cold-start)
+ * Usa 'caminho_session' como chave — compatível com ConfessionGuide.tsx
  */
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-interface User {
-  id: number;
-  username: string;
-  display_name: string;
-}
-
+interface User { id: number; username: string; display_name: string; }
 interface AuthContextType {
-  user: User | null;
-  token: string | null;
+  user: User | null; token: string | null;
   login: (username: string, password: string) => Promise<{ error?: string }>;
   register: (username: string, password: string, display_name: string) => Promise<{ error?: string }>;
   logout: () => void;
@@ -25,151 +15,102 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
+const SESSION_KEY = 'caminho_session';
+const CREDS_KEY   = 'caminho_creds';
 
-// Chaves no localStorage
-const SESSION_KEY = 'caminho_session';       // usuário logado atualmente
-const USERS_KEY   = 'caminho_users_db';      // banco de usuários
-
-// ---------- helpers internos ----------
-
-interface StoredUser {
-  id: number;
-  username: string;
-  display_name: string;
-  password: string;
+function saveSession(user: User, token: string) {
+  localStorage.setItem(SESSION_KEY, JSON.stringify({ user, token }));
+}
+function clearSession() {
+  localStorage.removeItem(SESSION_KEY);
+  localStorage.removeItem(CREDS_KEY);
+}
+function saveCreds(u: string, p: string, d: string) {
+  try { localStorage.setItem(CREDS_KEY, btoa(JSON.stringify({ u, p, d }))); } catch {}
+}
+function loadCreds(): { u: string; p: string; d: string } | null {
+  try { const raw = localStorage.getItem(CREDS_KEY); return raw ? JSON.parse(atob(raw)) : null; } catch { return null; }
 }
 
-function loadUsers(): StoredUser[] {
+async function tryAutoRecover(): Promise<{ user: User; token: string } | null> {
+  const creds = loadCreds();
+  if (!creds) return null;
   try {
-    const raw = localStorage.getItem(USERS_KEY);
-    const list: StoredUser[] = raw ? JSON.parse(raw) : [];
-
-    // Garante que o usuário admin sempre existe
-    if (!list.find(u => u.username === 'admin')) {
-      list.push({ id: 1, username: 'admin', display_name: 'Administrador', password: 'admin123' });
-      localStorage.setItem(USERS_KEY, JSON.stringify(list));
-    }
-    return list;
-  } catch {
-    return [{ id: 1, username: 'admin', display_name: 'Administrador', password: 'admin123' }];
-  }
+    const r1 = await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: creds.u, password: creds.p }) });
+    if (r1.ok) { const d = await r1.json(); return { user: d.user, token: d.token }; }
+    const r2 = await fetch('/api/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: creds.u, password: creds.p, display_name: creds.d || creds.u }) });
+    if (r2.ok) { const d = await r2.json(); return { user: d.user, token: d.token }; }
+  } catch {}
+  return null;
 }
-
-function saveUsers(users: StoredUser[]) {
-  localStorage.setItem(USERS_KEY, JSON.stringify(users));
-}
-
-function generateId(users: StoredUser[]): number {
-  return users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1;
-}
-
-// ---------- Provider ----------
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser]       = useState<User | null>(null);
-  const [token, setToken]     = useState<string | null>(null);
+  const [user, setUser]   = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Na inicialização, recupera sessão salva
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(SESSION_KEY);
-      if (raw) {
-        const session: { user: User; token: string } = JSON.parse(raw);
-        // Verifica se o usuário ainda existe no banco local
-        const users = loadUsers();
-        const found = users.find(u => u.id === session.user.id);
-        if (found) {
-          setUser({ id: found.id, username: found.username, display_name: found.display_name });
-          setToken(session.token);
-        } else {
-          // Usuário removido — limpa sessão
-          localStorage.removeItem(SESSION_KEY);
+    (async () => {
+      try {
+        const raw = localStorage.getItem(SESSION_KEY);
+        if (!raw) return;
+        const session = JSON.parse(raw);
+        const tok: string = session?.token;
+        if (!tok) { clearSession(); return; }
+        const res = await fetch('/api/auth/me', { headers: { Authorization: `Bearer ${tok}` } });
+        if (res.ok) {
+          const u: User = await res.json();
+          setUser(u); setToken(tok); saveSession(u, tok);
+        } else if (res.status === 401) {
+          const recovered = await tryAutoRecover();
+          if (recovered) { setUser(recovered.user); setToken(recovered.token); saveSession(recovered.user, recovered.token); }
+          else clearSession();
         }
-      }
-    } catch {
-      localStorage.removeItem(SESSION_KEY);
-    } finally {
-      setIsLoading(false);
-    }
+      } catch { /* erro de rede — mantém sessão */ }
+      finally { setIsLoading(false); }
+    })();
   }, []);
 
-  const login = async (username: string, password: string): Promise<{ error?: string }> => {
-    const users = loadUsers();
-    const found = users.find(
-      u => u.username.toLowerCase() === username.toLowerCase() && u.password === password
-    );
-    if (!found) {
-      return { error: 'Usuário ou senha incorretos.' };
-    }
-    const loggedUser: User = { id: found.id, username: found.username, display_name: found.display_name };
-    const fakeToken = btoa(`${found.id}:${Date.now()}`);
-    setUser(loggedUser);
-    setToken(fakeToken);
-    localStorage.setItem(SESSION_KEY, JSON.stringify({ user: loggedUser, token: fakeToken }));
-    return {};
+  const login = async (username: string, password: string) => {
+    try {
+      const r = await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: username.trim(), password }) });
+      const data = await r.json();
+      if (!r.ok) return { error: data.error || 'Usuário ou senha incorretos.' };
+      saveSession(data.user, data.token);
+      saveCreds(username.trim(), password, data.user?.display_name || username.trim());
+      setToken(data.token); setUser(data.user);
+      return {};
+    } catch { return { error: 'Erro de conexão. Verifique sua internet.' }; }
   };
 
-  const register = async (username: string, password: string, display_name: string): Promise<{ error?: string }> => {
-    if (username.trim().length < 3) return { error: 'O usuário deve ter ao menos 3 caracteres.' };
-    if (password.length < 4)        return { error: 'A senha deve ter ao menos 4 caracteres.' };
-    if (!display_name.trim())       return { error: 'Informe seu nome.' };
-
-    const users = loadUsers();
-    if (users.find(u => u.username.toLowerCase() === username.toLowerCase())) {
-      return { error: 'Este nome de usuário já está em uso.' };
-    }
-    const newUser: StoredUser = {
-      id: generateId(users),
-      username: username.trim(),
-      display_name: display_name.trim(),
-      password,
-    };
-    users.push(newUser);
-    saveUsers(users);
-
-    const loggedUser: User = { id: newUser.id, username: newUser.username, display_name: newUser.display_name };
-    const fakeToken = btoa(`${newUser.id}:${Date.now()}`);
-    setUser(loggedUser);
-    setToken(fakeToken);
-    localStorage.setItem(SESSION_KEY, JSON.stringify({ user: loggedUser, token: fakeToken }));
-    return {};
+  const register = async (username: string, password: string, display_name: string) => {
+    try {
+      const r = await fetch('/api/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: username.trim(), password, display_name: display_name.trim() }) });
+      const data = await r.json();
+      if (!r.ok) return { error: data.error || 'Erro ao criar conta.' };
+      saveSession(data.user, data.token);
+      saveCreds(username.trim(), password, display_name.trim());
+      setToken(data.token); setUser(data.user);
+      return {};
+    } catch { return { error: 'Erro de conexão. Verifique sua internet.' }; }
   };
 
   const logout = () => {
-    setUser(null);
-    setToken(null);
-    localStorage.removeItem(SESSION_KEY);
+    const t = token;
+    setUser(null); setToken(null); clearSession();
+    if (t) fetch('/api/auth/logout', { method: 'POST', headers: { Authorization: `Bearer ${t}` } }).catch(() => {});
   };
 
-  const updateProfile = async (
-    display_name: string,
-    password?: string,
-    newPassword?: string
-  ): Promise<{ error?: string }> => {
-    if (!user) return { error: 'Não autenticado.' };
-    if (!display_name.trim()) return { error: 'O nome não pode estar vazio.' };
-
-    const users = loadUsers();
-    const idx   = users.findIndex(u => u.id === user.id);
-    if (idx === -1) return { error: 'Usuário não encontrado.' };
-
-    // Se quiser trocar senha, valida a atual
-    if (newPassword) {
-      if (!password) return { error: 'Informe a senha atual.' };
-      if (users[idx].password !== password) return { error: 'Senha atual incorreta.' };
-      if (newPassword.length < 4) return { error: 'Nova senha deve ter ao menos 4 caracteres.' };
-      users[idx].password = newPassword;
-    }
-
-    users[idx].display_name = display_name.trim();
-    saveUsers(users);
-
-    const updatedUser: User = { id: users[idx].id, username: users[idx].username, display_name: users[idx].display_name };
-    setUser(updatedUser);
-    // Atualiza sessão salva
-    localStorage.setItem(SESSION_KEY, JSON.stringify({ user: updatedUser, token }));
-    return {};
+  const updateProfile = async (display_name: string, password?: string, newPassword?: string) => {
+    try {
+      const r = await fetch('/api/auth/profile', { method: 'PUT', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ display_name, password, new_password: newPassword }) });
+      const data = await r.json();
+      if (!r.ok) return { error: data.error || 'Erro ao atualizar.' };
+      setUser(data.user);
+      if (token) saveSession(data.user, token);
+      try { const c = loadCreds(); if (c) { c.d = display_name; if (newPassword) c.p = newPassword; localStorage.setItem(CREDS_KEY, btoa(JSON.stringify(c))); } } catch {}
+      return {};
+    } catch { return { error: 'Erro de conexão.' }; }
   };
 
   return (
@@ -185,19 +126,10 @@ export function useAuth() {
   return ctx;
 }
 
-/**
- * apiFetch — mantida para compatibilidade com componentes que ainda a usam
- * (Dashboard, etc.). Continua enviando token no header caso haja APIs reais.
- * Componentes migrados para localStorage não precisam mais chamá-la.
- */
 export function apiFetch(path: string, options: RequestInit = {}) {
-  const session = localStorage.getItem('caminho_session');
   let tok = '';
-  try { tok = session ? JSON.parse(session).token : ''; } catch {}
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    ...(options.headers as Record<string, string> || {}),
-  };
+  try { const raw = localStorage.getItem(SESSION_KEY); if (raw) tok = JSON.parse(raw)?.token || ''; } catch {}
+  const headers: Record<string, string> = { 'Content-Type': 'application/json', ...(options.headers as Record<string, string> || {}) };
   if (tok) headers['Authorization'] = `Bearer ${tok}`;
   return fetch(path, { ...options, headers });
 }
