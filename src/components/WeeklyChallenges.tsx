@@ -20,55 +20,102 @@ interface DailyChallenge {
 }
 
 const WEEKLY_KEY = 'weekly_challenge_cache';
-const DAILY_KEY = 'daily_challenge_cache';
+const DAILY_KEY  = 'daily_challenge_cache';
 
+// Cache diário: só é válido se foi gerado no mesmo dia (baseado em toDateString)
 function getCache(key: string) {
   try {
     const raw = localStorage.getItem(key);
     if (!raw) return null;
     const p = JSON.parse(raw);
     const today = new Date().toDateString();
-    // Weekly: valid for 7 days
     if (key === WEEKLY_KEY) {
-      const saved = new Date(p.date);
-      const diff = (Date.now() - saved.getTime()) / (1000 * 60 * 60 * 24);
-      if (diff < 7) return p.data;
-    } else if (p.date === today) return p.data;
+      // Semanal: válido apenas na mesma semana ISO (segunda a domingo)
+      const savedDate = new Date(p.savedIso);
+      const nowDate   = new Date();
+      // Calcula a semana ISO das duas datas
+      const isoWeek = (d: Date) => {
+        const jan4 = new Date(d.getFullYear(), 0, 4);
+        const week1Monday = new Date(jan4.getTime() - ((jan4.getDay() || 7) - 1) * 86400000);
+        return Math.ceil((d.getTime() - week1Monday.getTime()) / (7 * 86400000)) + 1;
+      };
+      if (
+        savedDate.getFullYear() === nowDate.getFullYear() &&
+        isoWeek(savedDate) === isoWeek(nowDate)
+      ) return p.data;
+    } else {
+      if (p.date === today) return p.data;
+    }
   } catch { /* noop */ }
   return null;
 }
-function setCache(key: string, data: any) {
-  try { localStorage.setItem(key, JSON.stringify({ date: new Date().toDateString(), data })); } catch { /* noop */ }
+
+function setCache(key: string, data: unknown) {
+  try {
+    localStorage.setItem(key, JSON.stringify({
+      date: new Date().toDateString(),
+      savedIso: new Date().toISOString(),
+      data,
+    }));
+  } catch { /* noop */ }
+}
+
+// Retorna data/hora atual formatada de forma explícita para o prompt
+function nowLabel() {
+  const d = new Date();
+  const weekday = d.toLocaleDateString('pt-BR', { weekday: 'long' });
+  const day     = d.getDate();
+  const month   = d.toLocaleDateString('pt-BR', { month: 'long' });
+  const year    = d.getFullYear();
+  return `${weekday}, ${day} de ${month} de ${year}`;
+}
+
+function nowWeekLabel() {
+  const d = new Date();
+  // Início da semana (segunda)
+  const monday = new Date(d);
+  monday.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+  // Fim da semana (domingo)
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  const fmt = (dt: Date) => dt.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' });
+  return `${fmt(monday)} a ${fmt(sunday)} de ${d.getFullYear()}`;
 }
 
 export default function WeeklyChallenges() {
   const [weeklyChallenge, setWeeklyChallenge] = useState<Challenge | null>(null);
-  const [dailyChallenge, setDailyChallenge] = useState<DailyChallenge | null>(null);
-  const [completedTasks, setCompletedTasks] = useState<number[]>([]);
-  const [dailyDone, setDailyDone] = useState(false);
+  const [dailyChallenge, setDailyChallenge]   = useState<DailyChallenge | null>(null);
+  const [completedTasks, setCompletedTasks]   = useState<number[]>([]);
+  const [dailyDone, setDailyDone]             = useState(false);
   const [isLoadingWeekly, setIsLoadingWeekly] = useState(false);
-  const [isLoadingDaily, setIsLoadingDaily] = useState(false);
+  const [isLoadingDaily, setIsLoadingDaily]   = useState(false);
 
   const fetchWeekly = async (force = false) => {
     const cached = !force && getCache(WEEKLY_KEY);
     if (cached) { setWeeklyChallenge(cached); return; }
     setIsLoadingWeekly(true);
     try {
-      const week = new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
+      const semana = nowWeekLabel();
+      const hoje   = nowLabel();
       const r = await fetch('/api/ai/generate', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messages: [
             { role: 'system', content: 'Você é um director espiritual católico. Responda APENAS com JSON válido.' },
-            { role: 'user', content: `Crie um desafio espiritual semanal para a semana de ${week}, baseado na liturgia da Igreja Católica e num santo relevante para este período.
+            { role: 'user', content: `HOJE É: ${hoje}
+A SEMANA ATUAL É: ${semana}
+
+Crie um desafio espiritual semanal para ESTA semana (${semana}), baseado na liturgia católica ATUAL deste período e num santo relevante para estes dias.
+IMPORTANTE: use a data real acima. Não use datas passadas nem futuras.
+
 JSON: {
   "title": "Título do Desafio Semanal",
-  "saint": "Nome do Santo",
+  "saint": "Nome do Santo desta semana",
   "theme": "Tema espiritual central",
   "description": "Descrição do desafio e contexto espiritual (2-3 frases)",
   "tasks": ["Tarefa concreta 1", "Tarefa concreta 2", "Tarefa concreta 3", "Tarefa concreta 4"],
   "quote": "Uma frase do santo escolhido",
-  "liturgical_connection": "Como este desafio se conecta com a liturgia desta semana"
+  "liturgical_connection": "Como este desafio se conecta com a liturgia desta semana atual"
 }` }
           ],
           responseFormat: 'json', maxTokens: 800,
@@ -86,19 +133,23 @@ JSON: {
     if (cached) { setDailyChallenge(cached); return; }
     setIsLoadingDaily(true);
     try {
-      const today = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+      const hoje = nowLabel();
       const r = await fetch('/api/ai/generate', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messages: [
             { role: 'system', content: 'Você é um director espiritual católico. Responda APENAS com JSON válido.' },
-            { role: 'user', content: `Crie um desafio espiritual diário para hoje (${today}), alinhado com a liturgia do dia e ensinamentos de um santo.
+            { role: 'user', content: `HOJE É: ${hoje}
+
+Crie um desafio espiritual diário para HOJE (${hoje}), alinhado com a liturgia católica DESTE dia específico e ensinamentos de um santo.
+IMPORTANTE: use a data real acima. Consulte o calendário litúrgico atual para este dia.
+
 JSON: {
   "title": "Título curto do desafio",
   "description": "Descrição do desafio (1-2 frases)",
-  "saint_connection": "Nome do santo e conexão com o dia",
+  "saint_connection": "Nome do santo celebrado hoje ou do período litúrgico atual e conexão",
   "action": "Uma ação concreta e prática para hoje",
-  "scripture": "Versículo bíblico relacionado (referência: texto)"
+  "scripture": "Versículo bíblico relacionado com a liturgia de hoje (referência: texto)"
 }` }
           ],
           responseFormat: 'json', maxTokens: 500,
@@ -114,19 +165,32 @@ JSON: {
   useEffect(() => {
     fetchWeekly();
     fetchDaily();
-    // Restore completed tasks
     try {
-      const saved = localStorage.getItem('weekly_tasks_done');
-      if (saved) setCompletedTasks(JSON.parse(saved));
+      // Tarefas semanais: reset automático se semana mudou
+      const savedWeeklyKey = localStorage.getItem('weekly_tasks_week');
+      const currentWeek = nowWeekLabel();
+      if (savedWeeklyKey !== currentWeek) {
+        localStorage.setItem('weekly_tasks_week', currentWeek);
+        localStorage.removeItem('weekly_tasks_done');
+      } else {
+        const saved = localStorage.getItem('weekly_tasks_done');
+        if (saved) setCompletedTasks(JSON.parse(saved));
+      }
+      // Desafio diário
       const savedDaily = localStorage.getItem('daily_challenge_done');
       if (savedDaily === new Date().toDateString()) setDailyDone(true);
     } catch { /* noop */ }
   }, []);
 
   const toggleTask = (i: number) => {
-    const next = completedTasks.includes(i) ? completedTasks.filter(t => t !== i) : [...completedTasks, i];
+    const next = completedTasks.includes(i)
+      ? completedTasks.filter(t => t !== i)
+      : [...completedTasks, i];
     setCompletedTasks(next);
-    try { localStorage.setItem('weekly_tasks_done', JSON.stringify(next)); } catch { /* noop */ }
+    try {
+      localStorage.setItem('weekly_tasks_done', JSON.stringify(next));
+      localStorage.setItem('weekly_tasks_week', nowWeekLabel());
+    } catch { /* noop */ }
   };
 
   const completeDaily = () => {
@@ -141,7 +205,7 @@ JSON: {
         <p className="text-[#1A1A1A]/60 italic">"Combati o bom combate, terminei a corrida, guardei a fé."</p>
       </header>
 
-      {/* Daily Challenge */}
+      {/* Desafio do Dia */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-bold flex items-center gap-2">
@@ -198,7 +262,7 @@ JSON: {
         )}
       </section>
 
-      {/* Weekly Challenge */}
+      {/* Desafio Semanal */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-bold flex items-center gap-2">
