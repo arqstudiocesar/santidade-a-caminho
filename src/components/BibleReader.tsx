@@ -84,9 +84,9 @@ const translations = [
   { id: 'jerusalem', name: 'Bíblia de Jerusalém' },
   { id: 'ave-maria', name: 'Bíblia Ave Maria' },
   { id: 'cnbb', name: 'Bíblia CNBB' },
-  { id: 'arc', name: 'Bíblia Almeida Revisada Corrigida' },
   { id: 'bltt', name: 'Bíblia Literal do Texto Tradicional' },
-  { id: 'nvi', name: 'Nova Versão Internacional' },
+  { id: 'arc', name: 'Bíblia Almeida Revisada Corrigida - (Protestante)' },
+  { id: 'nvi', name: 'Nova Versão Internacional - (Protestante)' },
 ];
 
 const GROUPS = ['Pentateuco','Históricos','Sapienciais','Proféticos','Evangelhos','Cartas','N. Testamento'];
@@ -96,10 +96,12 @@ export default function BibleReader() {
   const [selectedChapter, setSelectedChapter] = useState(1);
   const [startVerse, setStartVerse] = useState(1);
   const [endVerse, setEndVerse] = useState(10);
+  const [startVerseInput, setStartVerseInput] = useState('1');
+  const [endVerseInput, setEndVerseInput] = useState('10');
   const [maxVerses, setMaxVerses] = useState(25);
   const [selectedTranslation, setSelectedTranslation] = useState(translations[0]);
   const [isComparing, setIsComparing] = useState(false);
-  const [comparisonTranslation, setComparisonTranslation] = useState(translations[3]);
+  const [comparisonTranslation, setComparisonTranslation] = useState(translations[4]);
   const [isBookListOpen, setIsBookListOpen] = useState(false);
   const [bookFilter, setBookFilter] = useState('');
   const [selectedGroup, setSelectedGroup] = useState<string|null>(null);
@@ -116,8 +118,16 @@ export default function BibleReader() {
   useEffect(() => {
     const count = getVerseCount(selectedBook.name, selectedChapter);
     setMaxVerses(count);
-    setEndVerse(v => Math.min(v, count));
-    setStartVerse(v => Math.min(v, count));
+    setEndVerse(v => {
+      const clamped = Math.min(v, count);
+      setEndVerseInput(String(clamped));
+      return clamped;
+    });
+    setStartVerse(v => {
+      const clamped = Math.min(v, count);
+      setStartVerseInput(String(clamped));
+      return clamped;
+    });
   }, [selectedBook, selectedChapter]);
 
   // Carrega versículos principais
@@ -180,8 +190,10 @@ export default function BibleReader() {
       setSelectedBook(book);
       setSelectedChapter(r.chapter);
       const vc = getVerseCount(book.name, r.chapter);
-      setStartVerse(Math.max(1, r.verse-2));
-      setEndVerse(Math.min(vc, r.verse+5));
+      const sv = Math.max(1, r.verse-2);
+      const ev = Math.min(vc, r.verse+5);
+      setStartVerse(sv); setStartVerseInput(String(sv));
+      setEndVerse(ev);   setEndVerseInput(String(ev));
     }
     setShowSearch(false);
   }
@@ -279,10 +291,15 @@ export default function BibleReader() {
           {/* Versículo Inicial */}
           <div>
             <label className="text-[10px] uppercase tracking-widest font-bold text-[#1A1A1A]/40 ml-1 block mb-1">Vers. Inicial</label>
-            <input type="number" min={1} max={maxVerses} value={startVerse}
-              onChange={e=>{
-                const v=Math.min(Math.max(1,parseInt(e.target.value)||1),maxVerses);
-                setStartVerse(v); if(endVerse<v) setEndVerse(v);
+            <input
+              type="number" min={1} max={maxVerses}
+              value={startVerseInput}
+              onChange={e => setStartVerseInput(e.target.value)}
+              onBlur={() => {
+                const v = Math.min(Math.max(1, parseInt(startVerseInput) || 1), maxVerses);
+                setStartVerse(v);
+                setStartVerseInput(String(v));
+                if (endVerse < v) { setEndVerse(v); setEndVerseInput(String(v)); }
               }}
               className="w-full px-4 py-3 bg-[#F5F2ED] rounded-2xl text-sm border-none focus:ring-2 focus:ring-[#5A5A40]"/>
           </div>
@@ -291,10 +308,14 @@ export default function BibleReader() {
             <label className="text-[10px] uppercase tracking-widest font-bold text-[#1A1A1A]/40 ml-1 block mb-1">
               Vers. Final <span className="text-[#5A5A40]">(máx. {maxVerses})</span>
             </label>
-            <input type="number" min={startVerse} max={maxVerses} value={endVerse}
-              onChange={e=>{
-                const v=Math.min(Math.max(startVerse,parseInt(e.target.value)||startVerse),maxVerses);
+            <input
+              type="number" min={startVerse} max={maxVerses}
+              value={endVerseInput}
+              onChange={e => setEndVerseInput(e.target.value)}
+              onBlur={() => {
+                const v = Math.min(Math.max(startVerse, parseInt(endVerseInput) || startVerse), maxVerses);
                 setEndVerse(v);
+                setEndVerseInput(String(v));
               }}
               className="w-full px-4 py-3 bg-[#F5F2ED] rounded-2xl text-sm border-none focus:ring-2 focus:ring-[#5A5A40]"/>
           </div>

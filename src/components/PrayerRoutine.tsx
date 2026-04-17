@@ -136,18 +136,47 @@ function ReadingBlock({ reading, bgClass, borderClass, titleClass }: {
 }
 
 
+// ── Helpers de persistência das orações ─────────────────────────────────────
+const DEFAULT_PRAYER_LIST = [
+  { id: '1', name: 'Oferecimento do Dia', period: 'morning', completed: false },
+  { id: '2', name: 'Liturgia das Horas (Ofício das Leituras)', period: 'morning', completed: false },
+  { id: '3', name: 'Liturgia das Horas (Laudes)', period: 'morning', completed: false },
+  { id: '4', name: 'Angelus', period: 'afternoon', completed: false },
+  { id: '5', name: 'Liturgia das Horas (Hora Intermédia)', period: 'afternoon', completed: false },
+  { id: '6', name: 'Santo Rosário', period: 'afternoon', completed: false },
+  { id: '7', name: 'Liturgia das Horas (Vésperas)', period: 'afternoon', completed: false },
+  { id: '8', name: 'Exame de Consciência', period: 'night', completed: false },
+  { id: '9', name: 'Oração da Noite (Completas)', period: 'night', completed: false },
+];
+
+function getPrayerStorageKey(): string {
+  try {
+    const s = localStorage.getItem('caminho_session');
+    const id = s ? JSON.parse(s).user?.id : 'anon';
+    return `prayer_routine_${id}`;
+  } catch { return 'prayer_routine_anon'; }
+}
+
+function loadPrayersFromStorage() {
+  try {
+    const today = new Date().toDateString();
+    const raw = localStorage.getItem(getPrayerStorageKey());
+    if (!raw) return DEFAULT_PRAYER_LIST;
+    const parsed = JSON.parse(raw);
+    if (parsed.date !== today) return DEFAULT_PRAYER_LIST;
+    return parsed.prayers || DEFAULT_PRAYER_LIST;
+  } catch { return DEFAULT_PRAYER_LIST; }
+}
+
+function savePrayersToStorage(prayers: typeof DEFAULT_PRAYER_LIST) {
+  try {
+    const today = new Date().toDateString();
+    localStorage.setItem(getPrayerStorageKey(), JSON.stringify({ date: today, prayers }));
+  } catch { /* ok */ }
+}
+
 export default function PrayerRoutine() {
-  const [prayers, setPrayers] = useState([
-    { id: '1', name: 'Oferecimento do Dia', period: 'morning', completed: true },
-    { id: '2', name: 'Liturgia das Horas (Ofício das Leituras)', period: 'morning', completed: false },
-    { id: '3', name: 'Liturgia das Horas (Laudes)', period: 'morning', completed: false },
-    { id: '4', name: 'Angelus', period: 'afternoon', completed: false },
-    { id: '5', name: 'Liturgia das Horas (Hora Intermédia)', period: 'afternoon', completed: false },
-    { id: '6', name: 'Santo Rosário', period: 'afternoon', completed: false },
-    { id: '7', name: 'Liturgia das Horas (Vésperas)', period: 'afternoon', completed: false },
-    { id: '8', name: 'Exame de Consciência', period: 'night', completed: false },
-    { id: '9', name: 'Oração da Noite (Completas)', period: 'night', completed: false },
-  ]);
+  const [prayers, setPrayers] = useState(() => loadPrayersFromStorage());
 
   const [selectedPrayer, setSelectedPrayer] = useState<any>(null);
   const [liturgyData, setLiturgyData] = useState<any>(null);
@@ -318,7 +347,9 @@ JSON:
   };
 
   const togglePrayer = (id: string) => {
-    setPrayers(prayers.map(p => p.id === id ? { ...p, completed: !p.completed } : p));
+    const updated = prayers.map(p => p.id === id ? { ...p, completed: !p.completed } : p);
+    setPrayers(updated);
+    savePrayersToStorage(updated);
   };
 
   const sections = [

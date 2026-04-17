@@ -73,6 +73,11 @@ const formais: PrayerItem[] = [
   { title: 'Oração de Renúncia', text: 'Senhor Jesus Cristo,\nem vosso Santo Nome e pelo poder da vossa Cruz,\nrenuncio a toda influência do mal,\na toda obra das trevas,\na todo pecado passado e presente.\nRenuncio ao demônio e a todas as suas obras.\nConságro-me a vós completamente.\nSejais meu Senhor e meu Deus agora e sempre.\nAmém.' },
 ];
 
+// ── Ordenação alfabética dos grupos ──────────────────────────────────────────
+habituais.sort((a, b) => a.title.localeCompare(b.title, 'pt-BR'));
+ladainhas.sort((a, b) => a.title.localeCompare(b.title, 'pt-BR'));
+formais.sort((a, b) => a.title.localeCompare(b.title, 'pt-BR'));
+
 // ── Adoração Eucarística ──────────────────────────────────────────────────────
 interface AdorationStep { phase: string; content: string; }
 interface AdorationModel { title: string; subtitle: string; color: string; steps: AdorationStep[]; }
@@ -242,6 +247,11 @@ function DailyPrayers({ searchTerm, userPrayers, onDeleteUserPrayer }: {
 }) {
   const q = searchTerm.toLowerCase().trim();
 
+  // Estado de abertura de cada grupo (todos abertos por padrão)
+  const [openGroups, setOpenGroups] = useState({ habituais: true, ladainhas: true, formais: true });
+  const toggleGroup = (g: keyof typeof openGroups) =>
+    setOpenGroups(prev => ({ ...prev, [g]: !prev[g] }));
+
   const filterPrayers = (prayers: PrayerItem[]) =>
     q ? prayers.filter(p => p.title.toLowerCase().includes(q) || p.text.toLowerCase().includes(q)) : prayers;
 
@@ -260,49 +270,105 @@ function DailyPrayers({ searchTerm, userPrayers, onDeleteUserPrayer }: {
     );
   }
 
+  // Cabeçalho de grupo com botão acordeão
+  function GroupHeader({ label, groupKey, count }: { label: string; groupKey: keyof typeof openGroups; count: number }) {
+    return (
+      <button
+        onClick={() => toggleGroup(groupKey)}
+        className="w-full flex items-center justify-between px-1 py-2 hover:opacity-70 transition-opacity"
+      >
+        <h3 className="text-xs font-bold uppercase tracking-widest text-[#5A5A40]">
+          {label}{q ? <span className="text-[#1A1A1A]/30 font-normal normal-case ml-1">({count})</span> : null}
+        </h3>
+        {openGroups[groupKey]
+          ? <ChevronUp className="w-4 h-4 text-[#5A5A40] flex-shrink-0" />
+          : <ChevronDown className="w-4 h-4 text-[#5A5A40] flex-shrink-0" />}
+      </button>
+    );
+  }
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {filtHabituais.length > 0 && (
-        <div className="space-y-3">
-          <h3 className="text-xs font-bold uppercase tracking-widest text-[#5A5A40] px-1">
-            Orações Habituais {q && <span className="text-[#1A1A1A]/30 font-normal normal-case">({filtHabituais.length})</span>}
-          </h3>
-          <div className="space-y-2">
-            {filtHabituais.map((p, i) => {
-              const isUser = i >= habituais.length;
-              const userIdx = isUser ? i - habituais.length : -1;
-              return (
-                <div key={i} className="relative group">
-                  <PrayerCard prayer={p} />
-                  {isUser && (
-                    <button
-                      onClick={() => onDeleteUserPrayer(userIdx)}
-                      title="Remover oração"
-                      className="absolute top-2 right-2 p-1.5 bg-red-50 text-red-400 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-100 z-10"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  )}
+        <div className="space-y-1">
+          <GroupHeader label="Orações Habituais" groupKey="habituais" count={filtHabituais.length} />
+          <AnimatePresence initial={false}>
+            {openGroups.habituais && (
+              <motion.div
+                key="habituais"
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden"
+              >
+                <div className="space-y-2 pt-1">
+                  {filtHabituais.map((p, i) => {
+                    const isUser = i >= habituais.length;
+                    const userIdx = isUser ? i - habituais.length : -1;
+                    return (
+                      <div key={i} className="relative group">
+                        <PrayerCard prayer={p} />
+                        {isUser && (
+                          <button
+                            onClick={() => onDeleteUserPrayer(userIdx)}
+                            title="Remover oração"
+                            className="absolute top-2 right-2 p-1.5 bg-red-50 text-red-400 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-100 z-10"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
-              );
-            })}
-          </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       )}
+
       {filtLadainhas.length > 0 && (
-        <div className="space-y-3">
-          <h3 className="text-xs font-bold uppercase tracking-widest text-[#5A5A40] px-1">
-            Ladainhas {q && <span className="text-[#1A1A1A]/30 font-normal normal-case">({filtLadainhas.length})</span>}
-          </h3>
-          <div className="space-y-2">{filtLadainhas.map((p, i) => <PrayerCard key={i} prayer={p} />)}</div>
+        <div className="space-y-1">
+          <GroupHeader label="Ladainhas" groupKey="ladainhas" count={filtLadainhas.length} />
+          <AnimatePresence initial={false}>
+            {openGroups.ladainhas && (
+              <motion.div
+                key="ladainhas"
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden"
+              >
+                <div className="space-y-2 pt-1">
+                  {filtLadainhas.map((p, i) => <PrayerCard key={i} prayer={p} />)}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       )}
+
       {filtFormais.length > 0 && (
-        <div className="space-y-3">
-          <h3 className="text-xs font-bold uppercase tracking-widest text-[#5A5A40] px-1">
-            Orações Formais {q && <span className="text-[#1A1A1A]/30 font-normal normal-case">({filtFormais.length})</span>}
-          </h3>
-          <div className="space-y-2">{filtFormais.map((p, i) => <PrayerCard key={i} prayer={p} />)}</div>
+        <div className="space-y-1">
+          <GroupHeader label="Orações Formais" groupKey="formais" count={filtFormais.length} />
+          <AnimatePresence initial={false}>
+            {openGroups.formais && (
+              <motion.div
+                key="formais"
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden"
+              >
+                <div className="space-y-2 pt-1">
+                  {filtFormais.map((p, i) => <PrayerCard key={i} prayer={p} />)}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       )}
     </div>

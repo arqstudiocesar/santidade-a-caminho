@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Flame, Star, BookOpen, Quote, Calendar, Bell, Shield, CheckCircle2 } from 'lucide-react';
+import { Flame, Star, BookOpen, Quote, Calendar, Bell, Shield, CheckCircle2, Cross } from 'lucide-react';
 import { TabType } from '../types';
 
 // ── Versículos do dia (rotação por dia do ano) ──────────────────────────────
@@ -83,6 +83,18 @@ const WEEKLY_VIRTUES = [
   { name: "Justiça",        quote: "A justiça é o fundamento de toda ordem social e espiritual." },
 ];
 
+// ── Intenção de Oração por Dia da Semana ────────────────────────────────────
+const DAILY_INTENTIONS = [
+  // 0 = domingo
+  { icon: '✝️', title: 'Ressurreição do Senhor',    desc: 'Reze pela alegria da Ressurreição e a vida da Igreja.' },
+  { icon: '🕊️', title: 'Almas do Purgatório e Espírito Santo', desc: 'Reze pelas almas do purgatório e pela ação do Espírito Santo.' },
+  { icon: '👼', title: 'Santos Anjos',              desc: 'Reze pelos Santos Anjos, especialmente ao seu Anjo da Guarda.' },
+  { icon: '⚒️', title: 'São José',                  desc: 'Reze pela intercessão de São José, padroeiro da Igreja universal.' },
+  { icon: '🍞', title: 'Eucaristia e Sacerdócio',   desc: 'Reze pela Eucaristia e pelos sacerdotes da Igreja.' },
+  { icon: '✠',  title: 'Paixão de Cristo',          desc: 'Medite a Paixão de Cristo e reze pelas almas que sofrem.' },
+  { icon: '🌹', title: 'Nossa Senhora',              desc: 'Reze o Rosário e consagre-se ao Imaculado Coração de Maria.' },
+];
+
 // ── Helper: índice rotativo baseado na data ──────────────────────────────────
 function getDayIndex(arr: unknown[]): number {
   const now = new Date();
@@ -112,6 +124,41 @@ function lsGet<T>(base: string, fallback: T): T {
   } catch { return fallback; }
 }
 
+// ── Tipos para sincronização com PrayerRoutine ────────────────────────────────
+interface PrayerItem {
+  id: string;
+  name: string;
+  period: string;
+  completed: boolean;
+}
+
+const DEFAULT_PRAYERS: PrayerItem[] = [
+  { id: '1', name: 'Oferecimento do Dia', period: 'morning', completed: false },
+  { id: '2', name: 'Liturgia das Horas (Ofício das Leituras)', period: 'morning', completed: false },
+  { id: '3', name: 'Liturgia das Horas (Laudes)', period: 'morning', completed: false },
+  { id: '4', name: 'Angelus', period: 'afternoon', completed: false },
+  { id: '5', name: 'Liturgia das Horas (Hora Intermédia)', period: 'afternoon', completed: false },
+  { id: '6', name: 'Santo Rosário', period: 'afternoon', completed: false },
+  { id: '7', name: 'Liturgia das Horas (Vésperas)', period: 'afternoon', completed: false },
+  { id: '8', name: 'Exame de Consciência', period: 'night', completed: false },
+  { id: '9', name: 'Oração da Noite (Completas)', period: 'night', completed: false },
+];
+
+function loadPrayers(): PrayerItem[] {
+  try {
+    const today = new Date().toDateString();
+    const key = getUserKey('prayer_routine');
+    const raw = localStorage.getItem(key);
+    if (!raw) return DEFAULT_PRAYERS;
+    const parsed = JSON.parse(raw);
+    // Verifica se é do dia atual
+    if (parsed.date !== today) return DEFAULT_PRAYERS;
+    return parsed.prayers || DEFAULT_PRAYERS;
+  } catch {
+    return DEFAULT_PRAYERS;
+  }
+}
+
 // ── Componente ───────────────────────────────────────────────────────────────
 export default function Dashboard({ setActiveTab }: { setActiveTab: (tab: TabType) => void }) {
   const [pendingSins, setPendingSins]       = useState(0);
@@ -119,31 +166,31 @@ export default function Dashboard({ setActiveTab }: { setActiveTab: (tab: TabTyp
   const [verse, setVerse]   = useState(DAILY_VERSES[0]);
   const [thought, setThought] = useState(DAILY_THOUGHTS[0]);
   const [virtue, setVirtue] = useState(WEEKLY_VIRTUES[0]);
+  const [prayers, setPrayers] = useState<PrayerItem[]>(DEFAULT_PRAYERS);
 
-  useEffect(() => {
-    // Dados dinâmicos por data
+  // Intenção do dia da semana (domingo=0 ... sábado=6)
+  const todayIntention = DAILY_INTENTIONS[new Date().getDay()];
+
+  const loadData = () => {
     setVerse(DAILY_VERSES[getDayIndex(DAILY_VERSES)]);
     setThought(DAILY_THOUGHTS[getDayIndex(DAILY_THOUGHTS)]);
     setVirtue(WEEKLY_VIRTUES[getWeekIndex(WEEKLY_VIRTUES)]);
 
-    // Pecados da lista privada
     const sins: { id: number }[] = lsGet('sins', []);
     setPendingSins(sins.length);
 
-    // Próxima confissão do calendário
     const today = new Date().toISOString().split('T')[0];
     const dates: string[] = lsGet('confession_dates', []);
     const future = dates.filter(d => d >= today).sort();
     setNextConfession(future[0] || null);
 
-    // Atualiza quando o usuário volta para a aba (visibilidade)
-    const onFocus = () => {
-      const updatedSins: { id: number }[] = lsGet('sins', []);
-      setPendingSins(updatedSins.length);
-      const updatedDates: string[] = lsGet('confession_dates', []);
-      const f = updatedDates.filter(d => d >= today).sort();
-      setNextConfession(f[0] || null);
-    };
+    // Sincroniza orações do Ritmo de Oração
+    setPrayers(loadPrayers());
+  };
+
+  useEffect(() => {
+    loadData();
+    const onFocus = () => loadData();
     window.addEventListener('focus', onFocus);
     return () => window.removeEventListener('focus', onFocus);
   }, []);
@@ -153,8 +200,32 @@ export default function Dashboard({ setActiveTab }: { setActiveTab: (tab: TabTyp
     ? new Date(nextConfession + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })
     : 'Não agendada';
 
+  // Orações concluídas e próximas pendentes
+  const completedPrayers = prayers.filter(p => p.completed);
+  const pendingPrayers   = prayers.filter(p => !p.completed);
+  const nextTwoPending   = pendingPrayers.slice(0, 2);
+  // Mostra: as concluídas + as 2 próximas pendentes, max 3 cards
+  const displayPrayers = [...completedPrayers, ...nextTwoPending].slice(0, 3);
+
   return (
     <div className="space-y-8">
+
+      {/* ── Intenção de Oração do Dia ── */}
+      <section className="bg-white p-6 rounded-[2rem] border border-[#1A1A1A]/5 shadow-sm">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-2 bg-[#F5F2ED] rounded-xl">
+            <Cross className="w-5 h-5 text-[#5A5A40]" />
+          </div>
+          <div>
+            <p className="text-[10px] font-sans uppercase tracking-[0.15em] text-[#5A5A40] font-bold">
+              O que a Igreja nos convida a rezar hoje
+            </p>
+            <h3 className="font-bold text-lg leading-tight">{todayIntention.icon} {todayIntention.title}</h3>
+          </div>
+        </div>
+        <p className="text-sm text-[#1A1A1A]/60 italic ml-1">{todayIntention.desc}</p>
+      </section>
+
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-[#5A5A40] text-white p-8 lg:p-12 rounded-[2rem] shadow-xl">
         <div className="relative z-10 max-w-2xl">
@@ -247,14 +318,19 @@ export default function Dashboard({ setActiveTab }: { setActiveTab: (tab: TabTyp
         </div>
       </div>
 
-      {/* Prayer Reminders */}
+      {/* Prayer Reminders — sincronizado com Ritmo de Oração */}
       <section className="bg-white p-8 rounded-[2rem] border border-[#1A1A1A]/5 shadow-sm">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-[#F5F2ED] rounded-xl">
               <Bell className="w-5 h-5 text-[#5A5A40]" />
             </div>
-            <h3 className="text-xl font-bold">Ritmo de Oração</h3>
+            <div>
+              <h3 className="text-xl font-bold">Ritmo de Oração</h3>
+              <p className="text-xs text-[#1A1A1A]/40 mt-0.5">
+                {completedPrayers.length}/{prayers.length} concluídas hoje
+              </p>
+            </div>
           </div>
           <button
             onClick={() => setActiveTab('prayers')}
@@ -263,23 +339,43 @@ export default function Dashboard({ setActiveTab }: { setActiveTab: (tab: TabTyp
             Ver Tudo
           </button>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[
-            { name: 'Oferecimento do Dia', time: 'Manhã', done: false },
-            { name: 'Angelus', time: '12:00', done: false },
-            { name: 'Santo Rosário', time: 'Tarde', done: false },
-          ].map((prayer, i) => (
-            <div key={i} className={`p-4 rounded-2xl border flex items-center justify-between ${prayer.done ? 'bg-[#F5F2ED]/50 border-[#5A5A40]/10' : 'bg-white border-[#1A1A1A]/5'}`}>
-              <div>
-                <p className={`font-bold ${prayer.done ? 'text-[#1A1A1A]/40 line-through' : ''}`}>{prayer.name}</p>
-                <p className="text-xs text-[#1A1A1A]/40 uppercase tracking-widest">{prayer.time}</p>
+
+        {displayPrayers.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {displayPrayers.map((prayer) => (
+              <div
+                key={prayer.id}
+                className={`p-4 rounded-2xl border flex items-center justify-between ${
+                  prayer.completed
+                    ? 'bg-[#F5F2ED]/50 border-[#5A5A40]/10'
+                    : 'bg-white border-[#1A1A1A]/5'
+                }`}
+              >
+                <div>
+                  <p className={`font-bold text-sm ${prayer.completed ? 'text-[#1A1A1A]/40 line-through' : ''}`}>
+                    {prayer.name}
+                  </p>
+                  <p className="text-xs text-[#1A1A1A]/40 uppercase tracking-widest mt-0.5">
+                    {prayer.period === 'morning' ? 'Manhã' : prayer.period === 'afternoon' ? 'Tarde' : 'Noite'}
+                  </p>
+                </div>
+                <CheckCircle2
+                  className={`w-6 h-6 flex-shrink-0 ml-3 ${prayer.completed ? 'text-[#5A5A40]' : 'text-[#1A1A1A]/15'}`}
+                />
               </div>
-              <button className={`p-2 rounded-full ${prayer.done ? 'text-[#5A5A40]' : 'text-[#1A1A1A]/20 hover:text-[#5A5A40]'}`}>
-                <CheckCircle2 className="w-6 h-6" />
-              </button>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-[#1A1A1A]/40 italic text-center py-4">
+            Todas as orações do dia foram concluídas! 🙏
+          </p>
+        )}
+
+        {pendingPrayers.length === 0 && prayers.some(p => p.completed) && (
+          <p className="text-center text-xs text-[#5A5A40] font-bold mt-4 uppercase tracking-widest">
+            ✓ Todas as orações concluídas hoje
+          </p>
+        )}
       </section>
     </div>
   );
