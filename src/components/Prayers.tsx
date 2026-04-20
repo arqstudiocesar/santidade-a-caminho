@@ -3,7 +3,53 @@ import { ChevronDown, ChevronUp, BookOpen, Heart, Star, Search, Plus, X, Save } 
 import { motion, AnimatePresence } from 'motion/react';
 
 type SubTab = 'daily' | 'adoration' | 'consecration';
+type PrayerCategory = 'habituais' | 'ladainhas' | 'formais';
 interface PrayerItem { title: string; text: string; }
+interface UserPrayerItem { id: number; title: string; text: string; category: PrayerCategory; }
+
+// Helper para buscar token de autenticação salvo
+function getAuthToken(): string {
+  try {
+    const s = localStorage.getItem('caminho_session');
+    return s ? JSON.parse(s).token || '' : '';
+  } catch { return ''; }
+}
+
+async function apiLoadUserPrayers(): Promise<UserPrayerItem[]> {
+  try {
+    const token = getAuthToken();
+    if (!token) return [];
+    const r = await fetch('/api/user-prayers', { headers: { Authorization: `Bearer ${token}` } });
+    if (!r.ok) return [];
+    return await r.json();
+  } catch { return []; }
+}
+
+async function apiSaveUserPrayer(title: string, text: string, category: PrayerCategory): Promise<number | null> {
+  try {
+    const token = getAuthToken();
+    if (!token) return null;
+    const r = await fetch('/api/user-prayers', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ title, text, category }),
+    });
+    if (!r.ok) return null;
+    const data = await r.json();
+    return data.id ?? null;
+  } catch { return null; }
+}
+
+async function apiDeleteUserPrayer(id: number): Promise<void> {
+  try {
+    const token = getAuthToken();
+    if (!token) return;
+    await fetch(`/api/user-prayers/${id}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  } catch {}
+}
 
 // ── Orações Habituais ─────────────────────────────────────────────────────────
 const habituais: PrayerItem[] = [
@@ -242,24 +288,29 @@ function PrayerCard({ prayer }: { prayer: PrayerItem }) {
 // ── Sub-abas ──────────────────────────────────────────────────────────────────
 function DailyPrayers({ searchTerm, userPrayers, onDeleteUserPrayer }: {
   searchTerm: string;
-  userPrayers: PrayerItem[];
-  onDeleteUserPrayer: (index: number) => void;
+  userPrayers: UserPrayerItem[];
+  onDeleteUserPrayer: (id: number) => void;
 }) {
   const q = searchTerm.toLowerCase().trim();
 
-  // Estado de abertura de cada grupo (todos abertos por padrão)
   const [openGroups, setOpenGroups] = useState({ habituais: true, ladainhas: true, formais: true });
   const toggleGroup = (g: keyof typeof openGroups) =>
     setOpenGroups(prev => ({ ...prev, [g]: !prev[g] }));
 
   const filterPrayers = (prayers: PrayerItem[]) =>
     q ? prayers.filter(p => p.title.toLowerCase().includes(q) || p.text.toLowerCase().includes(q)) : prayers;
+  const filterUserPrayers = (prayers: UserPrayerItem[]) =>
+    q ? prayers.filter(p => p.title.toLowerCase().includes(q) || p.text.toLowerCase().includes(q)) : prayers;
 
-  const filtHabituais = filterPrayers([...habituais, ...userPrayers]);
+  const userHabituais = filterUserPrayers(userPrayers.filter(p => p.category === 'habituais'));
+  const userLadainhas = filterUserPrayers(userPrayers.filter(p => p.category === 'ladainhas'));
+  const userFormais   = filterUserPrayers(userPrayers.filter(p => p.category === 'formais'));
+
+  const filtHabituais = filterPrayers(habituais);
   const filtLadainhas = filterPrayers(ladainhas);
   const filtFormais   = filterPrayers(formais);
 
-  const total = filtHabituais.length + filtLadainhas.length + filtFormais.length;
+  const total = filtHabituais.length + userHabituais.length + filtLadainhas.length + userLadainhas.length + filtFormais.length + userFormais.length;
 
   if (q && total === 0) {
     return (
@@ -270,7 +321,6 @@ function DailyPrayers({ searchTerm, userPrayers, onDeleteUserPrayer }: {
     );
   }
 
-  // Cabeçalho de grupo com botão acordeão
   function GroupHeader({ label, groupKey, count }: { label: string; groupKey: keyof typeof openGroups; count: number }) {
     return (
       <button
@@ -287,40 +337,29 @@ function DailyPrayers({ searchTerm, userPrayers, onDeleteUserPrayer }: {
     );
   }
 
+  const totalHabituais = filtHabituais.length + userHabituais.length;
+  const totalLadainhas = filtLadainhas.length + userLadainhas.length;
+  const totalFormais   = filtFormais.length   + userFormais.length;
+
   return (
     <div className="space-y-6">
-      {filtHabituais.length > 0 && (
+      {totalHabituais > 0 && (
         <div className="space-y-1">
-          <GroupHeader label="Orações Habituais" groupKey="habituais" count={filtHabituais.length} />
+          <GroupHeader label="Orações Habituais" groupKey="habituais" count={totalHabituais} />
           <AnimatePresence initial={false}>
             {openGroups.habituais && (
-              <motion.div
-                key="habituais"
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                className="overflow-hidden"
-              >
+              <motion.div key="habituais" initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
                 <div className="space-y-2 pt-1">
-                  {filtHabituais.map((p, i) => {
-                    const isUser = i >= habituais.length;
-                    const userIdx = isUser ? i - habituais.length : -1;
-                    return (
-                      <div key={i} className="relative group">
-                        <PrayerCard prayer={p} />
-                        {isUser && (
-                          <button
-                            onClick={() => onDeleteUserPrayer(userIdx)}
-                            title="Remover oração"
-                            className="absolute top-2 right-2 p-1.5 bg-red-50 text-red-400 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-100 z-10"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        )}
-                      </div>
-                    );
-                  })}
+                  {filtHabituais.map((p, i) => <PrayerCard key={i} prayer={p} />)}
+                  {userHabituais.map(p => (
+                    <div key={p.id} className="relative group">
+                      <PrayerCard prayer={p} />
+                      <button onClick={() => onDeleteUserPrayer(p.id)} title="Remover oração"
+                        className="absolute top-2 right-2 p-1.5 bg-red-50 text-red-400 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-100 z-10">
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
                 </div>
               </motion.div>
             )}
@@ -328,21 +367,23 @@ function DailyPrayers({ searchTerm, userPrayers, onDeleteUserPrayer }: {
         </div>
       )}
 
-      {filtLadainhas.length > 0 && (
+      {totalLadainhas > 0 && (
         <div className="space-y-1">
-          <GroupHeader label="Ladainhas" groupKey="ladainhas" count={filtLadainhas.length} />
+          <GroupHeader label="Ladainhas" groupKey="ladainhas" count={totalLadainhas} />
           <AnimatePresence initial={false}>
             {openGroups.ladainhas && (
-              <motion.div
-                key="ladainhas"
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                className="overflow-hidden"
-              >
+              <motion.div key="ladainhas" initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
                 <div className="space-y-2 pt-1">
                   {filtLadainhas.map((p, i) => <PrayerCard key={i} prayer={p} />)}
+                  {userLadainhas.map(p => (
+                    <div key={p.id} className="relative group">
+                      <PrayerCard prayer={p} />
+                      <button onClick={() => onDeleteUserPrayer(p.id)} title="Remover oração"
+                        className="absolute top-2 right-2 p-1.5 bg-red-50 text-red-400 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-100 z-10">
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
                 </div>
               </motion.div>
             )}
@@ -350,21 +391,23 @@ function DailyPrayers({ searchTerm, userPrayers, onDeleteUserPrayer }: {
         </div>
       )}
 
-      {filtFormais.length > 0 && (
+      {totalFormais > 0 && (
         <div className="space-y-1">
-          <GroupHeader label="Orações Formais" groupKey="formais" count={filtFormais.length} />
+          <GroupHeader label="Orações Formais" groupKey="formais" count={totalFormais} />
           <AnimatePresence initial={false}>
             {openGroups.formais && (
-              <motion.div
-                key="formais"
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                className="overflow-hidden"
-              >
+              <motion.div key="formais" initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
                 <div className="space-y-2 pt-1">
                   {filtFormais.map((p, i) => <PrayerCard key={i} prayer={p} />)}
+                  {userFormais.map(p => (
+                    <div key={p.id} className="relative group">
+                      <PrayerCard prayer={p} />
+                      <button onClick={() => onDeleteUserPrayer(p.id)} title="Remover oração"
+                        className="absolute top-2 right-2 p-1.5 bg-red-50 text-red-400 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-100 z-10">
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
                 </div>
               </motion.div>
             )}
@@ -595,33 +638,36 @@ function ConsecrationTab() {
 }
 
 // ── Componente Principal ──────────────────────────────────────────────────────
-const USER_PRAYERS_KEY = 'caminho_user_prayers';
-
 export default function Prayers() {
   const [sub, setSub] = useState<SubTab>('daily');
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [newText, setNewText] = useState('');
-  const [userPrayers, setUserPrayers] = useState<PrayerItem[]>(() => {
-    try {
-      const raw = localStorage.getItem(USER_PRAYERS_KEY);
-      return raw ? JSON.parse(raw) : [];
-    } catch { return []; }
-  });
+  const [newCategory, setNewCategory] = useState<PrayerCategory>('habituais');
+  const [isSaving, setIsSaving] = useState(false);
+  const [userPrayers, setUserPrayers] = useState<UserPrayerItem[]>([]);
 
-  const saveUserPrayer = () => {
+  // Carrega as orações do usuário do servidor ao montar
+  useEffect(() => {
+    apiLoadUserPrayers().then(prayers => setUserPrayers(prayers));
+  }, []);
+
+  const saveUserPrayer = async () => {
     if (!newTitle.trim() || !newText.trim()) return;
-    const updated = [...userPrayers, { title: newTitle.trim(), text: newText.trim() }];
-    setUserPrayers(updated);
-    try { localStorage.setItem(USER_PRAYERS_KEY, JSON.stringify(updated)); } catch {}
-    setNewTitle(''); setNewText(''); setShowAddModal(false);
+    setIsSaving(true);
+    const id = await apiSaveUserPrayer(newTitle.trim(), newText.trim(), newCategory);
+    if (id !== null) {
+      const newPrayer: UserPrayerItem = { id, title: newTitle.trim(), text: newText.trim(), category: newCategory };
+      setUserPrayers(prev => [...prev, newPrayer].sort((a, b) => a.title.localeCompare(b.title, 'pt')));
+    }
+    setIsSaving(false);
+    setNewTitle(''); setNewText(''); setNewCategory('habituais'); setShowAddModal(false);
   };
 
-  const deleteUserPrayer = (index: number) => {
-    const updated = userPrayers.filter((_, i) => i !== index);
-    setUserPrayers(updated);
-    try { localStorage.setItem(USER_PRAYERS_KEY, JSON.stringify(updated)); } catch {}
+  const deleteUserPrayer = async (id: number) => {
+    setUserPrayers(prev => prev.filter(p => p.id !== id));
+    await apiDeleteUserPrayer(id);
   };
 
   const tabs = [
@@ -707,6 +753,25 @@ export default function Prayers() {
               </div>
               <div className="space-y-4">
                 <div>
+                  <label className="text-xs font-bold uppercase tracking-widest text-[#5A5A40] mb-1 block">Categoria</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {([
+                      { value: 'habituais', label: 'Orações Habituais' },
+                      { value: 'ladainhas', label: 'Ladainhas' },
+                      { value: 'formais',   label: 'Orações Formais' },
+                    ] as { value: PrayerCategory; label: string }[]).map(opt => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => setNewCategory(opt.value)}
+                        className={`py-2.5 px-2 rounded-xl text-xs font-bold transition-all text-center ${newCategory === opt.value ? 'bg-[#5A5A40] text-white shadow-md' : 'bg-[#F5F2ED] text-[#1A1A1A]/50 hover:bg-[#5A5A40]/10 hover:text-[#5A5A40]'}`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
                   <label className="text-xs font-bold uppercase tracking-widest text-[#5A5A40] mb-1 block">Título da Oração</label>
                   <input
                     type="text" value={newTitle} onChange={e => setNewTitle(e.target.value)}
@@ -719,18 +784,18 @@ export default function Prayers() {
                   <textarea
                     value={newText} onChange={e => setNewText(e.target.value)}
                     placeholder="Digite o texto da oração aqui..."
-                    rows={8}
+                    rows={7}
                     className="w-full px-4 py-3 bg-[#F5F2ED] rounded-2xl border-none focus:ring-2 focus:ring-[#5A5A40]/30 text-sm resize-none font-serif"
                   />
                 </div>
                 <button
                   onClick={saveUserPrayer}
-                  disabled={!newTitle.trim() || !newText.trim()}
+                  disabled={!newTitle.trim() || !newText.trim() || isSaving}
                   className="w-full py-3.5 bg-[#5A5A40] text-white rounded-2xl font-bold flex items-center justify-center gap-2 disabled:opacity-40 hover:scale-[1.02] transition-all"
                 >
-                  <Save className="w-4 h-4" /> Salvar Oração
+                  <Save className="w-4 h-4" /> {isSaving ? 'Salvando...' : 'Salvar Oração'}
                 </button>
-                <p className="text-[10px] text-center text-[#1A1A1A]/30">Orações adicionadas ficam salvas no seu dispositivo.</p>
+                <p className="text-[10px] text-center text-[#1A1A1A]/30">Orações adicionadas ficam salvas na sua conta.</p>
               </div>
             </motion.div>
           </div>

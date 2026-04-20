@@ -77,6 +77,12 @@ db.exec(`
     content TEXT NOT NULL, is_answered BOOLEAN DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
+  CREATE TABLE IF NOT EXISTS user_prayers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL,
+    title TEXT NOT NULL, text TEXT NOT NULL,
+    category TEXT NOT NULL DEFAULT 'habituais',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
 `);
 
 // ── Migrações ─────────────────────────────────────────────────────────────────
@@ -480,6 +486,36 @@ app.delete('/api/lectio/:id', lectioDeleteOne);
 app.delete('/api/lectio-history/:id', lectioDeleteOne);
 app.delete('/api/lectio', lectioDeleteAll);
 app.delete('/api/lectio-history', lectioDeleteAll);
+
+// ── Migração: user_prayers (caso o banco já exista sem a tabela) ──────────────
+if (!tblExists('user_prayers')) {
+  db.exec(`CREATE TABLE user_prayers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL,
+    title TEXT NOT NULL, text TEXT NOT NULL,
+    category TEXT NOT NULL DEFAULT 'habituais',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+}
+
+// ── Orações do Usuário (personalizadas) ───────────────────────────────────────
+app.get('/api/user-prayers', (req, res) => {
+  const u = requireUser(req, res); if (!u) return;
+  res.json(db.prepare('SELECT * FROM user_prayers WHERE user_id=? ORDER BY title ASC').all(u.id));
+});
+app.post('/api/user-prayers', (req, res) => {
+  const u = requireUser(req, res); if (!u) return;
+  const { title, text, category } = req.body;
+  if (!title?.trim() || !text?.trim()) return res.status(400).json({ error: 'Título e texto obrigatórios' });
+  const validCategories = ['habituais', 'ladainhas', 'formais'];
+  const cat = validCategories.includes(category) ? category : 'habituais';
+  const r = db.prepare('INSERT INTO user_prayers (user_id, title, text, category) VALUES (?,?,?,?)').run(u.id, title.trim(), text.trim(), cat);
+  res.json({ success: true, id: r.lastInsertRowid });
+});
+app.delete('/api/user-prayers/:id', (req, res) => {
+  const u = requireUser(req, res); if (!u) return;
+  db.prepare('DELETE FROM user_prayers WHERE id=? AND user_id=?').run(req.params.id, u.id);
+  res.json({ success: true });
+});
 
 // ── Intenções de Oração ───────────────────────────────────────────────────────
 app.get('/api/intentions', (req, res) => {

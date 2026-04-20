@@ -174,6 +174,11 @@ export default function LectioDivina() {
     setExegesis(null);
     try {
       const ref = `${selectedBook.name} ${selectedChapter},${startVerse}-${endVerse}`;
+      const totalVerses = endVerse - startVerse + 1;
+
+      // Monta lista explícita de versículos para garantir cobertura total
+      const verseList = Array.from({ length: totalVerses }, (_, i) => startVerse + i).join(', ');
+
       const res = await fetch('/api/ai/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -181,27 +186,31 @@ export default function LectioDivina() {
           messages: [
             {
               role: 'system',
-              content: `Você é exegeta bíblico católico de alto nível, especialista em hermenêutica, teologia bíblica e Padres da Igreja. Responda em português, com profundidade teológica mas linguagem clara. Siga fielmente a interpretação da Igreja Católica, conforme o Magistério, os Padres e Doutores da Igreja.`,
+              content: `Você é exegeta bíblico católico de alto nível, especialista em hermenêutica, teologia bíblica, Padres da Igreja e Catecismo da Igreja Católica (CIC). Responda em português, com profundidade teológica mas linguagem clara. Siga fielmente a interpretação da Igreja Católica, conforme o Magistério, os Padres e Doutores da Igreja. REGRA ABSOLUTA: você deve analisar TODOS os versículos solicitados, sem exceção. Nunca pule, resuma ou agrupe versículos sem análise individual.`,
             },
             {
               role: 'user',
               content: `Faça uma EXEGESE CATÓLICA COMPLETA de ${ref}.
 
+ATENÇÃO CRÍTICA: Esta passagem tem ${totalVerses} versículo(s): ${verseList}.
+Você DEVE analisar CADA UM DELES individualmente, sem exceção.
+
 ESTRUTURA OBRIGATÓRIA:
 
 ## CONTEXTO GERAL DO LIVRO/CAPÍTULO
-- Localização no cânon bíblico
-- Tema central do capítulo
-- O que veio antes e o que vem depois (contexto narrativo)
+- Localização no cânon bíblico e tema central do capítulo
+- Contexto narrativo (o que veio antes e o que vem depois)
 - Autor, datação e destinatários
 
 ## ANÁLISE VERSÍCULO POR VERSÍCULO
-Para cada versículo de ${startVerse} até ${endVerse}, apresente:
+OBRIGATÓRIO: analise cada versículo da lista abaixo, UM POR UM, nesta ordem exata: ${verseList}
 
-**${selectedChapter}:[número do versículo] "[texto do versículo]"**
-_Explicação: contexto imediato, sentido literal, sentido espiritual/alegórico, intenção do autor, a quem se dirige. Conexões com outras passagens bíblicas (mesmo sentido e sentido diferente). Interpretação de santos e doutores da Igreja (quando relevante)._
+Para CADA versículo, use este formato:
 
-**Palavras-chave:** Liste 1-3 termos importantes deste versículo com etimologia (hebraico/grego) e onde aparecem em outros contextos bíblicos.
+**${selectedChapter}:[nº] "[cite o texto do versículo]"**
+Explicação: contexto imediato, sentido literal, sentido espiritual/alegórico, intenção do autor. Conexões com outras passagens bíblicas. Interpretação de santos e doutores da Igreja quando relevante.
+**Palavras-chave:** 1-3 termos importantes com etimologia (hebraico/grego).
+**CIC:** Cite o(s) parágrafo(s) do Catecismo da Igreja Católica diretamente relacionado(s) ao tema deste versículo (ex: CIC §1234).
 
 ---
 
@@ -209,12 +218,24 @@ _Explicação: contexto imediato, sentido literal, sentido espiritual/alegórico
 Síntese da mensagem principal de ${ref} como um todo.
 
 ## INTERPRETAÇÃO DOS SANTOS E DOUTORES
-Apresente pelo menos 3 interpretações de santos, doutores ou Padres da Igreja sobre esta passagem (ou os versículos mais importantes dela). Se houver muitos comentadores, priorize: São João Crisóstomo, Santo Agostinho, São Tomás de Aquino, São Jerônimo, Santo Ireneu de Lyon, Orígenes (interpretação aceita pela Igreja).
+Pelo menos 3 interpretações de Padres/Doutores da Igreja (priorize: Santo Agostinho, São Tomás de Aquino, São João Crisóstomo, São Jerônimo).
 
 ## APLICAÇÃO ESPIRITUAL
 Como esta passagem se aplica à vida cristã concreta hoje?
 
-Seja profundo, fiel à doutrina católica e didático.`,
+---
+
+## REFERÊNCIAS
+
+### Passagens Bíblicas Correlacionadas
+Liste as passagens bíblicas mais relevantes que se relacionam com os temas desta perícope (mínimo 5).
+
+### Catecismo da Igreja Católica (CIC)
+Liste todos os parágrafos do CIC citados ou relacionados ao longo desta exegese, com uma breve descrição de cada um.
+Formato: **CIC §[número]** — [tema/descrição]
+
+### Fontes Patrísticas e Doutrinárias
+Liste os santos, doutores e obras consultados nesta análise.`,
             },
           ],
           maxTokens: 4000,
