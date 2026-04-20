@@ -40,7 +40,7 @@ db.exec(`
   );
   CREATE TABLE IF NOT EXISTS journal_entries (
     id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL DEFAULT 1,
-    content TEXT NOT NULL, type TEXT DEFAULT 'free',
+    title TEXT DEFAULT '', content TEXT NOT NULL, type TEXT DEFAULT 'free',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
   CREATE TABLE IF NOT EXISTS prayers (
@@ -95,6 +95,9 @@ for (const t of ['journal_entries','sins','confession_purposes','custom_exam_mod
 }
 if (tblExists('prayers') && !colExists('prayers','user_id'))
   db.exec(`ALTER TABLE prayers ADD COLUMN user_id INTEGER NOT NULL DEFAULT 1`);
+// Migração: adiciona coluna title ao diário se não existir
+if (tblExists('journal_entries') && !colExists('journal_entries', 'title'))
+  db.exec(`ALTER TABLE journal_entries ADD COLUMN title TEXT DEFAULT ''`);
 
 if (!tblExists('virtues')) {
   db.exec(`CREATE TABLE virtues (
@@ -305,12 +308,14 @@ app.get('/api/journal', (req, res) => {
 });
 app.post('/api/journal', (req, res) => {
   const u = requireUser(req, res); if (!u) return;
-  const r = db.prepare('INSERT INTO journal_entries (content, type, user_id) VALUES (?,?,?)').run(req.body.content, req.body.type||'free', u.id);
+  const { content, type, title } = req.body;
+  const r = db.prepare('INSERT INTO journal_entries (title, content, type, user_id) VALUES (?,?,?,?)').run(title||'', content, type||'free', u.id);
   res.json({ success: true, id: r.lastInsertRowid });
 });
 app.put('/api/journal/:id', (req, res) => {
   const u = requireUser(req, res); if (!u) return;
-  db.prepare('UPDATE journal_entries SET content=?, type=? WHERE id=? AND user_id=?').run(req.body.content, req.body.type, req.params.id, u.id);
+  const { content, type, title } = req.body;
+  db.prepare('UPDATE journal_entries SET title=?, content=?, type=? WHERE id=? AND user_id=?').run(title||'', content, type, req.params.id, u.id);
   res.json({ success: true });
 });
 app.delete('/api/journal/:id', (req, res) => {
