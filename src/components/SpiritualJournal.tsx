@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   PenTool, Plus, Search, Calendar, Trash2, Save, X,
   ChevronRight, ChevronDown, CheckSquare, Square,
@@ -8,6 +8,7 @@ import { JournalEntry } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import { apiFetch } from '../contexts/AuthContext';
 import { jsPDF } from 'jspdf';
+import { cacheGet, cacheSet } from '../utils/cache';
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 interface JournalEntryWithTitle extends JournalEntry {
@@ -88,7 +89,6 @@ function exportMultiplePDF(entriesToExport: JournalEntryWithTitle[]) {
   const margin = 20;
   let y = margin;
 
-  // Capa
   doc.setFontSize(22);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(30, 30, 30);
@@ -158,7 +158,17 @@ export default function SpiritualJournal() {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [isClearingAll, setIsClearingAll] = useState(false);
 
-  // ── Carregar registros do servidor ─────────────────────────────────────────
+  // Controla se já fizemos o carregamento inicial (para distinguir
+  // "servidor vazio por cold start" de "servidor vazio porque usuário apagou tudo")
+  const initialLoadDone = useRef(false);
+
+  // ── Carregar registros ──────────────────────────────────────────────────────
+  // Estratégia de persistência:
+  //   1. Busca do servidor (fonte de verdade quando disponível)
+  //   2. Se o servidor retornar vazio NO PRIMEIRO carregamento → usa cache local
+  //      (isso protege contra cold starts do Vercel que apagam o /tmp)
+  //   3. Se o servidor retornar vazio após uma mutação → o usuário realmente
+  //      apagou tudo → limpa o cache também
   useEffect(() => { fetchEntries(); }, []);
 
   const fetchEntries = () => {
@@ -166,10 +176,36 @@ export default function SpiritualJournal() {
     apiFetch('/api/journal')
       .then(res => res.json())
       .then((data: JournalEntryWithTitle[]) => {
-        setEntries(Array.isArray(data) ? data : []);
+        const serverData = Array.isArray(data) ? data : [];
+
+        if (serverData.length > 0) {
+          // Servidor tem dados → usa e atualiza cache
+          setEntries(serverData);
+          cacheSet<JournalEntryWithTitle[]>('journal', serverData);
+        } else if (!initialLoadDone.current) {
+          // Servidor vazio no primeiro carregamento → possível cold start
+          // Tenta restaurar do cache local
+          const cached = cacheGet<JournalEntryWithTitle[]>('journal', []);
+          setEntries(cached);
+          // Não reenviar ao servidor aqui: o usuário pode criar novos
+          // e o cache será atualizado normalmente
+        } else {
+          // Servidor vazio após mutação = usuário realmente apagou tudo
+          setEntries([]);
+          cacheSet<JournalEntryWithTitle[]>('journal', []);
+        }
       })
-      .catch(() => {})
-      .finally(() => setIsLoading(false));
+      .catch(() => {
+        // Erro de rede → usa cache
+        if (!initialLoadDone.current) {
+          const cached = cacheGet<JournalEntryWithTitle[]>('journal', []);
+          setEntries(cached);
+        }
+      })
+      .finally(() => {
+        initialLoadDone.current = true;
+        setIsLoading(false);
+      });
   };
 
   // ── Salvar / Editar ────────────────────────────────────────────────────────
@@ -192,7 +228,7 @@ export default function SpiritualJournal() {
     }
     setNewTitle(''); setNewContent(''); setType('free');
     setIsAdding(false); setEditingEntry(null);
-    fetchEntries();
+    fetchEntries(); // fetchEntries atualiza o cache automaticamente
   };
 
   // ── Excluir ────────────────────────────────────────────────────────────────
@@ -209,7 +245,11 @@ export default function SpiritualJournal() {
 
   const handleClearAll = async () => {
     await apiFetch('/api/journal', { method: 'DELETE' });
-    setIsClearingAll(false); fetchEntries();
+    // Limpa cache explicitamente para que o "servidor vazio" não seja
+    // confundido com cold start no próximo carregamento
+    cacheSet<JournalEntryWithTitle[]>('journal', []);
+    setIsClearingAll(false);
+    fetchEntries();
   };
 
   // ── Editar ────────────────────────────────────────────────────────────────
@@ -243,7 +283,6 @@ export default function SpiritualJournal() {
       return (e.title || '').toLowerCase().includes(q) || e.content.toLowerCase().includes(q);
     });
 
-  // Agrupar e ordenar: data DESC, desempate por título A-Z
   const groupedEntries = filteredEntries.reduce((acc: Record<string, JournalEntryWithTitle[]>, entry) => {
     const t = entry.type || 'free';
     if (!acc[t]) acc[t] = [];

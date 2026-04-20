@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronDown, ChevronUp, BookOpen, Heart, Star, Search, Plus, X, Save } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { cacheGet, cacheSet } from '../utils/cache';
 
 type SubTab = 'daily' | 'adoration' | 'consecration';
 type PrayerCategory = 'habituais' | 'ladainhas' | 'formais';
@@ -447,6 +448,15 @@ function AdorationModelsTab() {
   );
 }
 
+// ── Chave do localStorage para Consagração (isolada por usuário) ──────────────
+function getConsecrationKey(): string {
+  try {
+    const s = localStorage.getItem('caminho_session');
+    const id = s ? (JSON.parse(s)?.user?.id ?? 'anon') : 'anon';
+    return `consecration_33days_${id}`;
+  } catch { return 'consecration_33days_anon'; }
+}
+
 function ConsecrationTab() {
   const [openWeek, setOpenWeek] = useState<number | null>(null);
   const [openDay, setOpenDay] = useState<number | null>(null);
@@ -454,7 +464,7 @@ function ConsecrationTab() {
   // Dias marcados como concluídos — persiste no localStorage
   const [completedDays, setCompletedDays] = useState<Set<number>>(() => {
     try {
-      const saved = localStorage.getItem('consecration_33days');
+      const saved = localStorage.getItem(getConsecrationKey());
       if (saved) return new Set(JSON.parse(saved) as number[]);
     } catch {}
     return new Set<number>();
@@ -465,7 +475,7 @@ function ConsecrationTab() {
       const next = new Set(prev);
       if (next.has(dayNumber)) next.delete(dayNumber);
       else next.add(dayNumber);
-      try { localStorage.setItem('consecration_33days', JSON.stringify([...next])); } catch {}
+      try { localStorage.setItem(getConsecrationKey(), JSON.stringify([...next])); } catch {}
       return next;
     });
   };
@@ -527,7 +537,7 @@ function ConsecrationTab() {
                 onClick={() => {
                   if (window.confirm('Deseja limpar todo o progresso do cronograma?')) {
                     setCompletedDays(new Set());
-                    try { localStorage.removeItem('consecration_33days'); } catch {}
+                    try { localStorage.removeItem(getConsecrationKey()); } catch {}
                   }
                 }}
                 className="text-[10px] text-red-400 hover:text-red-600 font-bold"
@@ -649,8 +659,20 @@ export default function Prayers() {
   const [userPrayers, setUserPrayers] = useState<UserPrayerItem[]>([]);
 
   // Carrega as orações do usuário do servidor ao montar
+  // Se o servidor estiver vazio (cold start do Vercel), usa cache local como backup
   useEffect(() => {
-    apiLoadUserPrayers().then(prayers => setUserPrayers(prayers));
+    apiLoadUserPrayers().then(prayers => {
+      if (prayers.length > 0) {
+        setUserPrayers(prayers);
+        cacheSet<UserPrayerItem[]>('user_prayers', prayers);
+      } else {
+        const cached = cacheGet<UserPrayerItem[]>('user_prayers', []);
+        setUserPrayers(cached);
+      }
+    }).catch(() => {
+      const cached = cacheGet<UserPrayerItem[]>('user_prayers', []);
+      setUserPrayers(cached);
+    });
   }, []);
 
   const saveUserPrayer = async () => {
@@ -659,14 +681,18 @@ export default function Prayers() {
     const id = await apiSaveUserPrayer(newTitle.trim(), newText.trim(), newCategory);
     if (id !== null) {
       const newPrayer: UserPrayerItem = { id, title: newTitle.trim(), text: newText.trim(), category: newCategory };
-      setUserPrayers(prev => [...prev, newPrayer].sort((a, b) => a.title.localeCompare(b.title, 'pt')));
+      const updated = [...userPrayers, newPrayer].sort((a, b) => a.title.localeCompare(b.title, 'pt'));
+      setUserPrayers(updated);
+      cacheSet<UserPrayerItem[]>('user_prayers', updated);
     }
     setIsSaving(false);
     setNewTitle(''); setNewText(''); setNewCategory('habituais'); setShowAddModal(false);
   };
 
   const deleteUserPrayer = async (id: number) => {
-    setUserPrayers(prev => prev.filter(p => p.id !== id));
+    const updated = userPrayers.filter(p => p.id !== id);
+    setUserPrayers(updated);
+    cacheSet<UserPrayerItem[]>('user_prayers', updated);
     await apiDeleteUserPrayer(id);
   };
 

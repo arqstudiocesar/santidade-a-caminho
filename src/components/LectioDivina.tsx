@@ -7,8 +7,9 @@ import { motion, AnimatePresence } from 'motion/react';
 import { groqService } from '../services/groqService';
 import { getVerseCount } from '../data/verseCounts';
 import { jsPDF } from 'jspdf';
+import { apiFetch } from '../contexts/AuthContext';
 
-// ── localStorage helpers ─────────────────────────────────────────────────────
+// ── localStorage helpers (com isolamento por usuário) ─────────────────────────
 function getUserKey(base: string) {
   try {
     const s = localStorage.getItem('caminho_session');
@@ -132,6 +133,24 @@ const STEPS = [
 
 type StepKey = 'leitura' | 'meditacao' | 'oracao' | 'contemplacao' | 'acao';
 
+// ── Normaliza item vindo do servidor ─────────────────────────────────────────
+function normalizeServerItem(h: any, localId: number): HistoryItem {
+  return {
+    id: h.id ?? localId,
+    book: h.book ?? '',
+    chapter: h.chapter ?? 1,
+    start_verse: h.start_verse ?? 1,
+    end_verse: h.end_verse ?? 1,
+    content: h.content ?? '',
+    meditation: h.meditation ?? '',
+    prayer: h.prayer ?? '',
+    contemplation: h.contemplation ?? '',
+    action: h.action ?? '',
+    type: h.type === 'manual' ? 'manual' : 'guided',
+    created_at: h.created_at ?? new Date().toISOString(),
+  };
+}
+
 // ── Componente ────────────────────────────────────────────────────────────────
 export default function LectioDivina() {
   const [activeTab, setActiveTab]   = useState<'exegesis' | 'guided' | 'diy' | 'history'>('guided');
@@ -153,7 +172,6 @@ export default function LectioDivina() {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
 
-  // Atualiza max versículos via tabela estática
   useEffect(() => {
     const count = getVerseCount(selectedBook.name, selectedChapter);
     setMaxVerses(count);
@@ -161,11 +179,34 @@ export default function LectioDivina() {
     setStartVerse(v => Math.min(v, count));
   }, [selectedBook, selectedChapter]);
 
-  // Carrega histórico do localStorage
-  useEffect(() => { loadHistory(); }, []);
+  // Carrega histórico ao montar: tenta servidor, cai para localStorage
+  useEffect(() => { void loadHistory(); }, []);
 
-  function loadHistory() {
-    setHistory(lsGet<HistoryItem[]>('lectio_history', []));
+  async function loadHistory() {
+    const local = lsGet<HistoryItem[]>('lectio_history', []);
+
+    try {
+      const res = await apiFetch('/api/lectio');
+      if (!res.ok) throw new Error('API indisponível');
+      const serverData = await res.json();
+
+      if (Array.isArray(serverData) && serverData.length > 0) {
+        // Servidor tem dados → normaliza, sincroniza com localStorage e exibe
+        const normalized = serverData.map((h: any, i: number) =>
+          normalizeServerItem(h, nextId(local) + i)
+        );
+        setHistory(normalized);
+        lsSet('lectio_history', normalized);
+      } else if (local.length > 0) {
+        // Servidor vazio mas localStorage tem dados (possível cold start do Vercel)
+        setHistory(local);
+      } else {
+        setHistory([]);
+      }
+    } catch {
+      // Servidor inacessível → usa localStorage como fallback
+      setHistory(local);
+    }
   }
 
   // ── Exegese Católica Completa ─────────────────────────────────────────────
@@ -175,8 +216,6 @@ export default function LectioDivina() {
     try {
       const ref = `${selectedBook.name} ${selectedChapter},${startVerse}-${endVerse}`;
       const totalVerses = endVerse - startVerse + 1;
-
-      // Monta lista explícita de versículos para garantir cobertura total
       const verseList = Array.from({ length: totalVerses }, (_, i) => startVerse + i).join(', ');
 
       const res = await fetch('/api/ai/generate', {
@@ -190,52 +229,7 @@ export default function LectioDivina() {
             },
             {
               role: 'user',
-              content: `Faça uma EXEGESE CATÓLICA COMPLETA de ${ref}.
-
-ATENÇÃO CRÍTICA: Esta passagem tem ${totalVerses} versículo(s): ${verseList}.
-Você DEVE analisar CADA UM DELES individualmente, sem exceção.
-
-ESTRUTURA OBRIGATÓRIA:
-
-## CONTEXTO GERAL DO LIVRO/CAPÍTULO
-- Localização no cânon bíblico e tema central do capítulo
-- Contexto narrativo (o que veio antes e o que vem depois)
-- Autor, datação e destinatários
-
-## ANÁLISE VERSÍCULO POR VERSÍCULO
-OBRIGATÓRIO: analise cada versículo da lista abaixo, UM POR UM, nesta ordem exata: ${verseList}
-
-Para CADA versículo, use este formato:
-
-**${selectedChapter}:[nº] "[cite o texto do versículo]"**
-Explicação: contexto imediato, sentido literal, sentido espiritual/alegórico, intenção do autor. Conexões com outras passagens bíblicas. Interpretação de santos e doutores da Igreja quando relevante.
-**Palavras-chave:** 1-3 termos importantes com etimologia (hebraico/grego).
-**CIC:** Cite o(s) parágrafo(s) do Catecismo da Igreja Católica diretamente relacionado(s) ao tema deste versículo (ex: CIC §1234).
-
----
-
-## MENSAGEM CENTRAL DA PASSAGEM
-Síntese da mensagem principal de ${ref} como um todo.
-
-## INTERPRETAÇÃO DOS SANTOS E DOUTORES
-Pelo menos 3 interpretações de Padres/Doutores da Igreja (priorize: Santo Agostinho, São Tomás de Aquino, São João Crisóstomo, São Jerônimo).
-
-## APLICAÇÃO ESPIRITUAL
-Como esta passagem se aplica à vida cristã concreta hoje?
-
----
-
-## REFERÊNCIAS
-
-### Passagens Bíblicas Correlacionadas
-Liste as passagens bíblicas mais relevantes que se relacionam com os temas desta perícope (mínimo 5).
-
-### Catecismo da Igreja Católica (CIC)
-Liste todos os parágrafos do CIC citados ou relacionados ao longo desta exegese, com uma breve descrição de cada um.
-Formato: **CIC §[número]** — [tema/descrição]
-
-### Fontes Patrísticas e Doutrinárias
-Liste os santos, doutores e obras consultados nesta análise.`,
+              content: `Faça uma EXEGESE CATÓLICA COMPLETA de ${ref}.\n\nATENÇÃO CRÍTICA: Esta passagem tem ${totalVerses} versículo(s): ${verseList}.\nVocê DEVE analisar CADA UM DELES individualmente, sem exceção.\n\nESTRUTURA OBRIGATÓRIA:\n\n## CONTEXTO GERAL DO LIVRO/CAPÍTULO\n- Localização no cânon bíblico e tema central do capítulo\n- Contexto narrativo (o que veio antes e o que vem depois)\n- Autor, datação e destinatários\n\n## ANÁLISE VERSÍCULO POR VERSÍCULO\nOBRIGATÓRIO: analise cada versículo da lista abaixo, UM POR UM, nesta ordem exata: ${verseList}\n\nPara CADA versículo, use este formato:\n\n**${selectedChapter}:[nº] "[cite o texto do versículo]"**\nExplicação: contexto imediato, sentido literal, sentido espiritual/alegórico, intenção do autor. Conexões com outras passagens bíblicas. Interpretação de santos e doutores da Igreja quando relevante.\n**Palavras-chave:** 1-3 termos importantes com etimologia (hebraico/grego).\n**CIC:** Cite o(s) parágrafo(s) do Catecismo da Igreja Católica diretamente relacionado(s) ao tema deste versículo (ex: CIC §1234).\n\n---\n\n## MENSAGEM CENTRAL DA PASSAGEM\nSíntese da mensagem principal de ${ref} como um todo.\n\n## INTERPRETAÇÃO DOS SANTOS E DOUTORES\nPelo menos 3 interpretações de Padres/Doutores da Igreja (priorize: Santo Agostinho, São Tomás de Aquino, São João Crisóstomo, São Jerônimo).\n\n## APLICAÇÃO ESPIRITUAL\nComo esta passagem se aplica à vida cristã concreta hoje?\n\n---\n\n## REFERÊNCIAS\n\n### Passagens Bíblicas Correlacionadas\nListe as passagens bíblicas mais relevantes que se relacionam com os temas desta perícope (mínimo 5).\n\n### Catecismo da Igreja Católica (CIC)\nListe todos os parágrafos do CIC citados ou relacionados ao longo desta exegese, com uma breve descrição de cada um.\nFormato: **CIC §[número]** — [tema/descrição]\n\n### Fontes Patrísticas e Doutrinárias\nListe os santos, doutores e obras consultados nesta análise.`,
             },
           ],
           maxTokens: 4000,
@@ -281,7 +275,7 @@ Liste os santos, doutores e obras consultados nesta análise.`,
     finally { setIsLoading(false); }
   }
 
-  // ── Salvar no localStorage ────────────────────────────────────────────────
+  // ── Salvar: localStorage (primário) + servidor (secundário, não-bloqueante) ──
   function handleSave() {
     if (!lectioData) return;
     setSaveStatus('saving');
@@ -301,11 +295,32 @@ Liste os santos, doutores e obras consultados nesta análise.`,
         type: isGuided ? 'guided' : 'manual',
         created_at: new Date().toISOString(),
       };
+
+      // 1. Salva no localStorage imediatamente (garantia de persistência)
       const updated = [newItem, ...existing];
       lsSet('lectio_history', updated);
       setHistory(updated);
       setSaveStatus('saved');
       setTimeout(() => setSaveStatus('idle'), 3000);
+
+      // 2. Também tenta salvar no servidor (silencioso, sem bloquear UI)
+      apiFetch('/api/lectio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          book: newItem.book,
+          chapter: newItem.chapter,
+          start_verse: newItem.start_verse,
+          end_verse: newItem.end_verse,
+          content: newItem.content,
+          meditation: newItem.meditation,
+          prayer: newItem.prayer,
+          contemplation: newItem.contemplation,
+          action: newItem.action,
+          type: newItem.type,
+        }),
+      }).catch(() => {}); // falha silenciosa — localStorage já garantiu o dado
+
     } catch (e) {
       console.error(e);
       setSaveStatus('error');
@@ -333,13 +348,15 @@ Liste os santos, doutores e obras consultados nesta análise.`,
     doc.save(`Lectio_${selectedBook.name}_${selectedChapter}.pdf`);
   }
 
-  // ── Histórico ─────────────────────────────────────────────────────────────
+  // ── Histórico: excluir item ────────────────────────────────────────────────
   function deleteItem(id: number) {
     if (!confirm('Excluir este registro?')) return;
     const updated = history.filter(h => h.id !== id);
     lsSet('lectio_history', updated);
     setHistory(updated);
     setSelectedIds(ids => ids.filter(i => i !== id));
+    // Também deleta no servidor (silencioso)
+    apiFetch(`/api/lectio/${id}`, { method: 'DELETE' }).catch(() => {});
   }
 
   function deleteSelected() {
@@ -348,6 +365,8 @@ Liste os santos, doutores e obras consultados nesta análise.`,
     const updated = history.filter(h => !selectedIds.includes(h.id));
     lsSet('lectio_history', updated);
     setHistory(updated);
+    // Deleta no servidor (silencioso)
+    selectedIds.forEach(id => apiFetch(`/api/lectio/${id}`, { method: 'DELETE' }).catch(() => {}));
     setSelectedIds([]);
   }
 
@@ -356,6 +375,8 @@ Liste os santos, doutores e obras consultados nesta análise.`,
     lsSet('lectio_history', []);
     setHistory([]);
     setSelectedIds([]);
+    // Deleta no servidor (silencioso)
+    apiFetch('/api/lectio', { method: 'DELETE' }).catch(() => {});
   }
 
   function toggleSelect(id: number) {
@@ -538,7 +559,6 @@ Liste os santos, doutores e obras consultados nesta análise.`,
               <p className="text-[#1A1A1A]/60">Selecione uma passagem ou insira o texto manualmente.</p>
             </div>
 
-            {/* Seleção de passagem */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-left">
               <div className="col-span-2 sm:col-span-1">
                 <label className="text-[10px] uppercase tracking-widest font-bold text-[#1A1A1A]/40 ml-2 block mb-1">Livro</label>
@@ -605,7 +625,6 @@ Liste os santos, doutores e obras consultados nesta análise.`,
               </button>
             ))}
 
-            {/* Botões Salvar/Imprimir */}
             <div className="flex gap-2 pt-2">
               <button onClick={handleSave} disabled={saveStatus === 'saving'}
                 className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl text-xs font-bold transition-all
@@ -631,7 +650,6 @@ Liste os santos, doutores e obras consultados nesta análise.`,
 
           {/* Conteúdo principal */}
           <div className="lg:col-span-8 space-y-5">
-            {/* Texto da leitura colapsável */}
             <div className="bg-white rounded-[2rem] border border-[#1A1A1A]/5 shadow-sm overflow-hidden">
               <button onClick={() => setIsReadingCollapsed(!isReadingCollapsed)}
                 className="w-full p-5 flex items-center justify-between hover:bg-[#F5F2ED]/30 transition-colors">
@@ -652,7 +670,6 @@ Liste os santos, doutores e obras consultados nesta análise.`,
               </AnimatePresence>
             </div>
 
-            {/* Passo ativo */}
             <div className="bg-white p-6 sm:p-10 rounded-[3rem] border border-[#1A1A1A]/5 shadow-sm min-h-[380px] flex flex-col">
               <div className="flex items-center gap-4 mb-6">
                 <div className="p-3 bg-[#F5F2ED] rounded-2xl text-[#5A5A40]"><Edit3 className="w-6 h-6" /></div>
