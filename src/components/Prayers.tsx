@@ -179,54 +179,100 @@ interface ConsecDay { day: number; subtheme: string; tratado: string; leitura: s
 interface ConsecWeek { week: string; theme: string; color: string; days: ConsecDay[]; }
 
 const consecrationSchedule: ConsecWeek[] = [
-  { week: 'Semana Preparatória (Dias 1–7)', theme: 'Morte a Si Mesmo — Conhecimento e Abandono do Pecado', color: 'gray',
-    days: [
-      { day:1, subtheme:'A escravidão do pecado', tratado:'Cap. 79–89', leitura:'Rm 6,15-23 — Escravos da justiça', oracoes:'Ave-Maria, Rosário (Dolorosos), Ladainha do Espírito Santo', exercicio:'Exame de consciência geral de vida' },
-      { day:2, subtheme:'O mundo como inimigo da alma', tratado:'Cap. 90–100', leitura:'1Jo 2,15-17 — Não ameis o mundo', oracoes:'Ladainha de Nossa Senhora, Magnificat', exercicio:'Identificar 3 apegos mundanos e renunciá-los' },
-      { day:3, subtheme:'O demônio e seus enganos', tratado:'Cap. 101–109', leitura:'1Pe 5,8-11 — Sede sóbrios e vigilantes', oracoes:'Oração a São Miguel, Rosário (Dolorosos)', exercicio:'Oração de renúncia ao demônio' },
-      { day:4, subtheme:'A carne e suas inclinações desordenadas', tratado:'Cap. 79–82 (releitura)', leitura:'Gl 5,16-24 — Obras da carne e frutos do Espírito', oracoes:'Rosário (Dolorosos), Ato de Contrição', exercicio:'Prática de mortificação dos sentidos' },
-      { day:5, subtheme:'Necessidade de Maria para superar o pecado', tratado:'Cap. 41–55', leitura:'Lc 1,46-55 — Magnificat', oracoes:'Salve Rainha, Ladainha de Nossa Senhora', exercicio:'Consagrar ao Imaculado Coração as raízes de pecado' },
-      { day:6, subtheme:'A graça de Deus e a cooperação humana', tratado:'Cap. 56–59', leitura:'Fl 2,12-13 — Trabalhai pela vossa salvação', oracoes:'Te Deum, Rosário (Gloriosos)', exercicio:'Resolução de cooperação com a graça' },
-      { day:7, subtheme:'Revisão e fortalecimento da decisão', tratado:'Cap. 60–67', leitura:'Mc 8,34-38 — Negar-se a si mesmo', oracoes:'Vésperas marianas, Ave-Maria (50 vezes)', exercicio:'Revisão dos 6 primeiros dias. Propósitos escritos.' },
-    ] },
-  { week: '1ª Semana (Dias 8–14)', theme: 'Conhecimento de Si Mesmo — Humildade Verdadeira', color: 'blue',
-    days: [
-      { day:8, subtheme:'O que somos sem Deus', tratado:'Cap. 213–221', leitura:'Is 64,5-6 — Como pano imundo', oracoes:'Rosário (Dolorosos), Ato de Fé, Ato de Esperança', exercicio:'Meditação sobre a própria miséria com gratidão' },
-      { day:9, subtheme:'A falsidade do orgulho', tratado:'Cap. 222–226', leitura:'Lc 18,9-14 — O fariseu e o publicano', oracoes:'Ladainha dos Santos, Magnificat', exercicio:'Identificar uma área de orgulho e entregá-la a Maria' },
-      { day:10, subtheme:'A humildade de Maria como modelo', tratado:'Cap. 260–265', leitura:'Lc 1,26-38 — A Anunciação', oracoes:'Rosário (Dolorosos), Ato de Humildade', exercicio:'Realizar uma tarefa humilde sem ser visto' },
-      { day:11, subtheme:'Verdadeiro conhecimento de si', tratado:'Cap. 213–220', leitura:'Sl 139 (138) — Buscai-me e conhecei-me', oracoes:'Ladainha do Sagrado Coração, Rosário (Gloriosos)', exercicio:'Carta pessoal sobre quem sou diante de Deus' },
-      { day:12, subtheme:'Abandonar o julgamento próprio', tratado:'Cap. 227–236', leitura:'Mt 18,1-4 — Tornai-vos como crianças', oracoes:'Rosário (Gozosos), Alma de Cristo', exercicio:'Ato concreto de deferência a outrem' },
-      { day:13, subtheme:'Depender de Maria como criança', tratado:'Cap. 237–244', leitura:'Jo 19,26-27 — Eis a tua mãe', oracoes:'Consagração da família a Maria, Ladainha de Nossa Senhora', exercicio:'Colocar-se nas mãos de Maria por uma semana' },
-      { day:14, subtheme:'Síntese: quem sou e para que fui criado', tratado:'Cap. 245–260', leitura:'Ef 1,3-14 — Bendito Deus que nos escolheu', oracoes:'Rosário completo, Te Deum', exercicio:'Renovação do batismo e da vocação' },
-    ] },
-  { week: '2ª Semana (Dias 15–21)', theme: 'Conhecimento de Nossa Senhora — Devoção Verdadeira', color: 'rose',
-    days: [
-      { day:15, subtheme:'Quem é Maria: sua grandeza e missão', tratado:'Cap. 1–16', leitura:'Gn 3,14-15 — Inimizade entre ela e a serpente', oracoes:'Rosário (Gozosos), Ladainha de Loreto', exercicio:'Pesquisar e meditar um título mariano' },
-      { day:16, subtheme:'Maria, caminho seguro para Jesus', tratado:'Cap. 17–31', leitura:'Jo 2,1-11 — A intercessão de Maria em Caná', oracoes:'Salve Rainha, Memorare, Rosário (Luminosos)', exercicio:'Pedir a Maria que leve suas orações a Jesus hoje' },
-      { day:17, subtheme:'A devoção verdadeira e os desvios', tratado:'Cap. 89–108', leitura:'Pv 8,17-35 — Amar a Sabedoria', oracoes:'Rosário (Dolorosos), Sub Tuum Praesidium', exercicio:'Examinar a qualidade da própria devoção a Maria' },
-      { day:18, subtheme:'Maria, escrava de Deus — modelo de consagração', tratado:'Cap. 109–125', leitura:'Lc 1,38 — Eis a escrava do Senhor', oracoes:'Ladainha de Nossa Senhora, Magnificat', exercicio:'Meditar o que "escravidão de amor" significa' },
-      { day:19, subtheme:'Os efeitos da devoção mariana verdadeira', tratado:'Cap. 126–147', leitura:'Jo 15,1-8 — Permanecei em mim', oracoes:'Rosário (Gloriosos), Ato de Amor a Maria', exercicio:'Renunciar a um hábito contrário ao amor a Maria' },
-      { day:20, subtheme:'A consagração total: dar tudo a Maria', tratado:'Cap. 148–165', leitura:'Sl 45 (44) — Canto nupcial', oracoes:'Rosário (Gozosos), Ladainha dos Santos', exercicio:'Preparar a lista do que se quer consagrar' },
-      { day:21, subtheme:'Maria como mestra de vida interior', tratado:'Cap. 166–180', leitura:'Lc 2,19 — Maria guardava no coração', oracoes:'Vésperas, Rosário completo, Consagração de São Luís', exercicio:'Imitar Maria em uma virtude hoje' },
-    ] },
-  { week: '3ª Semana (Dias 22–28)', theme: 'Conhecimento de Jesus Cristo — O Caminho, a Verdade e a Vida', color: 'green',
-    days: [
-      { day:22, subtheme:'Jesus Cristo, Filho de Deus Encarnado', tratado:'Cap. 243–248', leitura:'Jo 1,1-14 — No princípio era o Verbo', oracoes:'Credo Niceno, Rosário (Gozosos), Alma de Cristo', exercicio:'Meditação sobre o mistério da Encarnação' },
-      { day:23, subtheme:'Viver com, por e em Jesus por Maria', tratado:'Cap. 257–265', leitura:'Gl 2,19-20 — Não sou eu que vivo, é Cristo', oracoes:'Rosário (Luminosos), Ato de Consagração a Jesus', exercicio:'Oferecer cada ação do dia com a intenção de Cristo' },
-      { day:24, subtheme:'O batismo e a pertença a Cristo', tratado:'Cap. 126–130', leitura:'Rm 6,1-11 — Batizados para uma vida nova', oracoes:'Renovação das promessas batismais, Rosário (Dolorosos)', exercicio:'Reler os votos batismais e renovar interiormente' },
-      { day:25, subtheme:'A Cruz como caminho de transformação', tratado:'Cap. 168–173', leitura:'1Cor 1,17-25 — A loucura da Cruz', oracoes:'Via-Sacra meditada, Rosário (Dolorosos)', exercicio:'Abraçar uma cruz do dia como participação em Cristo' },
-      { day:26, subtheme:'Jesus Eucarístico, presença do Ressuscitado', tratado:'Cap. 214–221', leitura:'Jo 6,53-58 — Quem come a minha carne...', oracoes:'Adoração breve ao Santíssimo, Rosário (Gloriosos)', exercicio:'Visita ao Santíssimo ou oração de adoração espiritual' },
-      { day:27, subtheme:'O Espírito Santo e Maria no serviço a Cristo', tratado:'Cap. 35–41', leitura:'At 1,12-14 — Perseverantes em oração com Maria', oracoes:'Veni Creator, Ladainha do Espírito Santo', exercicio:'Invocar o Espírito Santo antes de cada atividade' },
-      { day:28, subtheme:'O reinado de Cristo pelo serviço de Maria', tratado:'Cap. 55–60', leitura:'Fl 2,5-11 — Cristo humilhou-se... Deus o exaltou', oracoes:'Rosário completo, Te Deum', exercicio:'Oferecer o dia pelo reinado de Cristo' },
-    ] },
-  { week: 'Semana Final (Dias 29–33)', theme: 'Unificação e Preparação para a Consagração', color: 'gold',
-    days: [
-      { day:29, subtheme:'Recapitulação: morte, humildade, Maria, Cristo', tratado:'Cap. 265–273', leitura:'Cl 3,1-4 — Pensai nas coisas do alto', oracoes:'Rosário completo, Ladainha de Nossa Senhora', exercicio:'Redigir a carta de consagração pessoal' },
-      { day:30, subtheme:'A liberdade dos filhos de Deus em Maria', tratado:'Cap. 169–174', leitura:'Gl 4,4-7 — Deus enviou seu Filho, nascido de mulher', oracoes:'Magnificat, Rosário (Gozosos), Memorare', exercicio:'Identificar um ponto de liberdade espiritual alcançado' },
-      { day:31, subtheme:'Perseverança e fidelidade na consagração', tratado:'Cap. 175–182', leitura:'Ap 12,1-17 — A mulher e o dragão', oracoes:'Rosário (Gloriosos), Sub Tuum Praesidium', exercicio:'Plano de fidelidade: como manter a consagração' },
-      { day:32, subtheme:'Últimas disposições — pureza de intenção', tratado:'Cap. 266–273', leitura:'Lc 1,39-45 — A visitação', oracoes:'Ladainha de Nossa Senhora, Ladainha dos Santos, Rosário completo', exercicio:'Confissão sacramental (recomendada) e Eucaristia' },
-      { day:33, subtheme:'Dia da Consagração — Entrega Total', tratado:'Ato de Consagração completo (fórmula de São Luís)', leitura:'Lc 1,46-55 — Magnificat', oracoes:'Ato de Consagração de São Luís, Rosário completo, Ladainha de N. Senhora, Te Deum', exercicio:'Renovar a consagração. Comunhão eucarística. Silêncio de adoração.' },
-    ] },
+
+/* =========================
+   SEMANA PREPARATÓRIA
+   ========================= */
+
+{
+  week: 'Semana Preparatória (Dias 1–7)',
+  theme: 'Desapego do Mundo — Purificação Interior',
+  color: 'gray',
+  days: [
+    { day:1, subtheme:'Fim último do homem', tratado:'§1–6', leitura:'Mt 6,19-21', oracoes:'Veni Creator, Ave-Maria', exercicio:'Refletir profundamente: "Para que fui criado?"' },
+    { day:2, subtheme:'Vaidade do mundo', tratado:'§7–12', leitura:'Ecl 1,2', oracoes:'Ave-Maria, Salmo 1', exercicio:'Identificar vaidades concretas na própria vida' },
+    { day:3, subtheme:'Corrupção do homem', tratado:'§13–20', leitura:'Rm 3,10-18', oracoes:'Ato de Contrição, Salmo 51 (Miserere)', exercicio:'Exame de consciência profundo' },
+    { day:4, subtheme:'Necessidade da graça', tratado:'§21–27', leitura:'Jo 15,5', oracoes:'Veni Creator, Ladainha do Espírito Santo', exercicio:'Reconhecer dependência total de Deus' },
+    { day:5, subtheme:'Combate espiritual', tratado:'§28–36', leitura:'Ef 6,10-17', oracoes:'Oração a São Miguel, Rosário (Dolorosos)', exercicio:'Renunciar tentações concretas' },
+    { day:6, subtheme:'Orgulho e amor próprio', tratado:'§37–41', leitura:'Lc 18,9-14', oracoes:'Ato de Humildade, Ave-Maria', exercicio:'Identificar formas de orgulho pessoal' },
+    { day:7, subtheme:'Decisão de conversão', tratado:'§42–56', leitura:'Mc 8,34', oracoes:'Rosário (Dolorosos), Ato de Contrição', exercicio:'Escrever propósito concreto de mudança' },
+  ]
+},
+
+/* =========================
+   1ª SEMANA
+   ========================= */
+
+{
+  week: '1ª Semana (Dias 8–14)',
+  theme: 'Conhecimento de Si Mesmo — Humildade',
+  color: 'blue',
+  days: [
+    { day:8,  subtheme:'Miséria humana',         tratado:'§57–66',   leitura:'Sl 51',        oracoes:'Miserere, Rosário',                   exercicio:'Meditar pecados passados com arrependimento' },
+    { day:9,  subtheme:'Inclinação ao pecado',    tratado:'§67–75',   leitura:'Gn 8,21',      oracoes:'Ato de Contrição, Ave-Maria',          exercicio:'Identificar vícios dominantes' },
+    { day:10, subtheme:'Orgulho espiritual',       tratado:'§76–85',   leitura:'Mt 23,12',     oracoes:'Ladainha dos Santos, Rosário',         exercicio:'Fazer um ato oculto de humildade' },
+    { day:11, subtheme:'Falsas seguranças',         tratado:'§86–96',   leitura:'Lc 12,16-21', oracoes:'Salmo 127, Ave-Maria',                 exercicio:'Desapegar-se de algo material' },
+    { day:12, subtheme:'Necessidade de direção',    tratado:'§97–110',  leitura:'Pv 3,5',       oracoes:'Veni Creator, Rosário',               exercicio:'Buscar orientação espiritual' },
+    { day:13, subtheme:'Dependência de Deus',       tratado:'§111–120', leitura:'Jo 15,5',      oracoes:'Rosário, Ato de Confiança',            exercicio:'Entregar decisões importantes a Deus' },
+    { day:14, subtheme:'Síntese da humildade',      tratado:'§121–130', leitura:'Fl 2,5-8',     oracoes:'Te Deum, Rosário completo',            exercicio:'Escrever quem você é diante de Deus' },
+  ]
+},
+
+/* =========================
+   2ª SEMANA
+   ========================= */
+
+{
+  week: '2ª Semana (Dias 15–21)',
+  theme: 'Conhecimento de Maria — Devoção Verdadeira',
+  color: 'rose',
+  days: [
+    { day:15, subtheme:'Maria no plano de Deus', tratado:'§131–140', leitura:'Gn 3,15',   oracoes:'Ave-Maria, Ladainha de Nossa Senhora',    exercicio:'Meditar o papel de Maria na salvação' },
+    { day:16, subtheme:'Grandeza de Maria',        tratado:'§141–150', leitura:'Lc 1,28',   oracoes:'Magnificat, Rosário',                    exercicio:'Contemplar virtudes de Maria' },
+    { day:17, subtheme:'Necessidade de Maria',     tratado:'§151–160', leitura:'Jo 2,5',    oracoes:'Salve Rainha, Memorare',                 exercicio:'Pedir ajuda concreta a Maria' },
+    { day:18, subtheme:'Falsas devoções',           tratado:'§161–170', leitura:'Mt 15,8',   oracoes:'Rosário, Ato de Contrição',              exercicio:'Examinar sua devoção mariana' },
+    { day:19, subtheme:'Verdadeira devoção',        tratado:'§171–182', leitura:'Jo 19,27',  oracoes:'Consagração breve a Maria, Rosário',     exercicio:'Praticar entrega interior a Maria' },
+    { day:20, subtheme:'Efeitos da devoção',        tratado:'§183–200', leitura:'Gl 2,20',   oracoes:'Rosário, Ave-Maria',                     exercicio:'Renunciar algo por amor a Maria' },
+    { day:21, subtheme:'Entrega total a Maria',     tratado:'§201–220', leitura:'Lc 1,38',   oracoes:'Totus Tuus, Rosário completo',           exercicio:'Preparar a entrega total' },
+  ]
+},
+
+/* =========================
+   3ª SEMANA
+   ========================= */
+
+{
+  week: '3ª Semana (Dias 22–28)',
+  theme: 'Conhecimento de Jesus Cristo',
+  color: 'green',
+  days: [
+    { day:22, subtheme:'Cristo Encarnado',          tratado:'§221–230', leitura:'Jo 1,14',   oracoes:'Credo, Rosário (Gozosos)',               exercicio:'Meditar a Encarnação' },
+    { day:23, subtheme:'Cristo Salvador',            tratado:'§231–240', leitura:'Is 53',     oracoes:'Rosário (Dolorosos), Alma de Cristo',    exercicio:'Meditar a Paixão' },
+    { day:24, subtheme:'Cristo vida interior',       tratado:'§241–248', leitura:'Gl 2,20',   oracoes:'Alma de Cristo, Rosário',                exercicio:'Oferecer ações a Cristo' },
+    { day:25, subtheme:'Cruz e seguimento',          tratado:'§249–255', leitura:'Lc 9,23',   oracoes:'Via-Sacra, Rosário (Dolorosos)',          exercicio:'Aceitar uma cruz do dia' },
+    { day:26, subtheme:'Vida em Cristo',             tratado:'§256–260', leitura:'Cl 3,3',    oracoes:'Rosário, Ato de Amor',                   exercicio:'Viver na presença de Deus' },
+    { day:27, subtheme:'Reinado de Cristo',          tratado:'§261–265', leitura:'Fl 2,9-11', oracoes:'Te Deum, Rosário (Gloriosos)',            exercicio:'Oferecer o dia a Cristo Rei' },
+    { day:28, subtheme:'União com Cristo por Maria', tratado:'§266–273', leitura:'Jo 15,4',   oracoes:'Consagração breve, Rosário completo',     exercicio:'Entrega interior total' },
+  ]
+},
+
+/* =========================
+   SEMANA FINAL
+   ========================= */
+
+{
+  week: 'Semana Final (Dias 29–33)',
+  theme: 'Preparação para a Consagração',
+  color: 'gold',
+  days: [
+    { day:29, subtheme:'Recapitulação espiritual', tratado:'Revisão geral (§1–273)', leitura:'Cl 3,1-4',  oracoes:'Rosário completo, Ladainha de Nossa Senhora', exercicio:'Rever todo o caminho' },
+    { day:30, subtheme:'Desapego final',            tratado:'Síntese espiritual',      leitura:'Mt 19,21',  oracoes:'Ladainha de Nossa Senhora, Ave-Maria',        exercicio:'Renunciar principal apego' },
+    { day:31, subtheme:'Fidelidade',                tratado:'Síntese',                 leitura:'Ap 2,10',   oracoes:'Rosário (Gloriosos), Sub Tuum Praesidium',    exercicio:'Planejar perseverança' },
+    { day:32, subtheme:'Pureza de intenção',        tratado:'Síntese',                 leitura:'Mt 5,8',    oracoes:'Veni Creator, Ladainha dos Santos',           exercicio:'Confissão sacramental' },
+    { day:33, subtheme:'Consagração total',         tratado:'Fórmula de Consagração (São Luís)', leitura:'Lc 1,46-55', oracoes:'Ato de Consagração completo, Rosário completo, Te Deum', exercicio:'Comunhão e consagração solene' },
+  ]
+}
+
 ];
 
 const consecrationDates = [
@@ -294,7 +340,7 @@ function DailyPrayers({ searchTerm, userPrayers, onDeleteUserPrayer }: {
 }) {
   const q = searchTerm.toLowerCase().trim();
 
-  const [openGroups, setOpenGroups] = useState({ habituais: true, ladainhas: true, formais: true });
+  const [openGroups, setOpenGroups] = useState({ habituais: false, ladainhas: false, formais: false });
   const toggleGroup = (g: keyof typeof openGroups) =>
     setOpenGroups(prev => ({ ...prev, [g]: !prev[g] }));
 
@@ -676,15 +722,41 @@ export default function Prayers() {
   const saveUserPrayer = async () => {
     if (!newTitle.trim() || !newText.trim()) return;
     setIsSaving(true);
-    const id = await apiSaveUserPrayer(newTitle.trim(), newText.trim(), newCategory);
-    if (id !== null) {
-      const newPrayer: UserPrayerItem = { id, title: newTitle.trim(), text: newText.trim(), category: newCategory };
-      const updated = [...userPrayers, newPrayer].sort((a, b) => a.title.localeCompare(b.title, 'pt'));
-      setUserPrayers(updated);
-      cacheSet<UserPrayerItem[]>('user_prayers', updated);
-    }
-    setIsSaving(false);
+
+    // Gera um ID temporário negativo para identificar esta entrada localmente
+    // enquanto a API ainda não confirmou
+    const tempId = -(Date.now());
+    const newPrayer: UserPrayerItem = {
+      id: tempId,
+      title: newTitle.trim(),
+      text: newText.trim(),
+      category: newCategory,
+    };
+
+    // 1. Salva IMEDIATAMENTE no estado e no cache (não depende do servidor)
+    const optimistic = [...userPrayers, newPrayer].sort((a, b) =>
+      a.title.localeCompare(b.title, 'pt')
+    );
+    setUserPrayers(optimistic);
+    cacheSet<UserPrayerItem[]>('user_prayers', optimistic);
+
+    // Fecha o modal e limpa o formulário já aqui
     setNewTitle(''); setNewText(''); setNewCategory('habituais'); setShowAddModal(false);
+    setIsSaving(false);
+
+    // 2. Tenta salvar no servidor (em segundo plano, sem bloquear a UI)
+    const serverId = await apiSaveUserPrayer(newPrayer.title, newPrayer.text, newPrayer.category);
+    if (serverId !== null && serverId !== tempId) {
+      // Atualiza o ID temporário para o ID real do servidor
+      setUserPrayers(prev => {
+        const updated = prev.map(p => p.id === tempId ? { ...p, id: serverId } : p);
+        cacheSet<UserPrayerItem[]>('user_prayers', updated);
+        return updated;
+      });
+    }
+    // Se o servidor falhar, a oração ainda está salva no cache com o ID temporário.
+    // Na próxima vez que o usuário abrir o app, a função de carregamento
+    // buscará do servidor (se estiver disponível) ou do cache.
   };
 
   const deleteUserPrayer = async (id: number) => {
