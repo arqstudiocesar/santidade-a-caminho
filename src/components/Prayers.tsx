@@ -399,7 +399,7 @@ function DailyPrayers({ searchTerm, userPrayers, onDeleteUserPrayer }: {
                 <div className="space-y-2 pt-1">
                   {filtHabituais.map((p, i) => <PrayerCard key={i} prayer={p} />)}
                   {userHabituais.map(p => (
-                    <div key={p.id} className="relative group">
+                    <div key={`u_${p.title}_${p.category}`} className="relative group">
                       <PrayerCard prayer={p} />
                       <button onClick={() => onDeleteUserPrayer(p.id)} title="Remover oração"
                         className="absolute top-2 right-2 p-1.5 bg-red-50 text-red-400 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-100 z-10">
@@ -423,7 +423,7 @@ function DailyPrayers({ searchTerm, userPrayers, onDeleteUserPrayer }: {
                 <div className="space-y-2 pt-1">
                   {filtLadainhas.map((p, i) => <PrayerCard key={i} prayer={p} />)}
                   {userLadainhas.map(p => (
-                    <div key={p.id} className="relative group">
+                    <div key={`u_${p.title}_${p.category}`} className="relative group">
                       <PrayerCard prayer={p} />
                       <button onClick={() => onDeleteUserPrayer(p.id)} title="Remover oração"
                         className="absolute top-2 right-2 p-1.5 bg-red-50 text-red-400 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-100 z-10">
@@ -447,7 +447,7 @@ function DailyPrayers({ searchTerm, userPrayers, onDeleteUserPrayer }: {
                 <div className="space-y-2 pt-1">
                   {filtFormais.map((p, i) => <PrayerCard key={i} prayer={p} />)}
                   {userFormais.map(p => (
-                    <div key={p.id} className="relative group">
+                    <div key={`u_${p.title}_${p.category}`} className="relative group">
                       <PrayerCard prayer={p} />
                       <button onClick={() => onDeleteUserPrayer(p.id)} title="Remover oração"
                         className="absolute top-2 right-2 p-1.5 bg-red-50 text-red-400 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-100 z-10">
@@ -704,14 +704,36 @@ export default function Prayers() {
   const [isSaving, setIsSaving] = useState(false);
   const [userPrayers, setUserPrayers] = useState<UserPrayerItem[]>([]);
 
-  // Carrega as orações do usuário do servidor ao montar
+  // Carrega as orações do usuário do servidor ao montar.
   // mergeServerData protege contra cold start: se servidor retornar vazio
-  // mas o cache local tiver dados, os dados do cache são mantidos
+  // mas o cache local tiver dados, os dados do cache são mantidos.
   useEffect(() => {
     apiLoadUserPrayers().then(prayers => {
-      // false = não foi o usuário quem apagou (carregamento normal)
       const finalPrayers = mergeServerData<UserPrayerItem[]>('user_prayers', prayers, false);
       setUserPrayers(finalPrayers);
+
+      // Re-sincroniza orações com ID temporário (negativo) que não chegaram ao servidor.
+      // Isso ocorre quando o servidor estava fora durante o salvamento.
+      const unsaved = finalPrayers.filter(p => p.id < 0);
+      if (unsaved.length > 0) {
+        unsaved.forEach(p => {
+          apiSaveUserPrayer(p.title, p.text, p.category)
+            .then(newId => {
+              if (newId !== null) {
+                // Atualiza o ID temporário pelo ID real do servidor.
+                // O key do componente não muda porque usa title+category (estável).
+                setUserPrayers(prev => {
+                  const updated = prev.map(x =>
+                    x.id === p.id ? { ...x, id: newId } : x
+                  );
+                  cacheSet<UserPrayerItem[]>('user_prayers', updated);
+                  return updated;
+                });
+              }
+            })
+            .catch(() => {}); // silencioso — oração continua no cache
+        });
+      }
     }).catch(() => {
       // Erro de rede → usa cache
       const cached = cacheGet<UserPrayerItem[]>('user_prayers', []);
@@ -719,44 +741,34 @@ export default function Prayers() {
     });
   }, []);
 
+  // Salva oração: espera a resposta do servidor antes de fechar o modal.
+  // Isso garante que o ID final (real ou temporário) é definido UMA única vez,
+  // sem atualização posterior que mudaria o key e causaria o bug de colapso.
   const saveUserPrayer = async () => {
     if (!newTitle.trim() || !newText.trim()) return;
     setIsSaving(true);
 
-    // Gera um ID temporário negativo para identificar esta entrada localmente
-    // enquanto a API ainda não confirmou
-    const tempId = -(Date.now());
-    const newPrayer: UserPrayerItem = {
-      id: tempId,
-      title: newTitle.trim(),
-      text: newText.trim(),
-      category: newCategory,
-    };
+    const title = newTitle.trim();
+    const text = newText.trim();
+    const category = newCategory;
 
-    // 1. Salva IMEDIATAMENTE no estado e no cache (não depende do servidor)
-    const optimistic = [...userPrayers, newPrayer].sort((a, b) =>
+    // Tenta salvar no servidor (aguarda resposta)
+    const serverId = await apiSaveUserPrayer(title, text, category);
+
+    // Usa o ID do servidor se disponível; caso contrário, ID temporário local (negativo)
+    const finalId = serverId !== null ? serverId : -(Date.now());
+
+    const newPrayer: UserPrayerItem = { id: finalId, title, text, category };
+    const updated = [...userPrayers, newPrayer].sort((a, b) =>
       a.title.localeCompare(b.title, 'pt')
     );
-    setUserPrayers(optimistic);
-    cacheSet<UserPrayerItem[]>('user_prayers', optimistic);
 
-    // Fecha o modal e limpa o formulário já aqui
-    setNewTitle(''); setNewText(''); setNewCategory('habituais'); setShowAddModal(false);
+    // Atualiza estado e cache em uma única operação — sem atualização posterior
+    setUserPrayers(updated);
+    cacheSet<UserPrayerItem[]>('user_prayers', updated);
+
     setIsSaving(false);
-
-    // 2. Tenta salvar no servidor (em segundo plano, sem bloquear a UI)
-    const serverId = await apiSaveUserPrayer(newPrayer.title, newPrayer.text, newPrayer.category);
-    if (serverId !== null && serverId !== tempId) {
-      // Atualiza o ID temporário para o ID real do servidor
-      setUserPrayers(prev => {
-        const updated = prev.map(p => p.id === tempId ? { ...p, id: serverId } : p);
-        cacheSet<UserPrayerItem[]>('user_prayers', updated);
-        return updated;
-      });
-    }
-    // Se o servidor falhar, a oração ainda está salva no cache com o ID temporário.
-    // Na próxima vez que o usuário abrir o app, a função de carregamento
-    // buscará do servidor (se estiver disponível) ou do cache.
+    setNewTitle(''); setNewText(''); setNewCategory('habituais'); setShowAddModal(false);
   };
 
   const deleteUserPrayer = async (id: number) => {
