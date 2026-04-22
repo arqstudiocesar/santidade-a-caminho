@@ -8,7 +8,7 @@ import { JournalEntry } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import { apiFetch } from '../contexts/AuthContext';
 import { jsPDF } from 'jspdf';
-import { cacheGet, cacheSet } from '../utils/cache';
+import { cacheGet, cacheSet, mergeServerData } from '../utils/cache';
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 interface JournalEntryWithTitle extends JournalEntry {
@@ -173,52 +173,39 @@ export default function SpiritualJournal() {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
   // Controla primeiro carregamento para lógica de cache
-  const initialLoadDone = useRef(false);
-
   // ── Carregar registros ──────────────────────────────────────────────────────
   useEffect(() => { fetchEntries(); }, []);
 
-  const fetchEntries = () => {
+  // userDeletedAll: sinaliza que o próximo fetchEntries pode aceitar servidor vazio
+  // como intenção do usuário (e não como cold start)
+  const userDeletedAll = useRef(false);
+
+  const fetchEntries = (afterUserDelete = false) => {
     setIsLoading(true);
     apiFetch('/api/journal')
       .then(res => res.json())
       .then((data: JournalEntryWithTitle[]) => {
         const serverData = Array.isArray(data) ? data : [];
-
-        if (serverData.length > 0) {
-          // Servidor tem dados → usa e atualiza cache
-          setEntries(serverData);
-          cacheSet<JournalEntryWithTitle[]>('journal', serverData);
-          // Ao carregar, todos os cards ficam minimizados
-          const collapsed: Record<number, boolean> = {};
-          serverData.forEach(e => { collapsed[e.id] = true; });
-          setCollapsedCards(collapsed);
-        } else if (!initialLoadDone.current) {
-          // Servidor vazio no primeiro carregamento → possível cold start do Vercel
-          const cached = cacheGet<JournalEntryWithTitle[]>('journal', []);
-          setEntries(cached);
-          const collapsed: Record<number, boolean> = {};
-          cached.forEach(e => { collapsed[e.id] = true; });
-          setCollapsedCards(collapsed);
-        } else {
-          // Servidor vazio após mutação = usuário realmente apagou tudo
-          setEntries([]);
-          setCollapsedCards({});
-          cacheSet<JournalEntryWithTitle[]>('journal', []);
-        }
+        // mergeServerData: usa cache como fallback se o servidor retornar vazio
+        // sem que o usuário tenha apagado explicitamente (proteção contra cold start)
+        const finalData = mergeServerData<JournalEntryWithTitle[]>(
+          'journal', serverData, afterUserDelete
+        );
+        setEntries(finalData);
+        // Ao carregar, todos os cards ficam minimizados (só título visível)
+        const collapsed: Record<number, boolean> = {};
+        finalData.forEach(e => { collapsed[e.id] = true; });
+        setCollapsedCards(collapsed);
       })
       .catch(() => {
-        // Erro de rede → usa cache
-        if (!initialLoadDone.current) {
-          const cached = cacheGet<JournalEntryWithTitle[]>('journal', []);
-          setEntries(cached);
-          const collapsed: Record<number, boolean> = {};
-          cached.forEach(e => { collapsed[e.id] = true; });
-          setCollapsedCards(collapsed);
-        }
+        // Erro de rede → restaura do cache local
+        const cached = cacheGet<JournalEntryWithTitle[]>('journal', []);
+        setEntries(cached);
+        const collapsed: Record<number, boolean> = {};
+        cached.forEach(e => { collapsed[e.id] = true; });
+        setCollapsedCards(collapsed);
       })
       .finally(() => {
-        initialLoadDone.current = true;
         setIsLoading(false);
       });
   };
@@ -269,7 +256,6 @@ export default function SpiritualJournal() {
   const handleDelete = async (id: number) => {
     await apiFetch(`/api/journal/${id}`, { method: 'DELETE' });
     setDeleteId(null);
-    initialLoadDone.current = true;
     fetchEntries();
   };
 
@@ -279,7 +265,6 @@ export default function SpiritualJournal() {
     }
     setSelectedIds([]);
     setSelectMode(false);
-    initialLoadDone.current = true;
     fetchEntries();
   };
 
@@ -287,8 +272,7 @@ export default function SpiritualJournal() {
     await apiFetch('/api/journal', { method: 'DELETE' });
     cacheSet<JournalEntryWithTitle[]>('journal', []);
     setIsClearingAll(false);
-    initialLoadDone.current = true;
-    fetchEntries();
+    fetchEntries(true); // true = usuário apagou tudo propositalmente
   };
 
   // ── Editar ────────────────────────────────────────────────────────────────

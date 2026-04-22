@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronDown, ChevronUp, BookOpen, Heart, Star, Search, Plus, X, Save } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { cacheGet, cacheSet } from '../utils/cache';
+import { cacheGet, cacheSet, mergeServerData } from '../utils/cache';
 
 type SubTab = 'daily' | 'adoration' | 'consecration';
 type PrayerCategory = 'habituais' | 'ladainhas' | 'formais';
@@ -659,17 +659,15 @@ export default function Prayers() {
   const [userPrayers, setUserPrayers] = useState<UserPrayerItem[]>([]);
 
   // Carrega as orações do usuário do servidor ao montar
-  // Se o servidor estiver vazio (cold start do Vercel), usa cache local como backup
+  // mergeServerData protege contra cold start: se servidor retornar vazio
+  // mas o cache local tiver dados, os dados do cache são mantidos
   useEffect(() => {
     apiLoadUserPrayers().then(prayers => {
-      if (prayers.length > 0) {
-        setUserPrayers(prayers);
-        cacheSet<UserPrayerItem[]>('user_prayers', prayers);
-      } else {
-        const cached = cacheGet<UserPrayerItem[]>('user_prayers', []);
-        setUserPrayers(cached);
-      }
+      // false = não foi o usuário quem apagou (carregamento normal)
+      const finalPrayers = mergeServerData<UserPrayerItem[]>('user_prayers', prayers, false);
+      setUserPrayers(finalPrayers);
     }).catch(() => {
+      // Erro de rede → usa cache
       const cached = cacheGet<UserPrayerItem[]>('user_prayers', []);
       setUserPrayers(cached);
     });

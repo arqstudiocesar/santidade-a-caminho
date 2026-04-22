@@ -159,6 +159,8 @@ ensureAdminUser();
 function getUser(req: express.Request) {
   const auth = (req.headers.authorization || req.query.token as string || '').replace('Bearer ','').trim();
   if (!auth) return null;
+  // Garante que o schema existe (proteção contra cold start do Vercel)
+  ensureAdminUser();
   const s = db.prepare('SELECT s.user_id, u.username, u.display_name FROM sessions s JOIN users u ON s.user_id=u.id WHERE s.token=?').get(auth) as any;
   return s ? { id: s.user_id, username: s.username, display_name: s.display_name } : null;
 }

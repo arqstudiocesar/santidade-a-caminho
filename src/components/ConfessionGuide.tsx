@@ -3,28 +3,11 @@ import { Shield, CheckCircle2, AlertCircle, Info, List, Book, Heart, Trash2, Plu
   Calendar as CalendarIcon, ChevronLeft, ChevronRight, Wind, Save, CheckSquare, Square, RotateCcw } from 'lucide-react';
 import { Sin, ConfessionPurpose } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
+import { cacheGet, cacheSet } from '../utils/cache';
 
-// ---------- helpers de localStorage ----------
-
-function getKey(base: string) {
-  // Isola os dados por usuário logado
-  try {
-    const s = localStorage.getItem('caminho_session');
-    const id = s ? JSON.parse(s).user?.id : 'anon';
-    return `${base}_${id}`;
-  } catch { return `${base}_anon`; }
-}
-
-function lsGet<T>(base: string, fallback: T): T {
-  try {
-    const raw = localStorage.getItem(getKey(base));
-    return raw ? JSON.parse(raw) : fallback;
-  } catch { return fallback; }
-}
-
-function lsSet(base: string, value: unknown) {
-  try { localStorage.setItem(getKey(base), JSON.stringify(value)); } catch {}
-}
+// Aliases para manter compatibilidade com o código existente
+const lsGet = cacheGet;
+const lsSet = cacheSet;
 
 function nextId(items: { id: number }[]): number {
   return items.length > 0 ? Math.max(...items.map(i => i.id)) + 1 : 1;
