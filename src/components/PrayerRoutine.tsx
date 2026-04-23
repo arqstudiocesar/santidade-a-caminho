@@ -207,22 +207,123 @@ export default function PrayerRoutine() {
     setIsReadingMass(true);
     setViewingFeastLiturgy(false);
     setFeastLiturgy(null);
-    // A validação do cache é feita pelo groqService (compara com o motor litúrgico)
-    // Aqui apenas garantimos que o cache não persiste entre dias diferentes
+
+    // Limpa cache diário se for de outro dia
     try {
       const raw = JSON.parse(localStorage.getItem('groq_daily_cache') || '{}');
       const cached = raw['mass_liturgy'];
       if (cached && cached.date !== new Date().toDateString()) {
         delete raw['mass_liturgy'];
         localStorage.setItem('groq_daily_cache', JSON.stringify(raw));
+      } else if (cached && cached.date === new Date().toDateString() && cached.data) {
+        // Cache válido do dia → usa sem nova requisição
+        setMassLiturgy(cached.data);
+        setIsLoadingLiturgy(false);
+        return;
       }
     } catch { /* ok */ }
-    const data = await geminiService.getDailyMassLiturgy();
-    if (!data) {
+
+    const today = new Date().toLocaleDateString('pt-BR');
+    const litInfo = getTodayLiturgicalSummary();
+    const hasCelebration = !!(litInfo.celebrationName);
+    const celebrationRank = litInfo.celebrationName || '';
+
+    try {
+      // Tenta primeiro o endpoint de scraping (sem IA, mais confiável)
+      let liturgyFromScraping: any = null;
+      try {
+        const scraped = await fetch('/api/liturgy-today');
+        const scrapedData = await scraped.json();
+        if (scrapedData?.success && scrapedData?.structured?.readings?.length >= 2) {
+          liturgyFromScraping = {
+            title: `Liturgia do Dia — ${today}`,
+            readings: scrapedData.structured.readings,
+            feast: hasCelebration ? {
+              name: celebrationRank.split(' — ')[0],
+              type: celebrationRank.includes('Memória') ? 'Memória' :
+                    celebrationRank.includes('Festa') ? 'Festa' : 'Solenidade',
+            } : null,
+          };
+        }
+      } catch { /* prosseguir para IA */ }
+
+      if (liturgyFromScraping) {
+        setMassLiturgy(liturgyFromScraping);
+        try {
+          const raw = JSON.parse(localStorage.getItem('groq_daily_cache') || '{}');
+          raw['mass_liturgy'] = { date: new Date().toDateString(), data: liturgyFromScraping };
+          localStorage.setItem('groq_daily_cache', JSON.stringify(raw));
+        } catch {}
+        setIsLoadingLiturgy(false);
+        return;
+      }
+
+      // Fallback: IA com prompt que separa claramente liturgia do dia vs. memória/festa
+      const systemPrompt = hasCelebration
+        ? `Você é especialista em Liturgia Católica e Lecionário Romano. Hoje (${today}) há uma celebração litúrgica: ${celebrationRank}.
+REGRA CRÍTICA: A liturgia do dia (feria/semana) e a celebração (memória/festa) têm leituras DIFERENTES e INDEPENDENTES.
+NÃO misture as leituras da celebração com as leituras feriais do dia.
+As leituras do campo "readings" devem ser SOMENTE as leituras da Missa do DIA (feria do tempo litúrgico atual).
+A celebração será indicada no campo "feast" apenas com nome e tipo, SEM leituras próprias aqui.
+Responda APENAS com JSON válido.`
+        : `Você é especialista em Liturgia Católica e Lecionário Romano.
+Forneça as leituras exatas da Missa de hoje (${today}) — ${litInfo.seasonLabel}, Ano ${litInfo.liturgicalYear}.
+Responda APENAS com JSON válido.`;
+
+      const userPrompt = `Forneça as leituras COMPLETAS da Santa Missa de hoje, ${today}.
+Período litúrgico: ${litInfo.seasonLabel} — Ano ${litInfo.liturgicalYear} — Ciclo ferial ${litInfo.ferialCycle}.
+${hasCelebration ? `Celebração do dia: ${celebrationRank} (as leituras desta celebração NÃO devem constar em "readings" — apenas no campo "feast")` : ''}
+
+JSON obrigatório:
+{
+  "title": "Liturgia do Dia — ${today}",
+  "readings": [
+    {"type": "1ª Leitura", "reference": "Ex: Gn 1,1-2,2", "text": "TEXTO COMPLETO (mínimo 8 versículos)"},
+    {"type": "Salmo Responsorial", "reference": "Ex: Sl 103(104),1-2a.3b-4.24.35c", "text": "R. [antífona]\n\n1. [estrofe]\n\nR. [antífona]"},
+    {"type": "Evangelho", "reference": "Ex: Mt 5,1-12a", "text": "TEXTO COMPLETO (mínimo 8 versículos)"}
+  ]${hasCelebration ? `,
+  "feast": {
+    "name": "${celebrationRank.split(' — ')[0]}",
+    "type": "${celebrationRank.includes('Memória Obrig') || celebrationRank.includes('Memória') ? 'Memória' : celebrationRank.includes('Festa') ? 'Festa' : 'Solenidade'}"
+  }` : ''}
+}
+
+REGRAS:
+1. Textos completos, SEM "..." ou cortes.
+2. O Salmo deve ter: antífona (R.), estrofes numeradas e repetição da antífona.
+3. ${hasCelebration ? `A celebração "${celebrationRank.split(' — ')[0]}" vai APENAS no campo "feast". Não inclua leituras próprias dela em "readings".` : 'Nenhuma celebração hoje — apenas leituras feriais.'}`;
+
+      const resp = await fetch('/api/ai/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userPrompt },
+          ],
+          responseFormat: 'json',
+          maxTokens: 3500,
+        }),
+      });
+      const respData = await resp.json();
+      const clean = (respData.text || '').replace(/^```json\s*/i, '').replace(/```\s*$/i, '').trim();
+      const parsed = JSON.parse(clean);
+
+      if (parsed?.readings?.length >= 2) {
+        setMassLiturgy(parsed);
+        try {
+          const raw = JSON.parse(localStorage.getItem('groq_daily_cache') || '{}');
+          raw['mass_liturgy'] = { date: new Date().toDateString(), data: parsed };
+          localStorage.setItem('groq_daily_cache', JSON.stringify(raw));
+        } catch {}
+      } else {
+        alert("Não foi possível carregar a Liturgia Diária. Por favor, tente novamente.");
+        setIsReadingMass(false);
+      }
+    } catch (e) {
+      console.error('Erro ao carregar liturgia:', e);
       alert("Não foi possível carregar a Liturgia Diária. Por favor, tente novamente.");
       setIsReadingMass(false);
-    } else {
-      setMassLiturgy(data);
     }
     setIsLoadingLiturgy(false);
   };
