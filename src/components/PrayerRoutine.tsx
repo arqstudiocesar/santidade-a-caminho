@@ -199,8 +199,10 @@ export default function PrayerRoutine() {
   const [feastLiturgy, setFeastLiturgy] = useState<any>(null);
   const [isLoadingFeast, setIsLoadingFeast] = useState(false);
 
-  // Motor litúrgico — carregado sincronicamente (sem rede)
-  const todayLit = getTodayLiturgicalSummary();
+  // Motor litúrgico — carregado sincronicamente (sem rede).
+  // Passa o offset real do navegador para garantir que a data litúrgica seja
+  // a mesma usada no cache e no servidor (evita bug de fuso horário).
+  const todayLit = getTodayLiturgicalSummary(-new Date().getTimezoneOffset());
 
   const COLOR_MAP: Record<string, string> = {
     verde: 'bg-green-100 text-green-800 border-green-200',
@@ -215,15 +217,22 @@ export default function PrayerRoutine() {
   };
 
   // Retorna a data local do usuário como string e o offset UTC em minutos.
-  // Isso evita o bug de fuso: entre 21h-23h59 (Brasil), servidor UTC já é dia seguinte.
+  // Usa o offset REAL do navegador (não hardcoded para São Paulo) para funcionar
+  // corretamente em qualquer fuso horário.
+  // O tzOffset é passado ao servidor (?tz=) e ao motor litúrgico para garantir
+  // que todos calculem exatamente a mesma data local — evitando o bug em que
+  // usuários no Brasil entre 21h-23h59 recebem a liturgia do dia seguinte.
   const getUserLocalDate = () => {
     const now = new Date();
-    const tzOffset = -now.getTimezoneOffset(); // ex: UTC-3 → -180
-    // Reconstrói a data local usando o offset real do navegador
-    const local = new Date(now.getTime());
-    const dd = local.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo', day: '2-digit' });
-    const mm = local.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo', month: '2-digit' });
-    const yyyy = local.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo', year: 'numeric' });
+    // getTimezoneOffset() retorna minutos UTC - local (ex: UTC-3 → +180).
+    // Invertemos: UTC-3 → tzOffset = -180.
+    const tzOffset = -now.getTimezoneOffset();
+    // Reconstrói a data local somando o offset ao timestamp UTC puro.
+    const localMs = now.getTime() + tzOffset * 60 * 1000;
+    const local = new Date(localMs);
+    const dd = local.getUTCDate().toString().padStart(2, '0');
+    const mm = (local.getUTCMonth() + 1).toString().padStart(2, '0');
+    const yyyy = local.getUTCFullYear().toString();
     const cacheKey = `${yyyy}-${mm}-${dd}`;
     const displayDate = `${dd}/${mm}/${yyyy}`;
     return { cacheKey, displayDate, tzOffset };
@@ -253,7 +262,9 @@ export default function PrayerRoutine() {
     } catch { /* ok */ }
 
     const today = displayDate;
-    const litInfo = getTodayLiturgicalSummary();
+    // Passa o mesmo tzOffset do cacheKey para garantir que o motor litúrgico
+    // calcule exatamente o mesmo dia local — evita divergência entre cache e leituras.
+    const litInfo = getTodayLiturgicalSummary(tzOffset);
     const hasCelebration = !!(litInfo.celebrationName);
     const celebrationRank = litInfo.celebrationName || '';
 

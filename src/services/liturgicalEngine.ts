@@ -1167,13 +1167,42 @@ function buildSeasonLabel(
 // 9. UTILITÁRIOS PÚBLICOS
 // ─────────────────────────────────────────────────────────────────────────────
 
+/**
+ * Retorna a data local do usuário corrigida pelo fuso horário do navegador.
+ * Evita o bug de fuso: entre 21h-23h59 no Brasil, o servidor UTC já está no
+ * dia seguinte — usar esta função garante que o cálculo use o dia certo.
+ *
+ * @param tzOffsetMinutes  Offset em minutos (ex: -180 para UTC-3/Brasília).
+ *                         Se omitido, usa o fuso do ambiente atual (browser ou server).
+ */
+export function getLocalDate(tzOffsetMinutes?: number): Date {
+  if (tzOffsetMinutes !== undefined) {
+    // Calcula a data local forçando o offset explícito.
+    // Ex: 23h50 UTC-0 + (-180 min) = 20h50 UTC-3 → ainda é o mesmo dia no Brasil.
+    const utcMs = Date.now();
+    const localMs = utcMs + tzOffsetMinutes * 60 * 1000;
+    const d = new Date(localMs);
+    // Retorna um Date cujos métodos getFullYear/Month/Date correspondem ao UTC ajustado.
+    return new Date(
+      d.getUTCFullYear(),
+      d.getUTCMonth(),
+      d.getUTCDate(),
+      d.getUTCHours(),
+      d.getUTCMinutes(),
+      d.getUTCSeconds()
+    );
+  }
+  // Sem offset explícito: usa o fuso local do ambiente (correto no browser).
+  return new Date();
+}
+
 /** Retorna o dia litúrgico para hoje. */
-export function getTodayLiturgical(): LiturgicalDay {
-  return getLiturgicalDay(new Date());
+export function getTodayLiturgical(tzOffsetMinutes?: number): LiturgicalDay {
+  return getLiturgicalDay(getLocalDate(tzOffsetMinutes));
 }
 
 /** Retorna informações resumidas para uso no groqService */
-export function getTodayLiturgicalSummary(): {
+export function getTodayLiturgicalSummary(tzOffsetMinutes?: number): {
   dateISO: string;
   datePT: string;
   liturgicalYear: LiturgicalYear;
@@ -1189,8 +1218,8 @@ export function getTodayLiturgicalSummary(): {
   color: LiturgicalColor;
   isSunday: boolean;
 } {
-  const day = getTodayLiturgical();
-  const d = new Date();
-  const datePT = d.toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  const localDate = getLocalDate(tzOffsetMinutes);
+  const day = getLiturgicalDay(localDate);
+  const datePT = localDate.toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
   return { ...day, dateISO: day.date, datePT };
 }
