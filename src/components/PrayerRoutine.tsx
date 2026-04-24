@@ -136,48 +136,60 @@ function ReadingBlock({ reading, bgClass, borderClass, titleClass }: {
 }
 
 
-// ── Helpers de persistência das orações ─────────────────────────────────────
-const DEFAULT_PRAYER_LIST = [
-  { id: '1', name: 'Oferecimento do Dia', period: 'morning', completed: false },
-  { id: '2', name: 'Liturgia das Horas (Ofício das Leituras)', period: 'morning', completed: false },
-  { id: '3', name: 'Liturgia das Horas (Laudes)', period: 'morning', completed: false },
-  { id: '4', name: 'Angelus', period: 'afternoon', completed: false },
-  { id: '5', name: 'Liturgia das Horas (Hora Intermédia)', period: 'afternoon', completed: false },
-  { id: '6', name: 'Santo Rosário', period: 'afternoon', completed: false },
-  { id: '7', name: 'Liturgia das Horas (Vésperas)', period: 'afternoon', completed: false },
-  { id: '8', name: 'Exame de Consciência', period: 'night', completed: false },
-  { id: '9', name: 'Oração da Noite (Completas)', period: 'night', completed: false },
+// ── Tipos e helpers de persistência ──────────────────────────────────────────
+type PrayerItem = { id: string; name: string; period: string; completed: boolean; isCustom?: boolean };
+
+const DEFAULT_PRAYER_LIST: PrayerItem[] = [
+  { id: '1', name: 'Oferecimento do Dia',                       period: 'morning',   completed: false },
+  { id: '2', name: 'Liturgia das Horas (Ofício das Leituras)',  period: 'morning',   completed: false },
+  { id: '3', name: 'Liturgia das Horas (Laudes)',               period: 'morning',   completed: false },
+  { id: '4', name: 'Angelus',                                   period: 'afternoon', completed: false },
+  { id: '5', name: 'Liturgia das Horas (Hora Intermédia)',      period: 'afternoon', completed: false },
+  { id: '6', name: 'Santo Rosário',                             period: 'afternoon', completed: false },
+  { id: '7', name: 'Liturgia das Horas (Vésperas)',             period: 'afternoon', completed: false },
+  { id: '8', name: 'Exame de Consciência',                      period: 'night',     completed: false },
+  { id: '9', name: 'Oração da Noite (Completas)',               period: 'night',     completed: false },
 ];
 
-function getPrayerStorageKey(): string {
+function getUserPrayerBase(): string {
   try {
     const s = localStorage.getItem('caminho_session');
     const id = s ? JSON.parse(s).user?.id : 'anon';
     return `prayer_routine_${id}`;
   } catch { return 'prayer_routine_anon'; }
 }
-
-function loadPrayersFromStorage() {
-  try {
-    const today = new Date().toDateString();
-    const raw = localStorage.getItem(getPrayerStorageKey());
-    if (!raw) return DEFAULT_PRAYER_LIST;
-    const parsed = JSON.parse(raw);
-    if (parsed.date !== today) return DEFAULT_PRAYER_LIST;
-    return parsed.prayers || DEFAULT_PRAYER_LIST;
-  } catch { return DEFAULT_PRAYER_LIST; }
+// Orações personalizadas — persistem para sempre
+function loadCustomPrayers(): PrayerItem[] {
+  try { const r = localStorage.getItem(`${getUserPrayerBase()}_custom`); return r ? JSON.parse(r) : []; } catch { return []; }
 }
-
-function savePrayersToStorage(prayers: typeof DEFAULT_PRAYER_LIST) {
+function saveCustomPrayers(list: PrayerItem[]): void {
+  try { localStorage.setItem(`${getUserPrayerBase()}_custom`, JSON.stringify(list)); } catch {}
+}
+// Marcações do dia — reset diário
+function loadTodayDone(): string[] {
   try {
     const today = new Date().toDateString();
-    localStorage.setItem(getPrayerStorageKey(), JSON.stringify({ date: today, prayers }));
-  } catch { /* ok */ }
+    const r = localStorage.getItem(`${getUserPrayerBase()}_done`);
+    if (!r) return [];
+    const p = JSON.parse(r);
+    return p.date === today ? (p.ids || []) : [];
+  } catch { return []; }
+}
+function saveTodayDone(ids: string[]): void {
+  try { localStorage.setItem(`${getUserPrayerBase()}_done`, JSON.stringify({ date: new Date().toDateString(), ids })); } catch {}
+}
+// Lista completa com estado de conclusão do dia
+function buildPrayerList(): PrayerItem[] {
+  const custom = loadCustomPrayers();
+  const done   = loadTodayDone();
+  return [...DEFAULT_PRAYER_LIST, ...custom].map(p => ({ ...p, completed: done.includes(p.id) }));
 }
 
 export default function PrayerRoutine() {
-  const [prayers, setPrayers] = useState(() => loadPrayersFromStorage());
-
+  const [prayers, setPrayers] = useState<PrayerItem[]>(() => buildPrayerList());
+  const [showAddModal, setShowAddModal]       = useState(false);
+  const [newPrayerName, setNewPrayerName]     = useState('');
+  const [newPrayerPeriod, setNewPrayerPeriod] = useState('morning');
   const [selectedPrayer, setSelectedPrayer] = useState<any>(null);
   const [liturgyData, setLiturgyData] = useState<any>(null);
   const [massLiturgy, setMassLiturgy] = useState<any>(null);
@@ -228,6 +240,17 @@ export default function PrayerRoutine() {
     const hasCelebration = !!(litInfo.celebrationName);
     const celebrationRank = litInfo.celebrationName || '';
 
+    // Referências do motor litúrgico — usamos para ancorar o prompt da IA
+    const engineRefs = litInfo.readings;
+    // Verifica se o motor já tem referências reais (não placeholders gerados para a IA)
+    const hasRealEngineRefs = engineRefs &&
+      !engineRefs.firstReading.startsWith('Lecionário Ferial') &&
+      !engineRefs.gospel.startsWith('Evangelho —');
+    // Referências das leituras da FESTA (se houver) — para dizer à IA o que NÃO colocar em readings[]
+    const feastRefs = litInfo.feastReadings
+      ? `${litInfo.feastReadings.firstReading} / ${litInfo.feastReadings.psalm} / ${litInfo.feastReadings.gospel}`
+      : '';
+
     try {
       // Tenta primeiro o endpoint de scraping (sem IA, mais confiável)
       let liturgyFromScraping: any = null;
@@ -258,41 +281,33 @@ export default function PrayerRoutine() {
         return;
       }
 
-      // Fallback: IA com prompt que separa claramente liturgia do dia vs. memória/festa
-      const systemPrompt = hasCelebration
-        ? `Você é especialista em Liturgia Católica e Lecionário Romano. Hoje (${today}) há uma celebração litúrgica: ${celebrationRank}.
-REGRA CRÍTICA: A liturgia do dia (feria/semana) e a celebração (memória/festa) têm leituras DIFERENTES e INDEPENDENTES.
-NÃO misture as leituras da celebração com as leituras feriais do dia.
-As leituras do campo "readings" devem ser SOMENTE as leituras da Missa do DIA (feria do tempo litúrgico atual).
-A celebração será indicada no campo "feast" apenas com nome e tipo, SEM leituras próprias aqui.
-Responda APENAS com JSON válido.`
-        : `Você é especialista em Liturgia Católica e Lecionário Romano.
-Forneça as leituras exatas da Missa de hoje (${today}) — ${litInfo.seasonLabel}, Ano ${litInfo.liturgicalYear}.
-Responda APENAS com JSON válido.`;
+      // Fallback: IA — prompt ancorado nas refs do motor litúrgico e que separa
+      // explicitamente leituras da festa vs. leituras feriais/dominicais do dia.
+      const feastWarning = (hasCelebration && feastRefs)
+        ? `\n\u26a0\ufe0f ATEN\u00c7\u00c3O \u2014 celebra\u00e7\u00e3o: ${celebrationRank}. Leituras PR\u00d3PRIAS: ${feastRefs}. ESSAS REF. N\u00c3O DEVEM aparecer em "readings".`
+        : '';
+      const readingAnchor = hasRealEngineRefs
+        ? `Leituras do Lection\u00e1rio para hoje:\n- 1\u00aa Leitura: ${engineRefs.firstReading}\n- Salmo: ${engineRefs.psalm}\n- Evangelho: ${engineRefs.gospel}${engineRefs.secondReading ? `\n- 2\u00aa Leitura: ${engineRefs.secondReading}` : ''}`
+        : `Per\u00edodo: ${litInfo.seasonLabel} \u2014 Ano ${litInfo.liturgicalYear} \u2014 Ciclo ${litInfo.ferialCycle}.`;
 
-      const userPrompt = `Forneça as leituras COMPLETAS da Santa Missa de hoje, ${today}.
-Período litúrgico: ${litInfo.seasonLabel} — Ano ${litInfo.liturgicalYear} — Ciclo ferial ${litInfo.ferialCycle}.
-${hasCelebration ? `Celebração do dia: ${celebrationRank} (as leituras desta celebração NÃO devem constar em "readings" — apenas no campo "feast")` : ''}
+      const systemPrompt = `Voc\u00ea \u00e9 especialista em Liturgia Cat\u00f3lica e Lection\u00e1rio Romano. Responda APENAS com JSON v\u00e1lido.${feastWarning}`;
+      const feastType = celebrationRank.includes('Mem\u00f3ria') ? 'Mem\u00f3ria' : celebrationRank.includes('Festa') ? 'Festa' : 'Solenidade';
 
-JSON obrigatório:
-{
-  "title": "Liturgia do Dia — ${today}",
-  "readings": [
-    {"type": "1ª Leitura", "reference": "Ex: Gn 1,1-2,2", "text": "TEXTO COMPLETO (mínimo 8 versículos)"},
-    {"type": "Salmo Responsorial", "reference": "Ex: Sl 103(104),1-2a.3b-4.24.35c", "text": "R. [antífona]\n\n1. [estrofe]\n\nR. [antífona]"},
-    {"type": "Evangelho", "reference": "Ex: Mt 5,1-12a", "text": "TEXTO COMPLETO (mínimo 8 versículos)"}
-  ]${hasCelebration ? `,
-  "feast": {
-    "name": "${celebrationRank.split(' — ')[0]}",
-    "type": "${celebrationRank.includes('Memória Obrig') || celebrationRank.includes('Memória') ? 'Memória' : celebrationRank.includes('Festa') ? 'Festa' : 'Solenidade'}"
-  }` : ''}
-}
-
-REGRAS:
-1. Textos completos, SEM "..." ou cortes.
-2. O Salmo deve ter: antífona (R.), estrofes numeradas e repetição da antífona.
-3. ${hasCelebration ? `A celebração "${celebrationRank.split(' — ')[0]}" vai APENAS no campo "feast". Não inclua leituras próprias dela em "readings".` : 'Nenhuma celebração hoje — apenas leituras feriais.'}`;
-
+      const userPrompt = [
+        `Leituras COMPLETAS da Santa Missa de hoje, ${today}.`,
+        readingAnchor,
+        hasCelebration ? `Celebra\u00e7\u00e3o: ${celebrationRank} \u2192 vai SOMENTE em "feast", SEM leituras em "readings".` : '',
+        `JSON:`,
+        `{`,
+        `  "title": "Liturgia do Di\u00e1 \u2014 ${today}",`,
+        `  "readings": [`,
+        `    {"type": "1\u00aa Leitura", "reference": "${hasRealEngineRefs ? engineRefs.firstReading : 'referência exata'}", "text": "TEXTO COMPLETO"},`,
+        `    {"type": "Salmo Responsorial", "reference": "${hasRealEngineRefs ? engineRefs.psalm : 'referência exata'}", "text": "R. [antífona]\n\n1. [estrofe]\n\nR."},`,
+        `    {"type": "Evangelho", "reference": "${hasRealEngineRefs ? engineRefs.gospel : 'referência exata'}", "text": "TEXTO COMPLETO"}`,
+        `  ]${hasCelebration ? `,\n  "feast": {"name": "${celebrationRank.split(' \u2014 ')[0]}", "type": "${feastType}"}` : ''}`,
+        `}`,
+        `REGRAS: 1. Textos completos sem "...". 2. Salmo: R. antífona, estrofes, R. após cada estrofe. 3. ${hasRealEngineRefs ? `Use SOMENTE as referências: ${engineRefs.firstReading} / ${engineRefs.psalm} / ${engineRefs.gospel}.` : 'Forneça leituras feriais corretas.'} 4. ${hasCelebration && feastRefs ? `PROIBIDO usar ${feastRefs} em "readings".` : 'Nenhuma celebração.'}`,
+      ].filter(Boolean).join('\n');
       const resp = await fetch('/api/ai/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -450,7 +465,33 @@ JSON:
   const togglePrayer = (id: string) => {
     const updated = prayers.map(p => p.id === id ? { ...p, completed: !p.completed } : p);
     setPrayers(updated);
-    savePrayersToStorage(updated);
+    saveTodayDone(updated.filter(p => p.completed).map(p => p.id));
+  };
+
+  const addCustomPrayer = () => {
+    if (!newPrayerName.trim()) return;
+    const newP: PrayerItem = {
+      id: `custom_${Date.now()}`,
+      name: newPrayerName.trim(),
+      period: newPrayerPeriod,
+      completed: false,
+      isCustom: true,
+    };
+    const existing = loadCustomPrayers();
+    saveCustomPrayers([...existing, newP]);
+    setPrayers(prev => [...prev, newP]);
+    setNewPrayerName('');
+    setShowAddModal(false);
+  };
+
+  const removeCustomPrayer = (id: string) => {
+    const existing = loadCustomPrayers();
+    saveCustomPrayers(existing.filter(p => p.id !== id));
+    setPrayers(prev => {
+      const updated = prev.filter(p => p.id !== id);
+      saveTodayDone(updated.filter(p => p.completed).map(p => p.id));
+      return updated;
+    });
   };
 
   const sections = [
@@ -618,16 +659,30 @@ JSON:
                         {prayer.name}
                       </span>
                     </button>
+                    {/* Botão de concluir */}
                     <button 
                       onClick={() => togglePrayer(prayer.id)}
                       className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-[#1A1A1A]/10 hover:text-[#5A5A40] transition-colors"
                     >
                       <CheckCircle2 className={`w-6 h-6 ${prayer.completed ? 'text-[#5A5A40]' : ''}`} />
                     </button>
+                    {/* Botão de remover (apenas orações personalizadas) */}
+                    {prayer.isCustom && (
+                      <button
+                        onClick={() => removeCustomPrayer(prayer.id)}
+                        title="Remover oração"
+                        className="absolute right-12 top-1/2 -translate-y-1/2 p-2 opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-600 transition-all"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
                   </div>
                 ))}
                 
-                <button className="w-full flex items-center justify-center gap-2 p-4 rounded-2xl border border-dashed border-[#1A1A1A]/10 text-[#1A1A1A]/40 hover:text-[#5A5A40] hover:border-[#5A5A40]/30 transition-all text-sm font-bold">
+                <button
+                  onClick={() => setShowAddModal(true)}
+                  className="w-full flex items-center justify-center gap-2 p-4 rounded-2xl border border-dashed border-[#1A1A1A]/10 text-[#1A1A1A]/40 hover:text-[#5A5A40] hover:border-[#5A5A40]/30 transition-all text-sm font-bold"
+                >
                   <Plus className="w-4 h-4" /> Adicionar Oração
                 </button>
               </div>
@@ -918,6 +973,81 @@ JSON:
                     <p className="text-[#1A1A1A]/40 italic">Não foi possível carregar a liturgia de hoje.</p>
                   </div>
                 )}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+      {/* Modal: Adicionar Oração */}
+      <AnimatePresence>
+        {showAddModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setShowAddModal(false)}
+              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-md bg-white rounded-[2rem] shadow-2xl p-8 space-y-6"
+            >
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-bold">Nova Oração</h3>
+                <button onClick={() => setShowAddModal(false)} className="p-2 hover:bg-[#F5F2ED] rounded-full">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-widest text-[#5A5A40] block mb-1">Nome da Oração</label>
+                  <input
+                    type="text"
+                    value={newPrayerName}
+                    onChange={e => setNewPrayerName(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && addCustomPrayer()}
+                    placeholder="Ex: Coroa das Sete Dores..."
+                    autoFocus
+                    className="w-full px-4 py-3 bg-[#F5F2ED] rounded-2xl border-none focus:ring-2 focus:ring-[#5A5A40]/20 text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-widest text-[#5A5A40] block mb-1">Período</label>
+                  <div className="flex gap-2">
+                    {[
+                      { value: 'morning',   label: 'Manhã' },
+                      { value: 'afternoon', label: 'Tarde' },
+                      { value: 'night',     label: 'Noite' },
+                    ].map(opt => (
+                      <button
+                        key={opt.value}
+                        onClick={() => setNewPrayerPeriod(opt.value)}
+                        className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${newPrayerPeriod === opt.value ? 'bg-[#5A5A40] text-white' : 'bg-[#F5F2ED] text-[#1A1A1A]/60 hover:bg-[#5A5A40]/10'}`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  onClick={() => setShowAddModal(false)}
+                  className="flex-1 py-3 rounded-2xl font-bold text-[#1A1A1A]/40 hover:bg-[#F5F2ED] transition-all"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={addCustomPrayer}
+                  disabled={!newPrayerName.trim()}
+                  className="flex-1 py-3 bg-[#5A5A40] text-white rounded-2xl font-bold shadow-lg hover:scale-105 transition-all disabled:opacity-40 flex items-center justify-center gap-2"
+                >
+                  <Plus className="w-4 h-4" /> Adicionar
+                </button>
               </div>
             </motion.div>
           </div>
