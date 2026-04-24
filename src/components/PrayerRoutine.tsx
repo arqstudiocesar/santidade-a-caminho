@@ -272,7 +272,7 @@ export default function PrayerRoutine() {
       // Tenta primeiro o endpoint de scraping (sem IA, mais confiável)
       let liturgyFromScraping: any = null;
       try {
-        const scraped = await fetch(\`/api/liturgy-today?tz=\${tzOffset}\`);
+        const scraped = await fetch(\`/api/liturgy-today?tz=${tzOffset}`);
         const scrapedData = await scraped.json();
         if (scrapedData?.success && scrapedData?.structured?.readings?.length >= 2) {
           liturgyFromScraping = {
