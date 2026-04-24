@@ -563,10 +563,16 @@ app.post('/api/settings', (req, res) => {
 // ── Liturgia (scraping Canção Nova) ───────────────────────────────────────────
 app.get('/api/liturgy-today', async (req, res) => {
   try {
-    const now = new Date();
-    const dd = now.getDate().toString().padStart(2,'0');
-    const mm = (now.getMonth()+1).toString().padStart(2,'0');
-    const yyyy = now.getFullYear().toString();
+    // Corrige fuso horário: o cliente envia ?tz=-180 (UTC-3 = -180 minutos).
+    // Se não enviado, usa -180 (Brasília/padrão Brasil) para evitar
+    // o bug de buscar a liturgia do dia seguinte entre 21h e 23h59 (horário de Brasília).
+    const tzOffset = parseInt((req.query.tz as string) || '-180', 10);
+    const safeOffset = isNaN(tzOffset) ? -180 : Math.max(-720, Math.min(720, tzOffset));
+    // Data local do usuário = UTC + offset do fuso (em minutos)
+    const localNow = new Date(Date.now() + safeOffset * 60 * 1000);
+    const dd = localNow.getUTCDate().toString().padStart(2,'0');
+    const mm = (localNow.getUTCMonth()+1).toString().padStart(2,'0');
+    const yyyy = localNow.getUTCFullYear().toString();
     const dateStr = `${dd}/${mm}/${yyyy}`;
     const urls = [
       `https://liturgia.cancaonova.com/pb/${yyyy}/${mm}/${dd}/`,
@@ -627,8 +633,10 @@ app.get('/api/claude-liturgy', async (req, res) => {
   const key = process.env.ANTHROPIC_API_KEY || '';
   if (!key) return res.json({ success: false, error: 'ANTHROPIC_API_KEY não configurada' });
   try {
-    const now = new Date();
-    const dateStr = `${now.getDate().toString().padStart(2,'0')}/${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getFullYear()}`;
+    const tzOffset2 = parseInt((req.query.tz as string) || '-180', 10);
+    const safeOffset2 = isNaN(tzOffset2) ? -180 : Math.max(-720, Math.min(720, tzOffset2));
+    const localNow2 = new Date(Date.now() + safeOffset2 * 60 * 1000);
+    const dateStr = `${localNow2.getUTCDate().toString().padStart(2,'0')}/${(localNow2.getUTCMonth()+1).toString().padStart(2,'0')}/${localNow2.getUTCFullYear()}`;
     const r = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-beta': 'web-search-2025-03-05' },

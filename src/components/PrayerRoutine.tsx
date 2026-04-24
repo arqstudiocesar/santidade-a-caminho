@@ -214,20 +214,37 @@ export default function PrayerRoutine() {
     vermelho: 'bg-red-500', rosa: 'bg-pink-400',
   };
 
+  // Retorna a data local do usuário como string e o offset UTC em minutos.
+  // Isso evita o bug de fuso: entre 21h-23h59 (Brasil), servidor UTC já é dia seguinte.
+  const getUserLocalDate = () => {
+    const now = new Date();
+    const tzOffset = -now.getTimezoneOffset(); // ex: UTC-3 → -180
+    // Reconstrói a data local usando o offset real do navegador
+    const local = new Date(now.getTime());
+    const dd = local.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo', day: '2-digit' });
+    const mm = local.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo', month: '2-digit' });
+    const yyyy = local.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo', year: 'numeric' });
+    const cacheKey = `${yyyy}-${mm}-${dd}`;
+    const displayDate = `${dd}/${mm}/${yyyy}`;
+    return { cacheKey, displayDate, tzOffset };
+  };
+
   const fetchMassLiturgy = async () => {
     setIsLoadingLiturgy(true);
     setIsReadingMass(true);
     setViewingFeastLiturgy(false);
     setFeastLiturgy(null);
 
-    // Limpa cache diário se for de outro dia
+    const { cacheKey, displayDate, tzOffset } = getUserLocalDate();
+
+    // Limpa cache diário se for de outro dia (chave YYYY-MM-DD garante precisão)
     try {
       const raw = JSON.parse(localStorage.getItem('groq_daily_cache') || '{}');
       const cached = raw['mass_liturgy'];
-      if (cached && cached.date !== new Date().toDateString()) {
+      if (cached && cached.date !== cacheKey) {
         delete raw['mass_liturgy'];
         localStorage.setItem('groq_daily_cache', JSON.stringify(raw));
-      } else if (cached && cached.date === new Date().toDateString() && cached.data) {
+      } else if (cached && cached.date === cacheKey && cached.data) {
         // Cache válido do dia → usa sem nova requisição
         setMassLiturgy(cached.data);
         setIsLoadingLiturgy(false);
@@ -235,7 +252,7 @@ export default function PrayerRoutine() {
       }
     } catch { /* ok */ }
 
-    const today = new Date().toLocaleDateString('pt-BR');
+    const today = displayDate;
     const litInfo = getTodayLiturgicalSummary();
     const hasCelebration = !!(litInfo.celebrationName);
     const celebrationRank = litInfo.celebrationName || '';
@@ -255,7 +272,7 @@ export default function PrayerRoutine() {
       // Tenta primeiro o endpoint de scraping (sem IA, mais confiável)
       let liturgyFromScraping: any = null;
       try {
-        const scraped = await fetch('/api/liturgy-today');
+        const scraped = await fetch(\`/api/liturgy-today?tz=\${tzOffset}\`);
         const scrapedData = await scraped.json();
         if (scrapedData?.success && scrapedData?.structured?.readings?.length >= 2) {
           liturgyFromScraping = {
@@ -274,7 +291,7 @@ export default function PrayerRoutine() {
         setMassLiturgy(liturgyFromScraping);
         try {
           const raw = JSON.parse(localStorage.getItem('groq_daily_cache') || '{}');
-          raw['mass_liturgy'] = { date: new Date().toDateString(), data: liturgyFromScraping };
+          raw['mass_liturgy'] = { date: cacheKey, data: liturgyFromScraping };
           localStorage.setItem('groq_daily_cache', JSON.stringify(raw));
         } catch {}
         setIsLoadingLiturgy(false);
@@ -328,7 +345,7 @@ export default function PrayerRoutine() {
         setMassLiturgy(parsed);
         try {
           const raw = JSON.parse(localStorage.getItem('groq_daily_cache') || '{}');
-          raw['mass_liturgy'] = { date: new Date().toDateString(), data: parsed };
+          raw['mass_liturgy'] = { date: cacheKey, data: parsed };
           localStorage.setItem('groq_daily_cache', JSON.stringify(raw));
         } catch {}
       } else {
