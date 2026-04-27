@@ -50,14 +50,30 @@ const persistStatic = () => {
   catch { /* storage cheio — ignora */ }
 };
 
+/**
+ * Retorna a data local no formato YYYY-MM-DD considerando o fuso do usuário.
+ * Usa o mesmo cálculo do PrayerRoutine.tsx para garantir que a chave seja
+ * idêntica em ambos os lugares — evita o bug onde o cache nunca bate.
+ */
+function getTodayKey(): string {
+  const now = new Date();
+  const tzOffset = -now.getTimezoneOffset(); // UTC-3 → -180
+  const localMs = now.getTime() + tzOffset * 60 * 1000;
+  const local = new Date(localMs);
+  const dd = local.getUTCDate().toString().padStart(2, '0');
+  const mm = (local.getUTCMonth() + 1).toString().padStart(2, '0');
+  const yyyy = local.getUTCFullYear().toString();
+  return `${yyyy}-${mm}-${dd}`;
+}
+
 const getCachedDaily = (key: string): any | null => {
-  const today = new Date().toDateString();
+  const today = getTodayKey();
   const entry = dailyCache[key];
   return entry && entry.date === today ? entry.data : null;
 };
 
 const setCachedDaily = (key: string, data: any) => {
-  dailyCache[key] = { date: new Date().toDateString(), data };
+  dailyCache[key] = { date: getTodayKey(), data };
   persistDaily();
 };
 
@@ -361,12 +377,15 @@ JSON: { "title": "...", "sections": [ { "name": "...", "content": "..." }, ... ]
    *  3. Scraping Canção Nova via /api/liturgy-today
    *  4. Groq/Llama com referências exatas do motor + contexto web como fallback final
    */
-  async getDailyMassLiturgy() {
+  async getDailyMassLiturgy(tzOffsetMinutes?: number) {
+    // Usa o offset do navegador para calcular a data local correta.
+    // Se não informado, calcula automaticamente a partir do fuso do ambiente.
+    const _tz = tzOffsetMinutes !== undefined ? tzOffsetMinutes : -new Date().getTimezoneOffset();
     // ── 1. Verificar cache com validação por referência ──────────────────────
     const cached = getCachedDaily('mass_liturgy');
     if (cached?.feast_checked) {
       try {
-        const lit = getTodayLiturgicalSummary();
+        const lit = getTodayLiturgicalSummary(_tz);
         const engineR = (lit.hasProperReadings && lit.feastReadings) ? lit.feastReadings : lit.readings;
         const engineGospel = engineR.gospel || '';
         const cachedGospel = cached.readings?.find((r: any) =>
@@ -381,7 +400,7 @@ JSON: { "title": "...", "sections": [ { "name": "...", "content": "..." }, ... ]
 
     try {
       // ── 2. Motor litúrgico: referências determinísticas ──────────────────
-      const lit = getTodayLiturgicalSummary();
+      const lit = getTodayLiturgicalSummary(_tz);
       const { datePT, dateISO, liturgicalYear, ferialCycle, season, seasonLabel,
         celebrationName, celebrationRank, hasProperReadings, readings, feastReadings, color } = lit;
       const useR = (hasProperReadings && feastReadings) ? feastReadings : readings;
@@ -438,7 +457,7 @@ JSON: { "title": "...", "sections": [ { "name": "...", "content": "..." }, ... ]
 
       // ── 3. Claude API com web search ─────────────────────────────────────
       try {
-        const rC = await fetch('/api/claude-liturgy');
+        const rC = await fetch(`/api/claude-liturgy?tz=${_tz}`);
         const dC = await rC.json();
         if (dC.success && dC.data?.readings?.length >= 2) {
           const result = buildResult(applyEngineRefs(dC.data.readings));
@@ -450,7 +469,7 @@ JSON: { "title": "...", "sections": [ { "name": "...", "content": "..." }, ... ]
       // ── 4. Scraping Canção Nova ──────────────────────────────────────────
       let webText = '';
       try {
-        const rS = await fetch('/api/liturgy-today');
+        const rS = await fetch(`/api/liturgy-today?tz=${_tz}`);
         const dS = await rS.json();
         if (dS.success) {
           if (dS.structured?.readings?.length >= 2) {
