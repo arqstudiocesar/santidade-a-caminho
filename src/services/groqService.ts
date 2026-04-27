@@ -16,21 +16,7 @@ import { getTodayLiturgicalSummary } from './liturgicalEngine';
 
 const dailyCache: Record<string, { date: string; data: any }> = (() => {
   try {
-    const raw = JSON.parse(localStorage.getItem('groq_daily_cache') || '{}');
-    // Invalidar cache de liturgia sempre que as referências do motor divergirem
-    if (raw['mass_liturgy']?.data) {
-      try {
-        // Importar motor litúrgico para comparar referências
-        // A invalidação por referências acontece em getDailyMassLiturgy()
-        // Aqui apenas invalidamos se faltar feast_checked
-        const d = raw['mass_liturgy'].data;
-        if (!d.feast_checked) {
-          delete raw['mass_liturgy'];
-          localStorage.setItem('groq_daily_cache', JSON.stringify(raw));
-        }
-      } catch { delete raw['mass_liturgy']; }
-    }
-    return raw;
+    return JSON.parse(localStorage.getItem('groq_daily_cache') || '{}');
   }
   catch { return {}; }
 })();
@@ -377,21 +363,15 @@ JSON: { "title": "...", "sections": [ { "name": "...", "content": "..." }, ... ]
     // Usa o offset do navegador para calcular a data local correta.
     // Se não informado, calcula automaticamente a partir do fuso do ambiente.
     const _tz = tzOffsetMinutes !== undefined ? tzOffsetMinutes : -new Date().getTimezoneOffset();
-    // ── 1. Verificar cache com validação por referência ──────────────────────
+    // ── 1. Cache bloqueado por dia: se já existe liturgia válida hoje, usa sem questionar ──
     const cached = getCachedDaily('mass_liturgy');
-    if (cached?.feast_checked) {
-      try {
-        const lit = getTodayLiturgicalSummary(_tz);
-        const engineR = (lit.hasProperReadings && lit.feastReadings) ? lit.feastReadings : lit.readings;
-        const engineGospel = engineR.gospel || '';
-        const cachedGospel = cached.readings?.find((r: any) =>
-          r.type?.toLowerCase().includes('evangelho')
-        )?.reference || '';
-        const hasReal = engineGospel && !engineGospel.startsWith('Evangelho —');
-        const match = !hasReal || cachedGospel.includes(engineGospel.split(',')[0]);
-        if (match) return cached;
-        console.log('[cache] invalidado: motor=' + engineGospel + ' cache=' + cachedGospel);
-      } catch { return cached; }
+    if (cached?.readings?.length >= 2) {
+      // Garante que feast_checked seja marcado para evitar futura invalidação
+      if (!cached.feast_checked) {
+        cached.feast_checked = true;
+        setCachedDaily('mass_liturgy', cached);
+      }
+      return cached;
     }
 
     try {

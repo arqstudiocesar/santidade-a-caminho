@@ -262,27 +262,25 @@ export default function PrayerRoutine() {
   };
 
   const fetchMassLiturgy = async () => {
+    const { cacheKey, displayDate, tzOffset } = getUserLocalDate();
+
+    // REGRA PRINCIPAL: se já existe liturgia válida no cache para hoje, usa sem nova requisição.
+    // Isso garante que a liturgia NÃO mude ao fazer refresh, logout/login, ou trocar de aba.
+    try {
+      const raw = JSON.parse(localStorage.getItem('groq_daily_cache') || '{}');
+      const cached = raw['mass_liturgy'];
+      if (cached && cached.date === cacheKey && cached.data?.readings?.length >= 2) {
+        setMassLiturgy(cached.data);
+        setIsReadingMass(true);
+        setViewingFeastLiturgy(false);
+        return;
+      }
+    } catch { /* ok */ }
+
     setIsLoadingLiturgy(true);
     setIsReadingMass(true);
     setViewingFeastLiturgy(false);
     setFeastLiturgy(null);
-
-    const { cacheKey, displayDate, tzOffset } = getUserLocalDate();
-
-    // Limpa cache diário se for de outro dia (chave YYYY-MM-DD garante precisão)
-    try {
-      const raw = JSON.parse(localStorage.getItem('groq_daily_cache') || '{}');
-      const cached = raw['mass_liturgy'];
-      if (cached && cached.date !== cacheKey) {
-        delete raw['mass_liturgy'];
-        localStorage.setItem('groq_daily_cache', JSON.stringify(raw));
-      } else if (cached && cached.date === cacheKey && cached.data) {
-        // Cache válido do dia → usa sem nova requisição
-        setMassLiturgy(cached.data);
-        setIsLoadingLiturgy(false);
-        return;
-      }
-    } catch { /* ok */ }
 
     const today = displayDate;
     // Passa o mesmo tzOffset do cacheKey para garantir que o motor litúrgico
@@ -311,6 +309,7 @@ export default function PrayerRoutine() {
         if (scrapedData?.success && scrapedData?.structured?.readings?.length >= 2) {
           liturgyFromScraping = {
             title: `Liturgia do Dia — ${today}`,
+            feast_checked: true,
             readings: scrapedData.structured.readings,
             feast: hasCelebration ? {
               name: celebrationRank.split(' — ')[0],
@@ -376,6 +375,7 @@ export default function PrayerRoutine() {
       const parsed = JSON.parse(clean);
 
       if (parsed?.readings?.length >= 2) {
+        parsed.feast_checked = true;
         setMassLiturgy(parsed);
         try {
           const raw = JSON.parse(localStorage.getItem('groq_daily_cache') || '{}');
