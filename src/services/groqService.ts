@@ -56,14 +56,10 @@ const persistStatic = () => {
  * idêntica em ambos os lugares — evita o bug onde o cache nunca bate.
  */
 function getTodayKey(): string {
-  const now = new Date();
-  const tzOffset = -now.getTimezoneOffset(); // UTC-3 → -180
-  const localMs = now.getTime() + tzOffset * 60 * 1000;
-  const local = new Date(localMs);
-  const dd = local.getUTCDate().toString().padStart(2, '0');
-  const mm = (local.getUTCMonth() + 1).toString().padStart(2, '0');
-  const yyyy = local.getUTCFullYear().toString();
-  return `${yyyy}-${mm}-${dd}`;
+  // Usa America/Sao_Paulo como referência fixa para todos os usuários no Brasil.
+  // Isso é consistente com getBrazilDateKey() no PrayerRoutine.tsx e garante
+  // que o cache do groqService e do PrayerRoutine sempre usem a mesma chave.
+  return new Date().toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' }); // YYYY-MM-DD
 }
 
 const getCachedDaily = (key: string): any | null => {

@@ -1192,8 +1192,11 @@ export function getLocalDate(tzOffsetMinutes?: number): Date {
       d.getUTCSeconds()
     );
   }
-  // Sem offset explícito: usa o fuso local do ambiente (correto no browser).
-  return new Date();
+  // Sem offset explícito: usa America/Sao_Paulo como referência padrão,
+  // garantindo consistência com o resto do sistema (PrayerRoutine, groqService).
+  const brl = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' }); // YYYY-MM-DD
+  const [y, m, d] = brl.split('-').map(Number);
+  return new Date(y, m - 1, d, 12, 0, 0); // meio-dia para evitar ambiguidade de DST
 }
 
 /** Retorna o dia litúrgico para hoje. */

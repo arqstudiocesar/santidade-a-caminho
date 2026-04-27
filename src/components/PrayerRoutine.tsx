@@ -166,9 +166,16 @@ function saveCustomPrayers(list: PrayerItem[]): void {
   try { localStorage.setItem(`${getUserPrayerBase()}_custom`, JSON.stringify(list)); } catch {}
 }
 // Marcações do dia — reset diário
+function getBrazilDateKey(): string {
+  // Usa America/Sao_Paulo para calcular a data local correta,
+  // independente do fuso do servidor ou do ambiente.
+  const now = new Date();
+  return now.toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' }); // retorna YYYY-MM-DD
+}
+
 function loadTodayDone(): string[] {
   try {
-    const today = new Date().toDateString();
+    const today = getBrazilDateKey();
     const r = localStorage.getItem(`${getUserPrayerBase()}_done`);
     if (!r) return [];
     const p = JSON.parse(r);
@@ -176,7 +183,7 @@ function loadTodayDone(): string[] {
   } catch { return []; }
 }
 function saveTodayDone(ids: string[]): void {
-  try { localStorage.setItem(`${getUserPrayerBase()}_done`, JSON.stringify({ date: new Date().toDateString(), ids })); } catch {}
+  try { localStorage.setItem(`${getUserPrayerBase()}_done`, JSON.stringify({ date: getBrazilDateKey(), ids })); } catch {}
 }
 // Lista completa com estado de conclusão do dia
 function buildPrayerList(): PrayerItem[] {
@@ -192,9 +199,30 @@ export default function PrayerRoutine() {
   const [newPrayerPeriod, setNewPrayerPeriod] = useState('morning');
   const [selectedPrayer, setSelectedPrayer] = useState<any>(null);
   const [liturgyData, setLiturgyData] = useState<any>(null);
-  const [massLiturgy, setMassLiturgy] = useState<any>(null);
+  // Inicializa massLiturgy diretamente do cache do dia (se existir).
+  // Isso garante que ao abrir o app / fazer refresh / login, a liturgia já
+  // apareça sem precisar clicar no botão novamente — e sem fazer nova requisição.
+  const [massLiturgy, setMassLiturgy] = useState<any>(() => {
+    try {
+      const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' });
+      const raw = JSON.parse(localStorage.getItem('groq_daily_cache') || '{}');
+      const entry = raw['mass_liturgy'];
+      if (entry && entry.date === today && entry.data?.readings?.length >= 2) {
+        return entry.data;
+      }
+    } catch {}
+    return null;
+  });
   const [isLoadingLiturgy, setIsLoadingLiturgy] = useState(false);
-  const [isReadingMass, setIsReadingMass] = useState(false);
+  // Se massLiturgy já foi carregada do cache, exibir o painel imediatamente.
+  const [isReadingMass, setIsReadingMass] = useState<boolean>(() => {
+    try {
+      const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' });
+      const raw = JSON.parse(localStorage.getItem('groq_daily_cache') || '{}');
+      const entry = raw['mass_liturgy'];
+      return !!(entry && entry.date === today && entry.data?.readings?.length >= 2);
+    } catch { return false; }
+  });
   const [viewingFeastLiturgy, setViewingFeastLiturgy] = useState(false);
   const [feastLiturgy, setFeastLiturgy] = useState<any>(null);
   const [isLoadingFeast, setIsLoadingFeast] = useState(false);
@@ -224,17 +252,12 @@ export default function PrayerRoutine() {
   // usuários no Brasil entre 21h-23h59 recebem a liturgia do dia seguinte.
   const getUserLocalDate = () => {
     const now = new Date();
-    // getTimezoneOffset() retorna minutos UTC - local (ex: UTC-3 → +180).
-    // Invertemos: UTC-3 → tzOffset = -180.
-    const tzOffset = -now.getTimezoneOffset();
-    // Reconstrói a data local somando o offset ao timestamp UTC puro.
-    const localMs = now.getTime() + tzOffset * 60 * 1000;
-    const local = new Date(localMs);
-    const dd = local.getUTCDate().toString().padStart(2, '0');
-    const mm = (local.getUTCMonth() + 1).toString().padStart(2, '0');
-    const yyyy = local.getUTCFullYear().toString();
-    const cacheKey = `${yyyy}-${mm}-${dd}`;
-    const displayDate = `${dd}/${mm}/${yyyy}`;
+    const tzOffset = -now.getTimezoneOffset(); // UTC-3 → -180
+    // cacheKey usa America/Sao_Paulo para garantir consistência com getBrazilDateKey()
+    // e com o servidor — evita divergência entre os três pontos.
+    const cacheKey = now.toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' }); // YYYY-MM-DD
+    const parts = cacheKey.split('-');
+    const displayDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
     return { cacheKey, displayDate, tzOffset };
   };
 
@@ -370,6 +393,16 @@ export default function PrayerRoutine() {
     }
     setIsLoadingLiturgy(false);
   };
+
+  // Auto-carrega a liturgia do dia quando o componente monta,
+  // SE ainda não há cache válido para hoje.
+  // Assim o usuário não precisa clicar — e a liturgia persiste o dia todo.
+  React.useEffect(() => {
+    if (!massLiturgy) {
+      fetchMassLiturgy();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const fetchFeastLiturgy = async (feastName: string, feastType: string) => {
     setIsLoadingFeast(true);
