@@ -1114,6 +1114,58 @@ const LENT_FERIAL: Record<string, ReadingRefs> = {
   'SEM6-3': { firstReading: 'Is 50,4-9a', psalm: 'Sl 68(69),8-10.21-22.31.33-34', gospel: 'Mt 26,14-25' },
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// LECIONÁRIO FERIAL DO TEMPO PASCAL
+// Chave: "W{semana}-{dia}" onde semana=2..7, dia: 1=Seg 2=Ter 3=Qua 4=Qui 5=Sex 6=Sáb
+// Semana 1 = Oitava da Páscoa (festivos — não entram aqui)
+// Semana 2 = Segunda semana do Tempo Pascal, etc.
+// Estas leituras são IGUAIS em todos os anos (A, B, C) — só os domingos variam.
+// ─────────────────────────────────────────────────────────────────────────────
+const EASTER_FERIAL: Record<string, ReadingRefs> = {
+  // ── SEMANA 2 ──────────────────────────────────────────────────────────────
+  'W2-1': { firstReading: 'At 4,23-31',     psalm: 'Sl 2,1-3.4-6.7-9',                       gospel: 'Jo 3,1-8' },
+  'W2-2': { firstReading: 'At 4,32-37',     psalm: 'Sl 92(93),1-2.5',                         gospel: 'Jo 3,7b-15' },
+  'W2-3': { firstReading: 'At 5,17-26',     psalm: 'Sl 33(34),2-3.4-5.6-7.8-9',              gospel: 'Jo 3,16-21' },
+  'W2-4': { firstReading: 'At 5,27-33',     psalm: 'Sl 33(34),2.9.17-18.19-20',               gospel: 'Jo 3,31-36' },
+  'W2-5': { firstReading: 'At 5,34-42',     psalm: 'Sl 27(28),1.8-9',                         gospel: 'Jo 6,1-15' },
+  'W2-6': { firstReading: 'At 6,1-7',       psalm: 'Sl 32(33),1-2.4-5.18-19',                 gospel: 'Jo 6,16-21' },
+  // ── SEMANA 3 ──────────────────────────────────────────────────────────────
+  'W3-1': { firstReading: 'At 6,8-15',      psalm: 'Sl 118(119),23-24.26-27.29-30',           gospel: 'Jo 6,22-29' },
+  'W3-2': { firstReading: 'At 7,51—8,1a',   psalm: 'Sl 30(31),3cd-4.6.7b-8ab.17.21ab',        gospel: 'Jo 6,30-35' },
+  'W3-3': { firstReading: 'At 8,1b-8',      psalm: 'Sl 65(66),1-3a.4-5.6-7a.16.20',           gospel: 'Jo 6,35-40' },
+  'W3-4': { firstReading: 'At 8,26-40',     psalm: 'Sl 65(66),8-9.16-17.20',                  gospel: 'Jo 6,44-51' },
+  'W3-5': { firstReading: 'At 9,1-20',      psalm: 'Sl 116(117),1.2',                          gospel: 'Jo 6,52-59' },
+  'W3-6': { firstReading: 'At 9,31-42',     psalm: 'Sl 115(116),12-13.14-15.16-17',            gospel: 'Jo 6,60-69' },
+  // ── SEMANA 4 ──────────────────────────────────────────────────────────────
+  'W4-1': { firstReading: 'At 11,1-18',     psalm: 'Sl 41(42),2-3;43(44),3-4',                gospel: 'Jo 10,11-18' },
+  'W4-2': { firstReading: 'At 11,19-26',    psalm: 'Sl 87(88),1-2.3-4.5-6',                   gospel: 'Jo 10,22-30' },
+  'W4-3': { firstReading: 'At 12,24—13,5a', psalm: 'Sl 67(68),1-6a',                           gospel: 'Jo 12,44-50' },
+  'W4-4': { firstReading: 'At 13,13-25',    psalm: 'Sl 88(89),2-3.21-22.25.27',               gospel: 'Jo 13,16-20' },
+  'W4-5': { firstReading: 'At 13,26-33',    psalm: 'Sl 2,6-7.8-9.10-11ab',                    gospel: 'Jo 14,1-6' },
+  'W4-6': { firstReading: 'At 13,44-52',    psalm: 'Sl 97(98),1.2-3ab.3cd-4.5-6',             gospel: 'Jo 14,7-14' },
+  // ── SEMANA 5 ──────────────────────────────────────────────────────────────
+  'W5-1': { firstReading: 'At 14,5-18',     psalm: 'Sl 115(116),1-2.3-4',                     gospel: 'Jo 14,21-26' },
+  'W5-2': { firstReading: 'At 14,19-28',    psalm: 'Sl 144(145),10-11.12-13ab.21',             gospel: 'Jo 14,27-31a' },
+  'W5-3': { firstReading: 'At 15,1-6',      psalm: 'Sl 121(122),1-2.3-4ab.4cd-5',             gospel: 'Jo 15,1-8' },
+  'W5-4': { firstReading: 'At 15,7-21',     psalm: 'Sl 95(96),1-2a.2b-3.10',                  gospel: 'Jo 15,9-11' },
+  'W5-5': { firstReading: 'At 15,22-31',    psalm: 'Sl 56(57),8-9.10.12',                     gospel: 'Jo 15,12-17' },
+  'W5-6': { firstReading: 'At 16,1-10',     psalm: 'Sl 99(100),1-2.3.5',                      gospel: 'Jo 15,18-21' },
+  // ── SEMANA 6 ──────────────────────────────────────────────────────────────
+  'W6-1': { firstReading: 'At 16,11-15',    psalm: 'Sl 149,1b-2.3-4.5-6a.9b',                 gospel: 'Jo 15,26—16,4a' },
+  'W6-2': { firstReading: 'At 16,22-34',    psalm: 'Sl 137(138),1-2ab.2c-3.7c-8',             gospel: 'Jo 16,5-11' },
+  'W6-3': { firstReading: 'At 17,15.22—18,1', psalm: 'Sl 148,1-2.11-12.13.14',               gospel: 'Jo 16,12-15' },
+  'W6-4': { firstReading: 'At 1,1-11',      psalm: 'Sl 46(47),2-3.6-7.8-9',                   gospel: 'Mc 16,15-20' }, // Ascensão (quinta da 6ª semana no Brasil)
+  'W6-5': { firstReading: 'At 18,9-18',     psalm: 'Sl 46(47),2-3.4-5.6-7',                   gospel: 'Jo 16,20-23a' },
+  'W6-6': { firstReading: 'At 18,23-28',    psalm: 'Sl 46(47),2-3.8-9.10',                    gospel: 'Jo 16,23b-28' },
+  // ── SEMANA 7 (entre Ascensão e Pentecostes) ───────────────────────────────
+  'W7-1': { firstReading: 'At 19,1-8',      psalm: 'Sl 67(68),2-3.4-5.6-7',                   gospel: 'Jo 16,29-33' },
+  'W7-2': { firstReading: 'At 20,17-27',    psalm: 'Sl 67(68),10-11.20-21',                   gospel: 'Jo 17,1-11a' },
+  'W7-3': { firstReading: 'At 20,28-38',    psalm: 'Sl 67(68),29-30.33-35a.35bc-36',          gospel: 'Jo 17,11b-19' },
+  'W7-4': { firstReading: 'At 22,30;23,6-11', psalm: 'Sl 15(16),1-2a.5.7-8.9-10.11',         gospel: 'Jo 17,20-26' },
+  'W7-5': { firstReading: 'At 25,13b-21',   psalm: 'Sl 102(103),1-2.11-12.19-20ab',           gospel: 'Jo 21,15-19' },
+  'W7-6': { firstReading: 'At 28,16-20.30-31', psalm: 'Sl 10(11),4.5.7',                      gospel: 'Jo 21,20-25' },
+};
+
 function getFerialReadings(
   season: LiturgicalSeason, week: number,
   weekday: number, cycle: FerialCycle, litYear: LiturgicalYear
@@ -1127,7 +1179,13 @@ function getFerialReadings(
     if (LENT_FERIAL[key0]) return LENT_FERIAL[key0];
   }
 
-  // Para Tempo Pascal ferial e Tempo Comum: orientação para a IA
+  // Tempo Pascal: banco de leituras completo (igual em todos os anos)
+  if (season === 'Tempo Pascal' && weekday >= 1 && weekday <= 6) {
+    const easterKey = `W${week}-${weekday}`;
+    if (EASTER_FERIAL[easterKey]) return EASTER_FERIAL[easterKey];
+  }
+
+  // Tempo Comum: orientação para a IA (sem banco próprio aqui)
   const cycleLabel = cycle === 'I' ? 'I' : 'II';
   const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
   return {

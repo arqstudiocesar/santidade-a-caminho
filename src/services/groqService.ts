@@ -17,14 +17,24 @@ import { getTodayLiturgicalSummary } from './liturgicalEngine';
 const dailyCache: Record<string, { date: string; data: any }> = (() => {
   try {
     const raw = JSON.parse(localStorage.getItem('groq_daily_cache') || '{}');
-    // Invalida cache salvo com referências placeholder (geradas antes do lecionário pascal ser completo).
-    // Placeholder começa com "Lecionário Ferial" — são referências genéricas, não escriturísticas.
-    if (raw['mass_liturgy']?.data?.readings) {
-      const firstRef: string = raw['mass_liturgy'].data.readings[0]?.reference || '';
-      if (firstRef.startsWith('Lecionário Ferial')) {
-        delete raw['mass_liturgy'];
-        localStorage.setItem('groq_daily_cache', JSON.stringify(raw));
-      }
+    // Invalida o cache de liturgia nas seguintes situações:
+    //  1. Sem feast_checked (marcador de dado completo)
+    //  2. Data diferente de hoje (cache de ontem)
+    //  3. Referência placeholder como "Lecionário Ferial..." (dado incompleto da IA)
+    if (raw['mass_liturgy']) {
+      try {
+        const today = getTodayKey();
+        const entry = raw['mass_liturgy'];
+        const d = entry?.data;
+        const firstRef: string = d?.readings?.[0]?.reference || '';
+        const hasPlaceholder = firstRef.startsWith('Lecionário Ferial');
+        const isExpired = entry.date !== today;
+        const noFeastCheck = !d?.feast_checked;
+        if (hasPlaceholder || isExpired || noFeastCheck) {
+          delete raw['mass_liturgy'];
+          localStorage.setItem('groq_daily_cache', JSON.stringify(raw));
+        }
+      } catch { delete raw['mass_liturgy']; }
     }
     return raw;
   }

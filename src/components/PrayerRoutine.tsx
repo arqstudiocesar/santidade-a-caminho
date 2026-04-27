@@ -192,6 +192,31 @@ function buildPrayerList(): PrayerItem[] {
   return [...DEFAULT_PRAYER_LIST, ...custom].map(p => ({ ...p, completed: done.includes(p.id) }));
 }
 
+/**
+ * Verifica se os dados do cache batem com as referências do motor litúrgico.
+ * Se o cache tiver a data certa mas referências erradas (bug de cache antigo),
+ * ele é descartado automaticamente para forçar nova busca.
+ */
+function validateCachedLiturgy(cached: any, engineFirstReading: string): boolean {
+  if (!cached?.readings?.length) return false;
+  // Se o motor retornou uma referência real (não placeholder), verifica consistência
+  if (engineFirstReading.startsWith('Lecionário Ferial') || engineFirstReading.startsWith('Evangelho')) {
+    return true; // Motor não tem ref exata — confia no cache
+  }
+  // Extrai o livro bíblico do motor (ex: "At 4,23-31" → "At")
+  const engineBook = engineFirstReading.split(/[\s,]/)[0];
+  // Verifica se alguma leitura do cache menciona esse livro
+  const firstReadingCached = cached.readings.find((r: any) =>
+    r.type?.includes('1ª') || r.type?.includes('Primeira')
+  );
+  if (!firstReadingCached) return true; // Sem 1ª leitura no cache — aceita
+  const cachedRef: string = firstReadingCached.reference || '';
+  const cachedBook = cachedRef.split(/[\s,]/)[0];
+  if (!cachedBook) return true; // Sem referência — aceita
+  // Se o livro da 1ª leitura é diferente, o cache está errado
+  return cachedBook === engineBook;
+}
+
 export default function PrayerRoutine() {
   const [prayers, setPrayers] = useState<PrayerItem[]>(() => buildPrayerList());
   const [showAddModal, setShowAddModal]       = useState(false);
@@ -208,19 +233,29 @@ export default function PrayerRoutine() {
       const raw = JSON.parse(localStorage.getItem('groq_daily_cache') || '{}');
       const entry = raw['mass_liturgy'];
       if (entry && entry.date === today && entry.data?.readings?.length >= 2) {
-        return entry.data;
+        // Valida se o cache bate com o motor litúrgico.
+        // Previne que um cache com data certa mas leituras erradas (bug antigo) seja exibido.
+        const engineRef = getTodayLiturgicalSummary(-new Date().getTimezoneOffset()).readings.firstReading;
+        if (validateCachedLiturgy(entry.data, engineRef)) {
+          return entry.data;
+        }
+        // Cache inválido — remove e força nova busca
+        delete raw['mass_liturgy'];
+        localStorage.setItem('groq_daily_cache', JSON.stringify(raw));
       }
     } catch {}
     return null;
   });
   const [isLoadingLiturgy, setIsLoadingLiturgy] = useState(false);
-  // Se massLiturgy já foi carregada do cache, exibir o painel imediatamente.
+  // Exibe o painel da liturgia ao abrir se já existe cache válido E verificado para hoje.
   const [isReadingMass, setIsReadingMass] = useState<boolean>(() => {
     try {
       const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' });
       const raw = JSON.parse(localStorage.getItem('groq_daily_cache') || '{}');
       const entry = raw['mass_liturgy'];
-      return !!(entry && entry.date === today && entry.data?.readings?.length >= 2);
+      if (!(entry && entry.date === today && entry.data?.readings?.length >= 2)) return false;
+      const engineRef = getTodayLiturgicalSummary(-new Date().getTimezoneOffset()).readings.firstReading;
+      return validateCachedLiturgy(entry.data, engineRef);
     } catch { return false; }
   });
   const [viewingFeastLiturgy, setViewingFeastLiturgy] = useState(false);
@@ -264,16 +299,22 @@ export default function PrayerRoutine() {
   const fetchMassLiturgy = async () => {
     const { cacheKey, displayDate, tzOffset } = getUserLocalDate();
 
-    // REGRA PRINCIPAL: se já existe liturgia válida no cache para hoje, usa sem nova requisição.
-    // Isso garante que a liturgia NÃO mude ao fazer refresh, logout/login, ou trocar de aba.
+    // REGRA PRINCIPAL: se já existe liturgia válida E verificada no cache para hoje, usa sem nova requisição.
+    // Também valida se as referências do cache batem com o motor litúrgico (previne dados errados de cache antigo).
     try {
       const raw = JSON.parse(localStorage.getItem('groq_daily_cache') || '{}');
       const cached = raw['mass_liturgy'];
       if (cached && cached.date === cacheKey && cached.data?.readings?.length >= 2) {
-        setMassLiturgy(cached.data);
-        setIsReadingMass(true);
-        setViewingFeastLiturgy(false);
-        return;
+        const engineRef = getTodayLiturgicalSummary(tzOffset).readings.firstReading;
+        if (validateCachedLiturgy(cached.data, engineRef)) {
+          setMassLiturgy(cached.data);
+          setIsReadingMass(true);
+          setViewingFeastLiturgy(false);
+          return;
+        }
+        // Cache inválido: data certa, mas leituras erradas — remove e busca de novo
+        delete raw['mass_liturgy'];
+        localStorage.setItem('groq_daily_cache', JSON.stringify(raw));
       }
     } catch { /* ok */ }
 
