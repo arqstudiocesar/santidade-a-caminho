@@ -192,31 +192,6 @@ function buildPrayerList(): PrayerItem[] {
   return [...DEFAULT_PRAYER_LIST, ...custom].map(p => ({ ...p, completed: done.includes(p.id) }));
 }
 
-/**
- * Verifica se os dados do cache batem com as referências do motor litúrgico.
- * Se o cache tiver a data certa mas referências erradas (bug de cache antigo),
- * ele é descartado automaticamente para forçar nova busca.
- */
-function validateCachedLiturgy(cached: any, engineFirstReading: string): boolean {
-  if (!cached?.readings?.length) return false;
-  // Se o motor retornou uma referência real (não placeholder), verifica consistência
-  if (engineFirstReading.startsWith('Lecionário Ferial') || engineFirstReading.startsWith('Evangelho')) {
-    return true; // Motor não tem ref exata — confia no cache
-  }
-  // Extrai o livro bíblico do motor (ex: "At 4,23-31" → "At")
-  const engineBook = engineFirstReading.split(/[\s,]/)[0];
-  // Verifica se alguma leitura do cache menciona esse livro
-  const firstReadingCached = cached.readings.find((r: any) =>
-    r.type?.includes('1ª') || r.type?.includes('Primeira')
-  );
-  if (!firstReadingCached) return true; // Sem 1ª leitura no cache — aceita
-  const cachedRef: string = firstReadingCached.reference || '';
-  const cachedBook = cachedRef.split(/[\s,]/)[0];
-  if (!cachedBook) return true; // Sem referência — aceita
-  // Se o livro da 1ª leitura é diferente, o cache está errado
-  return cachedBook === engineBook;
-}
-
 export default function PrayerRoutine() {
   const [prayers, setPrayers] = useState<PrayerItem[]>(() => buildPrayerList());
   const [showAddModal, setShowAddModal]       = useState(false);
@@ -233,29 +208,19 @@ export default function PrayerRoutine() {
       const raw = JSON.parse(localStorage.getItem('groq_daily_cache') || '{}');
       const entry = raw['mass_liturgy'];
       if (entry && entry.date === today && entry.data?.readings?.length >= 2) {
-        // Valida se o cache bate com o motor litúrgico.
-        // Previne que um cache com data certa mas leituras erradas (bug antigo) seja exibido.
-        const engineRef = getTodayLiturgicalSummary(-new Date().getTimezoneOffset()).readings.firstReading;
-        if (validateCachedLiturgy(entry.data, engineRef)) {
-          return entry.data;
-        }
-        // Cache inválido — remove e força nova busca
-        delete raw['mass_liturgy'];
-        localStorage.setItem('groq_daily_cache', JSON.stringify(raw));
+        return entry.data;
       }
     } catch {}
     return null;
   });
   const [isLoadingLiturgy, setIsLoadingLiturgy] = useState(false);
-  // Exibe o painel da liturgia ao abrir se já existe cache válido E verificado para hoje.
+  // Se massLiturgy já foi carregada do cache, exibir o painel imediatamente.
   const [isReadingMass, setIsReadingMass] = useState<boolean>(() => {
     try {
       const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' });
       const raw = JSON.parse(localStorage.getItem('groq_daily_cache') || '{}');
       const entry = raw['mass_liturgy'];
-      if (!(entry && entry.date === today && entry.data?.readings?.length >= 2)) return false;
-      const engineRef = getTodayLiturgicalSummary(-new Date().getTimezoneOffset()).readings.firstReading;
-      return validateCachedLiturgy(entry.data, engineRef);
+      return !!(entry && entry.date === today && entry.data?.readings?.length >= 2);
     } catch { return false; }
   });
   const [viewingFeastLiturgy, setViewingFeastLiturgy] = useState(false);
@@ -299,22 +264,16 @@ export default function PrayerRoutine() {
   const fetchMassLiturgy = async () => {
     const { cacheKey, displayDate, tzOffset } = getUserLocalDate();
 
-    // REGRA PRINCIPAL: se já existe liturgia válida E verificada no cache para hoje, usa sem nova requisição.
-    // Também valida se as referências do cache batem com o motor litúrgico (previne dados errados de cache antigo).
+    // REGRA PRINCIPAL: se já existe liturgia válida no cache para hoje, usa sem nova requisição.
+    // Isso garante que a liturgia NÃO mude ao fazer refresh, logout/login, ou trocar de aba.
     try {
       const raw = JSON.parse(localStorage.getItem('groq_daily_cache') || '{}');
       const cached = raw['mass_liturgy'];
       if (cached && cached.date === cacheKey && cached.data?.readings?.length >= 2) {
-        const engineRef = getTodayLiturgicalSummary(tzOffset).readings.firstReading;
-        if (validateCachedLiturgy(cached.data, engineRef)) {
-          setMassLiturgy(cached.data);
-          setIsReadingMass(true);
-          setViewingFeastLiturgy(false);
-          return;
-        }
-        // Cache inválido: data certa, mas leituras erradas — remove e busca de novo
-        delete raw['mass_liturgy'];
-        localStorage.setItem('groq_daily_cache', JSON.stringify(raw));
+        setMassLiturgy(cached.data);
+        setIsReadingMass(true);
+        setViewingFeastLiturgy(false);
+        return;
       }
     } catch { /* ok */ }
 
@@ -348,16 +307,56 @@ export default function PrayerRoutine() {
         const scraped = await fetch(`/api/liturgy-today?tz=${tzOffset}`);
         const scrapedData = await scraped.json();
         if (scrapedData?.success && scrapedData?.structured?.readings?.length >= 2) {
-          liturgyFromScraping = {
-            title: `Liturgia do Dia — ${today}`,
-            feast_checked: true,
-            readings: scrapedData.structured.readings,
-            feast: hasCelebration ? {
-              name: celebrationRank.split(' — ')[0],
-              type: celebrationRank.includes('Memória') ? 'Memória' :
-                    celebrationRank.includes('Festa') ? 'Festa' : 'Solenidade',
-            } : null,
+          // Aplica as referências do motor litúrgico sobre os textos do scraping.
+          // O site pode ter referências diferentes ou desatualizadas — o motor é a
+          // fonte de verdade para QUAL leitura é a correta para cada tipo.
+          const applyEngineRefsToScraped = (readings: any[]): any[] => {
+            return readings.map((r: any) => {
+              const type: string = r.type || '';
+              if (type.includes('1ª') || type.toLowerCase().includes('primeira')) {
+                return { ...r, reference: hasRealEngineRefs ? engineRefs.firstReading : r.reference };
+              }
+              if (type.includes('Salmo') || type.toLowerCase().includes('salmo')) {
+                return { ...r, reference: hasRealEngineRefs ? engineRefs.psalm : r.reference };
+              }
+              if (type.includes('2ª') || type.toLowerCase().includes('segunda')) {
+                return { ...r, reference: (hasRealEngineRefs && engineRefs.secondReading) ? engineRefs.secondReading : r.reference };
+              }
+              if (type.toLowerCase().includes('vangelho') || type.includes('Evangelho')) {
+                return { ...r, reference: hasRealEngineRefs ? engineRefs.gospel : r.reference };
+              }
+              return r;
+            });
           };
+
+          // Valida o Salmo: o texto deve seguir o formato responsorial (conter "R.")
+          // Se não seguir, o scraping provavelmente misturou o texto com outro salmo.
+          const validatePsalmText = (readings: any[]): boolean => {
+            const psalm = readings.find((r: any) =>
+              (r.type || '').toLowerCase().includes('salmo')
+            );
+            if (!psalm) return true; // Sem salmo — aceita e deixa a IA complementar
+            const text: string = psalm.text || '';
+            // Salmo responsorial válido deve conter "R." de responsório
+            return text.includes('R.') || text.includes('R ') || text.length < 50;
+          };
+
+          const correctedReadings = applyEngineRefsToScraped(scrapedData.structured.readings);
+          const psalmOk = validatePsalmText(correctedReadings);
+
+          if (psalmOk) {
+            liturgyFromScraping = {
+              title: `Liturgia do Dia — ${today}`,
+              feast_checked: true,
+              readings: correctedReadings,
+              feast: hasCelebration ? {
+                name: celebrationRank.split(' — ')[0],
+                type: celebrationRank.includes('Memória') ? 'Memória' :
+                      celebrationRank.includes('Festa') ? 'Festa' : 'Solenidade',
+              } : null,
+            };
+          }
+          // Se psalmOk === false, liturgyFromScraping permanece null → fallback para IA
         }
       } catch { /* prosseguir para IA */ }
 
@@ -397,7 +396,7 @@ export default function PrayerRoutine() {
         `    {"type": "Evangelho", "reference": "${hasRealEngineRefs ? engineRefs.gospel : 'referência exata'}", "text": "TEXTO COMPLETO"}`,
         `  ]${hasCelebration ? `,\n  "feast": {"name": "${celebrationRank.split(' \u2014 ')[0]}", "type": "${feastType}"}` : ''}`,
         `}`,
-        `REGRAS: 1. Textos completos sem "...". 2. Salmo: R. antífona, estrofes, R. após cada estrofe. 3. ${hasRealEngineRefs ? `Use SOMENTE as referências: ${engineRefs.firstReading} / ${engineRefs.psalm} / ${engineRefs.gospel}.` : 'Forneça leituras feriais corretas.'} 4. ${hasCelebration && feastRefs ? `PROIBIDO usar ${feastRefs} em "readings".` : 'Nenhuma celebração.'}`,
+        `REGRAS: 1. Textos COMPLETOS e ÍNTEGROS, SEM "..." ou cortes. 2. Salmo Responsorial: formato OBRIGATÓRIO: "R. [antífona completa]\n\n[estrofe 1]\n\nR. [antífona]\n\n[estrofe 2]\n\nR. [antífona]" — o texto do salmo deve ser do Sl ${hasRealEngineRefs ? engineRefs.psalm.split(",")[0] : "indicado"}, NÃO de outro salmo. 3. ${hasRealEngineRefs ? `Use SOMENTE estas referências: 1ª Leitura=${engineRefs.firstReading} / Salmo=${engineRefs.psalm} / Evangelho=${engineRefs.gospel}.` : "Forneça leituras feriais corretas."} 4. ${hasCelebration && feastRefs ? `PROIBIDO usar ${feastRefs} em "readings".` : "Nenhuma celebração."}  5. NUNCA confunda o salmo com outro — a referência determina o salmo EXATO a usar.`,
       ].filter(Boolean).join('\n');
       const resp = await fetch('/api/ai/generate', {
         method: 'POST',

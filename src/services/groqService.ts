@@ -17,24 +17,14 @@ import { getTodayLiturgicalSummary } from './liturgicalEngine';
 const dailyCache: Record<string, { date: string; data: any }> = (() => {
   try {
     const raw = JSON.parse(localStorage.getItem('groq_daily_cache') || '{}');
-    // Invalida o cache de liturgia nas seguintes situações:
-    //  1. Sem feast_checked (marcador de dado completo)
-    //  2. Data diferente de hoje (cache de ontem)
-    //  3. Referência placeholder como "Lecionário Ferial..." (dado incompleto da IA)
-    if (raw['mass_liturgy']) {
-      try {
-        const today = getTodayKey();
-        const entry = raw['mass_liturgy'];
-        const d = entry?.data;
-        const firstRef: string = d?.readings?.[0]?.reference || '';
-        const hasPlaceholder = firstRef.startsWith('Lecionário Ferial');
-        const isExpired = entry.date !== today;
-        const noFeastCheck = !d?.feast_checked;
-        if (hasPlaceholder || isExpired || noFeastCheck) {
-          delete raw['mass_liturgy'];
-          localStorage.setItem('groq_daily_cache', JSON.stringify(raw));
-        }
-      } catch { delete raw['mass_liturgy']; }
+    // Invalida cache salvo com referências placeholder (geradas antes do lecionário pascal ser completo).
+    // Placeholder começa com "Lecionário Ferial" — são referências genéricas, não escriturísticas.
+    if (raw['mass_liturgy']?.data?.readings) {
+      const firstRef: string = raw['mass_liturgy'].data.readings[0]?.reference || '';
+      if (firstRef.startsWith('Lecionário Ferial')) {
+        delete raw['mass_liturgy'];
+        localStorage.setItem('groq_daily_cache', JSON.stringify(raw));
+      }
     }
     return raw;
   }
@@ -451,14 +441,28 @@ JSON: { "title": "...", "sections": [ { "name": "...", "content": "..." }, ... ]
         };
       });
 
+      // Valida se o Salmo Responsorial do scraping está no formato correto.
+      // O Salmo deve conter "R." (antífona de resposta). Se não tiver, o scraping
+      // misturou texto de outro salmo — nesse caso descartamos e usamos a IA.
+      const isPsalmValid = (readings: any[]): boolean => {
+        const psalm = readings.find((r: any) => (r.type || '').includes('Salmo'));
+        if (!psalm) return true;
+        const text: string = psalm.text || '';
+        return text.includes('R.') || text.includes('R ') || text.length < 50;
+      };
+
       // ── 3. Claude API com web search ─────────────────────────────────────
       try {
         const rC = await fetch(`/api/claude-liturgy?tz=${_tz}`);
         const dC = await rC.json();
         if (dC.success && dC.data?.readings?.length >= 2) {
-          const result = buildResult(applyEngineRefs(dC.data.readings));
-          setCachedDaily('mass_liturgy', result);
-          return result;
+          const corrected = applyEngineRefs(dC.data.readings);
+          // Só usa se o Salmo estiver no formato responsorial correto
+          if (isPsalmValid(corrected)) {
+            const result = buildResult(corrected);
+            setCachedDaily('mass_liturgy', result);
+            return result;
+          }
         }
       } catch { /* continuar */ }
 
@@ -469,9 +473,13 @@ JSON: { "title": "...", "sections": [ { "name": "...", "content": "..." }, ... ]
         const dS = await rS.json();
         if (dS.success) {
           if (dS.structured?.readings?.length >= 2) {
-            const result = buildResult(applyEngineRefs(dS.structured.readings));
-            setCachedDaily('mass_liturgy', result);
-            return result;
+            const corrected = applyEngineRefs(dS.structured.readings);
+            // Só usa se o Salmo estiver no formato responsorial correto
+            if (isPsalmValid(corrected)) {
+              const result = buildResult(corrected);
+              setCachedDaily('mass_liturgy', result);
+              return result;
+            }
           }
           if (dS.text?.length > 300) webText = dS.text.slice(0, 6000);
         }
@@ -498,7 +506,7 @@ ${refs}${webCtx}
 INSTRUÇÕES OBRIGATÓRIAS:
 1. Forneça o texto COMPLETO e EXATO de cada leitura conforme a Bíblia de Jerusalém.
 2. Para a 1ª Leitura: inclua o cabeçalho "Leitura do Livro de [livro]." e todos os versículos.
-3. Para o Salmo: escreva "R. [antífona completa]", depois cada estrofe numerada, repetindo "R." após cada uma.
+3. Para o Salmo: a referência exata é "${psalmFull||useR.psalm}". Use SOMENTE os versículos desse salmo específico. Formato OBRIGATÓRIO: primeira linha "R. [antífona responsorial]", depois as estrofes dos versículos indicados, com "R." repetido após cada estrofe. NUNCA use versículos de outro salmo.
 4. Para o Evangelho: inclua "Proclamação do Evangelho de Jesus Cristo segundo [evangelista]." e o texto integral.
 5. NÃO abrevie com "..." nem omita versículos. Mínimo 6 versículos por leitura.
 
