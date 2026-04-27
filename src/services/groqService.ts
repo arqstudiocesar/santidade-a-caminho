@@ -16,7 +16,17 @@ import { getTodayLiturgicalSummary } from './liturgicalEngine';
 
 const dailyCache: Record<string, { date: string; data: any }> = (() => {
   try {
-    return JSON.parse(localStorage.getItem('groq_daily_cache') || '{}');
+    const raw = JSON.parse(localStorage.getItem('groq_daily_cache') || '{}');
+    // Invalida cache salvo com referências placeholder (geradas antes do lecionário pascal ser completo).
+    // Placeholder começa com "Lecionário Ferial" — são referências genéricas, não escriturísticas.
+    if (raw['mass_liturgy']?.data?.readings) {
+      const firstRef: string = raw['mass_liturgy'].data.readings[0]?.reference || '';
+      if (firstRef.startsWith('Lecionário Ferial')) {
+        delete raw['mass_liturgy'];
+        localStorage.setItem('groq_daily_cache', JSON.stringify(raw));
+      }
+    }
+    return raw;
   }
   catch { return {}; }
 })();
