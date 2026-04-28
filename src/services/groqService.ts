@@ -485,71 +485,17 @@ JSON: { "title": "...", "sections": [ { "name": "...", "content": "..." }, ... ]
         }
       } catch { /* continuar */ }
 
-      // ── 5. Groq/Llama com referências exatas + contexto web ──────────────
-      const refs = [
-        useR.firstReading && `1ª Leitura: ${useR.firstReading}`,
-        psalmFull && `Salmo Responsorial: ${psalmFull}`,
-        useR.secondReading && `2ª Leitura: ${useR.secondReading}`,
-        useR.gospel && `Evangelho: ${useR.gospel}`,
-      ].filter(Boolean).join('\n');
-
-      const webCtx = webText
-        ? `\n\nTEXTO DO SITE OFICIAL (cancaonova.com) — use para extrair os textos das leituras:\n${webText}\n\nIMPORTANTE: Copie os textos DO SITE acima. NÃO invente versículos.`
-        : '';
-
-      const userMsg = `Data: ${datePT} (${dateISO})
-${isFeast ? `CELEBRAÇÃO: ${celebrationRank.toUpperCase()} — ${celebrationName}` : `${seasonLabel} — Ciclo ${ferialCycle}, Ano ${liturgicalYear}`}
-
-REFERÊNCIAS EXATAS (Lecionário Romano oficial):
-${refs}${webCtx}
-
-INSTRUÇÕES OBRIGATÓRIAS:
-1. Forneça o texto COMPLETO e EXATO de cada leitura conforme a Bíblia de Jerusalém.
-2. Para a 1ª Leitura: inclua o cabeçalho "Leitura do Livro de [livro]." e todos os versículos.
-3. Para o Salmo: a referência exata é "${psalmFull||useR.psalm}". Use SOMENTE os versículos desse salmo específico. Formato OBRIGATÓRIO: primeira linha "R. [antífona responsorial]", depois as estrofes dos versículos indicados, com "R." repetido após cada estrofe. NUNCA use versículos de outro salmo.
-4. Para o Evangelho: inclua "Proclamação do Evangelho de Jesus Cristo segundo [evangelista]." e o texto integral.
-5. NÃO abrevie com "..." nem omita versículos. Mínimo 6 versículos por leitura.
-
-JSON:
-{
-  "title": "Liturgia Diária — ${datePT}",
-  "feast_checked": true,
-  "season": "${season}",
-  "liturgical_year": "${liturgicalYear}",
-  "color": "${color}",
-  ${isFeast ? `"feast": {"name": "${(celebrationName||'').replace(/"/g,"'")}","type": "${celebrationRank}"},` : ''}
-  "readings": [
-    {"type": "1ª Leitura", "reference": "${useR.firstReading}", "text": "Leitura do Livro de ...\n\n[texto completo]"},
-    {"type": "Salmo Responsorial", "reference": "${psalmFull||useR.psalm}", "text": "R. [antífona]\n\n1. [estrofe]\n\nR. [antífona]"},
-    ${useR.secondReading ? `{"type": "2ª Leitura", "reference": "${useR.secondReading}", "text": "[texto completo]"},` : ''}
-    {"type": "Evangelho", "reference": "${useR.gospel}", "text": "Proclamação do Evangelho...\n\n[texto completo]"}
-  ]
-}`;
-
-      const text = await callAI({
-        messages: [
-          { role: 'system', content: 'Você é especialista em Liturgia Católica e Bíblia de Jerusalém. Forneça textos bíblicos COMPLETOS, PRECISOS e FIÉIS ao original. Responda APENAS com JSON válido.' },
-          { role: 'user', content: userMsg },
-        ],
-        responseFormat: 'json',
-        maxTokens: 4500,
-      });
-
-      const result2 = parseJSON(text, null);
-      if (result2?.readings) {
-        result2.feast_checked = true;
-        const ps = result2.readings.find((r: any) => r.type?.toLowerCase().includes('salmo'));
-        if (ps && psalmFull) ps.reference = psalmFull;
-        setCachedDaily('mass_liturgy', result2);
-        return result2;
-      }
-
-      // Fallback final: referências sem texto
+      // ── 5. Scraping falhou e IA desabilitada para texto de leituras ─────────
+      // A geração de texto litúrgico por IA foi DESABILITADA porque a IA
+      // mistura traduções e inventa versículos — o que é inaceitável para
+      // textos litúrgicos oficiais da Igreja.
+      // Se o scraping falhou, exibimos as referências com mensagem clara
+      // ao invés de texto inventado.
       return buildResult([
-        useR.firstReading && { type: '1ª Leitura', reference: useR.firstReading, title: `Primeira Leitura (${useR.firstReading})`, text: 'Texto não disponível. Verifique sua conexão.' },
-        psalmFull && { type: 'Salmo Responsorial', reference: psalmFull, title: `Responsório — ${psalmFull}`, text: 'Texto não disponível.' },
-        useR.secondReading && { type: '2ª Leitura', reference: useR.secondReading, title: `Segunda Leitura (${useR.secondReading})`, text: 'Texto não disponível.' },
-        useR.gospel && { type: 'Evangelho', reference: useR.gospel, title: `Evangelho (${useR.gospel})`, text: 'Texto não disponível.' },
+        useR.firstReading && { type: '1ª Leitura', reference: useR.firstReading, title: `Primeira Leitura (${useR.firstReading})`, text: '⚠️ Texto não disponível no momento.\nVerifique o site oficial: liturgia.cancaonova.com' },
+        psalmFull && { type: 'Salmo Responsorial', reference: psalmFull, title: `Responsório — ${psalmFull}`, text: '⚠️ Texto não disponível no momento.\nVerifique o site oficial: liturgia.cancaonova.com' },
+        useR.secondReading && { type: '2ª Leitura', reference: useR.secondReading, title: `Segunda Leitura (${useR.secondReading})`, text: '⚠️ Texto não disponível no momento.\nVerifique o site oficial: liturgia.cancaonova.com' },
+        useR.gospel && { type: 'Evangelho', reference: useR.gospel, title: `Evangelho (${useR.gospel})`, text: '⚠️ Texto não disponível no momento.\nVerifique o site oficial: liturgia.cancaonova.com' },
       ].filter(Boolean) as any[]);
 
     } catch (e) {

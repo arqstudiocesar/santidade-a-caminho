@@ -371,62 +371,51 @@ export default function PrayerRoutine() {
         return;
       }
 
-      // Fallback: IA — prompt ancorado nas refs do motor litúrgico e que separa
-      // explicitamente leituras da festa vs. leituras feriais/dominicais do dia.
-      const feastWarning = (hasCelebration && feastRefs)
-        ? `\n\u26a0\ufe0f ATEN\u00c7\u00c3O \u2014 celebra\u00e7\u00e3o: ${celebrationRank}. Leituras PR\u00d3PRIAS: ${feastRefs}. ESSAS REF. N\u00c3O DEVEM aparecer em "readings".`
-        : '';
-      const readingAnchor = hasRealEngineRefs
-        ? `Leituras do Lection\u00e1rio para hoje:\n- 1\u00aa Leitura: ${engineRefs.firstReading}\n- Salmo: ${engineRefs.psalm}\n- Evangelho: ${engineRefs.gospel}${engineRefs.secondReading ? `\n- 2\u00aa Leitura: ${engineRefs.secondReading}` : ''}`
-        : `Per\u00edodo: ${litInfo.seasonLabel} \u2014 Ano ${litInfo.liturgicalYear} \u2014 Ciclo ${litInfo.ferialCycle}.`;
-
-      const systemPrompt = `Voc\u00ea \u00e9 especialista em Liturgia Cat\u00f3lica e Lection\u00e1rio Romano. Responda APENAS com JSON v\u00e1lido.${feastWarning}`;
-      const feastType = celebrationRank.includes('Mem\u00f3ria') ? 'Mem\u00f3ria' : celebrationRank.includes('Festa') ? 'Festa' : 'Solenidade';
-
-      const userPrompt = [
-        `Leituras COMPLETAS da Santa Missa de hoje, ${today}.`,
-        readingAnchor,
-        hasCelebration ? `Celebra\u00e7\u00e3o: ${celebrationRank} \u2192 vai SOMENTE em "feast", SEM leituras em "readings".` : '',
-        `JSON:`,
-        `{`,
-        `  "title": "Liturgia do Di\u00e1 \u2014 ${today}",`,
-        `  "readings": [`,
-        `    {"type": "1\u00aa Leitura", "reference": "${hasRealEngineRefs ? engineRefs.firstReading : 'referência exata'}", "text": "TEXTO COMPLETO"},`,
-        `    {"type": "Salmo Responsorial", "reference": "${hasRealEngineRefs ? engineRefs.psalm : 'referência exata'}", "text": "R. [antífona]\n\n1. [estrofe]\n\nR."},`,
-        `    {"type": "Evangelho", "reference": "${hasRealEngineRefs ? engineRefs.gospel : 'referência exata'}", "text": "TEXTO COMPLETO"}`,
-        `  ]${hasCelebration ? `,\n  "feast": {"name": "${celebrationRank.split(' \u2014 ')[0]}", "type": "${feastType}"}` : ''}`,
-        `}`,
-        `REGRAS: 1. Textos COMPLETOS e ÍNTEGROS, SEM "..." ou cortes. 2. Salmo Responsorial: formato OBRIGATÓRIO: "R. [antífona completa]\n\n[estrofe 1]\n\nR. [antífona]\n\n[estrofe 2]\n\nR. [antífona]" — o texto do salmo deve ser do Sl ${hasRealEngineRefs ? engineRefs.psalm.split(",")[0] : "indicado"}, NÃO de outro salmo. 3. ${hasRealEngineRefs ? `Use SOMENTE estas referências: 1ª Leitura=${engineRefs.firstReading} / Salmo=${engineRefs.psalm} / Evangelho=${engineRefs.gospel}.` : "Forneça leituras feriais corretas."} 4. ${hasCelebration && feastRefs ? `PROIBIDO usar ${feastRefs} em "readings".` : "Nenhuma celebração."}  5. NUNCA confunda o salmo com outro — a referência determina o salmo EXATO a usar.`,
-      ].filter(Boolean).join('\n');
-      const resp = await fetch('/api/ai/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: userPrompt },
+      // Scraping falhou — exibe mensagem com referências oficiais.
+      // A geração de texto litúrgico por IA foi DESABILITADA: a IA mistura
+      // traduções e inventa versículos, o que é inaceitável para liturgia oficial.
+      if (hasRealEngineRefs) {
+        const fallbackLiturgy = {
+          title: `Liturgia do Dia — ${today}`,
+          feast_checked: true,
+          readings: [
+            {
+              type: '1ª Leitura',
+              reference: engineRefs.firstReading,
+              title: `Primeira Leitura (${engineRefs.firstReading})`,
+              text: `⚠️ Não foi possível carregar o texto desta leitura.\n\nConsulte o texto oficial em:\nliturgiadapalavraportuguesa.org ou liturgia.cancaonova.com`,
+            },
+            {
+              type: 'Salmo Responsorial',
+              reference: engineRefs.psalm,
+              title: `Responsório — ${engineRefs.psalm}`,
+              text: `⚠️ Não foi possível carregar o texto deste Salmo.\n\nConsulte o texto oficial em:\nliturgiadapalavraportuguesa.org ou liturgia.cancaonova.com`,
+            },
+            ...(engineRefs.secondReading ? [{
+              type: '2ª Leitura',
+              reference: engineRefs.secondReading,
+              title: `Segunda Leitura (${engineRefs.secondReading})`,
+              text: `⚠️ Não foi possível carregar o texto desta leitura.\n\nConsulte o texto oficial em:\nliturgiadapalavraportuguesa.org ou liturgia.cancaonova.com`,
+            }] : []),
+            {
+              type: 'Evangelho',
+              reference: engineRefs.gospel,
+              title: `Evangelho (${engineRefs.gospel})`,
+              text: `⚠️ Não foi possível carregar o texto deste Evangelho.\n\nConsulte o texto oficial em:\nliturgiadapalavraportuguesa.org ou liturgia.cancaonova.com`,
+            },
           ],
-          responseFormat: 'json',
-          maxTokens: 3500,
-        }),
-      });
-      const respData = await resp.json();
-      const clean = (respData.text || '').replace(/^```json\s*/i, '').replace(/```\s*$/i, '').trim();
-      const parsed = JSON.parse(clean);
-
-      if (parsed?.readings?.length >= 2) {
-        parsed.feast_checked = true;
-        setMassLiturgy(parsed);
-        try {
-          const raw = JSON.parse(localStorage.getItem('groq_daily_cache') || '{}');
-          raw['mass_liturgy'] = { date: cacheKey, data: parsed };
-          localStorage.setItem('groq_daily_cache', JSON.stringify(raw));
-        } catch {}
+          feast: hasCelebration ? {
+            name: celebrationRank.split(' — ')[0],
+            type: celebrationRank.includes('Memória') ? 'Memória' :
+                  celebrationRank.includes('Festa') ? 'Festa' : 'Solenidade',
+          } : null,
+        };
+        setMassLiturgy(fallbackLiturgy);
+        // NÃO salva no cache — próxima tentativa deve buscar do servidor novamente
       } else {
-        alert("Não foi possível carregar a Liturgia Diária. Por favor, tente novamente.");
+        alert("Não foi possível carregar a Liturgia Diária. Verifique sua conexão e tente novamente.");
         setIsReadingMass(false);
       }
-    } catch (e) {
       console.error('Erro ao carregar liturgia:', e);
       alert("Não foi possível carregar a Liturgia Diária. Por favor, tente novamente.");
       setIsReadingMass(false);
@@ -434,15 +423,8 @@ export default function PrayerRoutine() {
     setIsLoadingLiturgy(false);
   };
 
-  // Auto-carrega a liturgia do dia quando o componente monta,
-  // SE ainda não há cache válido para hoje.
-  // Assim o usuário não precisa clicar — e a liturgia persiste o dia todo.
-  React.useEffect(() => {
-    if (!massLiturgy) {
-      fetchMassLiturgy();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // A liturgia NÃO é carregada automaticamente.
+  // O usuário deve clicar no botão para exibir a liturgia do dia.
 
   const fetchFeastLiturgy = async (feastName: string, feastType: string) => {
     setIsLoadingFeast(true);

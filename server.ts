@@ -561,71 +561,240 @@ app.post('/api/settings', (req, res) => {
 });
 
 // ── Liturgia (scraping Canção Nova) ───────────────────────────────────────────
+// O site liturgia.cancaonova.com/pb/ usa abas JavaScript para exibir as leituras.
+// O HTML renderizado pelo servidor NÃO contém id="tab-1leitura" etc — essas IDs só
+// existem no DOM após a execução do JS no navegador.
+// A solução é usar os MARCADORES TEXTUAIS do conteúdo (ex: "Leitura dos Atos",
+// "Responsório Sl", "Proclamação do Evangelho") que SÃO incluídos no HTML estático.
 app.get('/api/liturgy-today', async (req, res) => {
   try {
-    // Corrige fuso horário: o cliente envia ?tz=-180 (UTC-3 = -180 minutos).
-    // Se não enviado, usa -180 (Brasília/padrão Brasil) para evitar
-    // o bug de buscar a liturgia do dia seguinte entre 21h e 23h59 (horário de Brasília).
+    // Data local do usuário (respeita fuso horário enviado pelo cliente)
     const tzOffset = parseInt((req.query.tz as string) || '-180', 10);
     const safeOffset = isNaN(tzOffset) ? -180 : Math.max(-720, Math.min(720, tzOffset));
-    // Data local do usuário = UTC + offset do fuso (em minutos)
     const localNow = new Date(Date.now() + safeOffset * 60 * 1000);
-    const dd = localNow.getUTCDate().toString().padStart(2,'0');
-    const mm = (localNow.getUTCMonth()+1).toString().padStart(2,'0');
+    const dd   = localNow.getUTCDate().toString().padStart(2, '0');
+    const mm   = (localNow.getUTCMonth() + 1).toString().padStart(2, '0');
     const yyyy = localNow.getUTCFullYear().toString();
-    const dateStr = `${dd}/${mm}/${yyyy}`;
+    const dateKey = `${yyyy}-${mm}-${dd}`;
+
+    // Tenta as URLs em ordem de preferência
     const urls = [
       `https://liturgia.cancaonova.com/pb/${yyyy}/${mm}/${dd}/`,
+      `https://liturgia.cancaonova.com/pb/?sDia=${dd}&sMes=${mm}&sAno=${yyyy}`,
       'https://liturgia.cancaonova.com/pb/',
     ];
-    let html = '', bestUrl = '';
+
+    let html = '';
     for (const url of urls) {
       try {
-        const r = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 Chrome/120', 'Accept-Language': 'pt-BR,pt;q=0.9' }, signal: AbortSignal.timeout(15000) });
+        const r = await fetch(url, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            'Accept': 'text/html,application/xhtml+xml',
+            'Accept-Language': 'pt-BR,pt;q=0.9',
+          },
+          redirect: 'follow',
+          signal: AbortSignal.timeout(15000),
+        });
         if (!r.ok) continue;
         const h = await r.text();
-        if (h.length > html.length) { html = h; bestUrl = url; }
+        // Só aceita HTML que contenha conteúdo litúrgico real
+        if (h.includes('Leitura') && h.includes('Evangelho') && h.length > html.length) {
+          html = h;
+          break; // Primeiro que funcionar, usa
+        }
       } catch { continue; }
     }
-    if (!html) return res.json({ success: false, date: dateStr });
 
-    const cleanHtml = (raw: string) => raw
-      .replace(/<script[\s\S]*?<\/script>/gi,'').replace(/<style[\s\S]*?<\/style>/gi,'')
-      .replace(/<br[^>]*>/gi,'\n').replace(/<p[^>]*>/gi,'\n').replace(/<\/p>/gi,'\n')
-      .replace(/<div[^>]*>/gi,'\n').replace(/<\/div>/gi,'\n')
-      .replace(/<strong[^>]*>/gi,'').replace(/<\/strong>/gi,'')
-      .replace(/<em[^>]*>/gi,'').replace(/<\/em>/gi,'')
-      .replace(/<[^>]+>/g,'').replace(/&amp;/g,'&').replace(/&nbsp;/g,' ')
-      .replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&#\d+;/g,'')
-      .replace(/[ \t]{2,}/g,' ').replace(/\n{3,}/g,'\n\n').trim();
+    if (!html) return res.json({ success: false, date: dateKey, error: 'Sem resposta do site' });
 
+    // ── Limpeza de HTML ─────────────────────────────────────────────────────────
+    const clean = (raw: string): string => raw
+      .replace(/<script[\s\S]*?<\/script>/gi, '')
+      .replace(/<style[\s\S]*?<\/style>/gi, '')
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<\/p>/gi, '\n')
+      .replace(/<p[^>]*>/gi, '')
+      .replace(/<strong[^>]*>([\s\S]*?)<\/strong>/gi, '$1')
+      .replace(/<b[^>]*>([\s\S]*?)<\/b>/gi, '$1')
+      .replace(/<em[^>]*>([\s\S]*?)<\/em>/gi, '$1')
+      .replace(/<span[^>]*>([\s\S]*?)<\/span>/gi, '$1')
+      .replace(/<div[^>]*>/gi, '\n')
+      .replace(/<\/div>/gi, '\n')
+      .replace(/<[^>]+>/g, '')
+      .replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+      .replace(/&#\d+;/g, '').replace(/&[a-zA-Z]+;/g, '')
+      .replace(/[ \t]{2,}/g, ' ').replace(/ +\n/g, '\n').replace(/\n +/g, '\n')
+      .replace(/\n{3,}/g, '\n\n').trim();
+
+    // ── Extrator por marcadores textuais ────────────────────────────────────────
+    // Extrai o texto entre dois marcadores, limpando o HTML no processo.
+    const extractBetween = (
+      source: string,
+      startMarkers: string[],
+      endMarkers: string[],
+      maxLen = 15000,
+    ): string => {
+      for (const start of startMarkers) {
+        const idx = source.indexOf(start);
+        if (idx === -1) continue;
+        for (const end of endMarkers) {
+          const endIdx = source.indexOf(end, idx + start.length);
+          if (endIdx !== -1 && endIdx - idx <= maxLen) {
+            return clean(source.slice(idx, endIdx + end.length));
+          }
+        }
+        // Sem fim definido: pega até maxLen
+        const raw = clean(source.slice(idx, idx + maxLen));
+        if (raw.length > 30) return raw;
+      }
+      return '';
+    };
+
+    // ── 1ª Leitura ──────────────────────────────────────────────────────────────
+    const leitura1Text = extractBetween(
+      html,
+      ['Leitura do Livro', 'Leitura dos Atos', 'Leitura da Carta',
+       'Leitura do Apocalipse', 'Leitura da Primeira', 'Leitura da Segunda'],
+      ['- Palavra do Senhor', '– Palavra do Senhor', '— Palavra do Senhor',
+       'Palavra do Senhor', '- Graças a Deus', '— Graças a Deus'],
+    );
+
+    // Referência da 1ª Leitura: extraída do título da leitura no HTML
+    // O site usa: <strong>Primeira Leitura (At 11,19-26)</strong>
+    const ref1Match = html.match(
+      /(?:Primeira\s+Leitura|1[aª]\s*Leitura)\s*\(([^)]{3,40})\)/i
+    ) || html.match(/<strong[^>]*>([A-Z][a-z]{0,5}\s+\d[\d,;.\s\-]{2,20})<\/strong>/i);
+    const ref1 = ref1Match?.[1]?.trim() || '';
+
+    // ── Salmo Responsorial ──────────────────────────────────────────────────────
+    // O salmo começa com "Responsório Sl" e termina antes do Aleluia/Evangelho
+    const salmoRaw = extractBetween(
+      html,
+      ['Responsório Sl', 'Responsório sl', 'RESPONSÓRIO SL', 'Salmo Responsorial'],
+      ['Aclamação ao Evangelho', 'ACLAMAÇÃO AO EVANGELHO',
+       'Proclamação do Evangelho', '- Aleluia', '— Aleluia', 'Aleluia,', 'ALELUIA',
+       '2ª Leitura', 'Segunda Leitura'],
+      5000,
+    );
+
+    // Extrai a referência do salmo (ex: "Responsório Sl 86(87),1-3.4.5.6-7")
+    const salmoRefMatch = salmoRaw.match(/Responsório\s+(Sl[\s\d()/,.;a-zA-Z\-]+)/i);
+    const salmoRef = salmoRefMatch?.[1]?.trim() || '';
+
+    // Formata o salmo no padrão litúrgico: R. [antífona], estrofes com R. intercalado
+    const formatarSalmo = (raw: string): string => {
+      if (!raw) return '';
+      const linhas = raw.split('\n').map(l => l.trim()).filter(l => l.length > 2);
+      let antifona = '';
+      const estrofes: string[] = [];
+
+      for (const linha of linhas) {
+        // Pula linha de título (começa com "Responsório" ou "Salmo")
+        if (/^(Responsório|Salmo\s+Responsorial|Sl\s*\d)/i.test(linha)) continue;
+        // Remove prefixo de traço
+        const limpa = linha.replace(/^[-–—•]\s*/, '').trim();
+        if (!limpa) continue;
+
+        if (!antifona) {
+          // A primeira linha de conteúdo é a antífona
+          antifona = limpa;
+        } else {
+          estrofes.push(limpa);
+        }
+      }
+
+      if (!antifona) return raw; // Fallback: retorna texto bruto se não parseou
+
+      // Monta: R. antífona → estrofe 1 → R. antífona → estrofe 2 → R. antífona
+      const partes: string[] = [`R. ${antifona}`];
+      for (const estrofe of estrofes) {
+        partes.push('');
+        partes.push(estrofe);
+        partes.push('');
+        partes.push(`R. ${antifona}`);
+      }
+      return partes.join('\n');
+    };
+
+    const salmoText = formatarSalmo(salmoRaw);
+
+    // ── 2ª Leitura (domingos/solenidades) ───────────────────────────────────────
+    // Existe uma segunda ocorrência de "Leitura da Carta" nos domingos
+    let leitura2Text = '';
+    const leitura1StartMarkers = ['Leitura do Livro', 'Leitura dos Atos', 'Leitura da Carta',
+                                   'Leitura do Apocalipse'];
+    let firstReadingEnd = -1;
+    for (const m of leitura1StartMarkers) {
+      const idx = html.indexOf(m);
+      if (idx !== -1) {
+        // Encontra o fim da 1ª leitura
+        const endIdx = html.indexOf('Palavra do Senhor', idx);
+        if (endIdx !== -1) firstReadingEnd = endIdx + 'Palavra do Senhor'.length;
+        break;
+      }
+    }
+    if (firstReadingEnd > 0) {
+      leitura2Text = extractBetween(
+        html.slice(firstReadingEnd),
+        ['Leitura da Carta', 'Leitura do Livro', 'Leitura da Primeira', 'Leitura da Segunda'],
+        ['- Palavra do Senhor', '– Palavra do Senhor', '— Palavra do Senhor',
+         'Palavra do Senhor'],
+        12000,
+      );
+    }
+
+    // ── Evangelho ────────────────────────────────────────────────────────────────
+    const evangelhoText = extractBetween(
+      html,
+      ['Proclamação do Evangelho', 'PROCLAMAÇÃO DO EVANGELHO'],
+      ['- Palavra da Salvação', '– Palavra da Salvação', '— Palavra da Salvação',
+       'Palavra da Salvação'],
+    );
+
+    // Referência do Evangelho: ex: "Evangelho (Jo 10,22-30)"
+    const refEvMatch = html.match(
+      /(?:Evangelho)\s*\(([A-Za-z]{1,4}\s+\d[\d,.\-\s]{2,20})\)/i
+    );
+    const refEv = refEvMatch?.[1]?.trim() || '';
+
+    // ── Monta as leituras estruturadas ──────────────────────────────────────────
     interface Reading { type: string; reference: string; text: string; }
     const readings: Reading[] = [];
-    const pats = [
-      { id: 'tab-1leitura', type: '1ª Leitura' },{ id: 'tab-1-leitura', type: '1ª Leitura' },
-      { id: 'tab-salmo', type: 'Salmo Responsorial' },
-      { id: 'tab-2leitura', type: '2ª Leitura' },{ id: 'tab-2-leitura', type: '2ª Leitura' },
-      { id: 'tab-evangelho', type: 'Evangelho' },
-    ];
-    for (const p of pats) {
-      const re = new RegExp('id=["\']' + p.id + '["\'][^>]*>([\\s\\S]{100,8000}?)(?=id=["\']tab-|<\\/section|$)','i');
-      const m = html.match(re); if (!m?.[1]) continue;
-      const refM = m[1].match(/<strong[^>]*>([^<]{5,60})<\/strong>/i) || m[1].match(/\(([A-Za-z]\w{0,8}\s+\d[^)]{2,40})\)/);
-      const text = cleanHtml(m[1]);
-      if (text.length > 80) readings.push({ type: p.type, reference: refM?.[1]?.trim() || '', text });
-    }
-    if (readings.filter(r => r.type.includes('Leitura') || r.type.includes('Evangelho')).length >= 2)
-      return res.json({ success: true, structured: { readings }, date: dateStr });
 
-    let main = '';
-    const mainM = html.match(/<main[^>]*>([\s\S]*?)<\/main>/i);
-    const artM  = html.match(/<article[^>]*>([\s\S]*?)<\/article>/i);
-    if (mainM?.[1]?.length > 300) main = mainM[1];
-    else if (artM?.[1]?.length > 300) main = artM[1];
-    else main = html.slice(0, 20000);
-    const fullText = cleanHtml(main);
-    res.json({ success: fullText.length > 200, text: fullText.slice(0,8000), url: bestUrl, date: dateStr });
-  } catch (e: any) { res.json({ success: false, error: e.message }); }
+    if (leitura1Text.length > 50) {
+      readings.push({ type: '1ª Leitura', reference: ref1, text: leitura1Text });
+    }
+    if (salmoText.length > 20) {
+      readings.push({ type: 'Salmo Responsorial', reference: salmoRef, text: salmoText });
+    }
+    if (leitura2Text.length > 50) {
+      readings.push({ type: '2ª Leitura', reference: '', text: leitura2Text });
+    }
+    if (evangelhoText.length > 50) {
+      readings.push({ type: 'Evangelho', reference: refEv, text: evangelhoText });
+    }
+
+    const has1a     = readings.some(r => r.type.includes('1ª'));
+    const hasGospel = readings.some(r => r.type.includes('Evangelho'));
+
+    if (has1a && hasGospel) {
+      return res.json({ success: true, structured: { readings }, date: dateKey });
+    }
+
+    // Fallback: retorna o texto bruto para que o groqService tente estruturar
+    const fallbackText = clean(html).slice(0, 8000);
+    return res.json({
+      success: fallbackText.length > 200,
+      text: fallbackText,
+      date: dateKey,
+      error: `Scraping parcial: 1ª=${has1a}, Ev=${hasGospel}`,
+    });
+
+  } catch (e: any) {
+    res.json({ success: false, error: e.message });
+  }
 });
 
 // ── Claude API com web search (leituras) ─────────────────────────────────────
