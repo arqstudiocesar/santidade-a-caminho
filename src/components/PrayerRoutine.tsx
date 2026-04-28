@@ -416,11 +416,13 @@ export default function PrayerRoutine() {
         alert("Não foi possível carregar a Liturgia Diária. Verifique sua conexão e tente novamente.");
         setIsReadingMass(false);
       }
+    } catch (e) {
       console.error('Erro ao carregar liturgia:', e);
       alert("Não foi possível carregar a Liturgia Diária. Por favor, tente novamente.");
       setIsReadingMass(false);
+    } finally {
+      setIsLoadingLiturgy(false);
     }
-    setIsLoadingLiturgy(false);
   };
 
   // A liturgia NÃO é carregada automaticamente.
