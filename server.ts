@@ -578,10 +578,11 @@ app.get('/api/liturgy-today', async (req, res) => {
     const dateKey = `${yyyy}-${mm}-${dd}`;
 
     // Tenta as URLs em ordem de preferência
+    // A URL com data é a mais precisa; a genérica /pb/ sempre mostra o dia atual
     const urls = [
       `https://liturgia.cancaonova.com/pb/${yyyy}/${mm}/${dd}/`,
-      `https://liturgia.cancaonova.com/pb/?sDia=${dd}&sMes=${mm}&sAno=${yyyy}`,
       'https://liturgia.cancaonova.com/pb/',
+      `https://liturgia.cancaonova.com/pb/?sDia=${dd}&sMes=${mm}&sAno=${yyyy}`,
     ];
 
     let html = '';
@@ -589,24 +590,38 @@ app.get('/api/liturgy-today', async (req, res) => {
       try {
         const r = await fetch(url, {
           headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-            'Accept': 'text/html,application/xhtml+xml',
-            'Accept-Language': 'pt-BR,pt;q=0.9',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language': 'pt-BR,pt;q=0.9,en;q=0.5',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1',
           },
           redirect: 'follow',
-          signal: AbortSignal.timeout(15000),
+          signal: AbortSignal.timeout(20000),
         });
         if (!r.ok) continue;
         const h = await r.text();
-        // Só aceita HTML que contenha conteúdo litúrgico real
-        if (h.includes('Leitura') && h.includes('Evangelho') && h.length > html.length) {
+        // Aceita HTML que contenha conteúdo litúrgico real
+        if ((h.includes('Leitura dos Atos') || h.includes('Leitura do Livro') || h.includes('Leitura da Carta')) &&
+            h.includes('Evangelho') && h.length > 5000) {
           html = h;
-          break; // Primeiro que funcionar, usa
+          break;
+        }
+        // Fallback menos estrito: qualquer HTML razoável
+        if (h.includes('Leitura') && h.includes('Evangelho') && h.length > 3000 && !html) {
+          html = h;
         }
       } catch { continue; }
     }
 
     if (!html) return res.json({ success: false, date: dateKey, error: 'Sem resposta do site' });
+
+    // ── Verificação rápida: a página tem conteúdo litúrgico útil? ────────────
+    // O site Canção Nova entrega textos litúrgicos completos no HTML estático.
+    // Verificar pelos marcadores mais básicos.
+    const hasLiturgy = html.includes('Leitura') && html.includes('Evangelho');
+    if (!hasLiturgy) return res.json({ success: false, date: dateKey, error: 'HTML sem conteúdo litúrgico' });
 
     // ── Limpeza de HTML ─────────────────────────────────────────────────────────
     const clean = (raw: string): string => raw
@@ -653,13 +668,24 @@ app.get('/api/liturgy-today', async (req, res) => {
     };
 
     // ── 1ª Leitura ──────────────────────────────────────────────────────────────
-    const leitura1Text = extractBetween(
-      html,
-      ['Leitura do Livro', 'Leitura dos Atos', 'Leitura da Carta',
-       'Leitura do Apocalipse', 'Leitura da Primeira', 'Leitura da Segunda'],
-      ['- Palavra do Senhor', '– Palavra do Senhor', '— Palavra do Senhor',
-       'Palavra do Senhor', '- Graças a Deus', '— Graças a Deus'],
-    );
+    // Canção Nova usa: "Leitura dos Atos dos Apóstolos." (com ponto) como marcador de início.
+    // O fim é "- Palavra do Senhor" ou equivalente.
+    const startMarkers1 = [
+      'Leitura dos Atos dos Apóstolos',
+      'Leitura do Livro dos Atos',
+      'Leitura do Livro do', 'Leitura do Livro de',
+      'Leitura dos Atos',
+      'Leitura da Carta', 'Leitura da Primeira Carta',
+      'Leitura da Segunda Carta', 'Leitura da Terceira Carta',
+      'Leitura do Livro do Génesis', 'Leitura do Génesis',
+      'Leitura do Apocalipse',
+    ];
+    const endMarkers1 = [
+      '- Palavra do Senhor', '– Palavra do Senhor', '— Palavra do Senhor',
+      '- Graças a Deus', '– Graças a Deus', '— Graças a Deus',
+      'Palavra do Senhor',
+    ];
+    const leitura1Text = extractBetween(html, startMarkers1, endMarkers1);
 
     // Referência da 1ª Leitura: extraída do título da leitura no HTML
     // O site usa: <strong>Primeira Leitura (At 11,19-26)</strong>
@@ -746,11 +772,15 @@ app.get('/api/liturgy-today', async (req, res) => {
     }
 
     // ── Evangelho ────────────────────────────────────────────────────────────────
+    // Canção Nova: "Proclamação do Evangelho de Jesus Cristo segundo João/Lucas/..."
     const evangelhoText = extractBetween(
       html,
-      ['Proclamação do Evangelho', 'PROCLAMAÇÃO DO EVANGELHO'],
+      ['Proclamação do Evangelho de Jesus Cristo',
+       'Proclamação do Evangelho',
+       'PROCLAMAÇÃO DO EVANGELHO'],
       ['- Palavra da Salvação', '– Palavra da Salvação', '— Palavra da Salvação',
-       'Palavra da Salvação'],
+       '- Glória a vós', '– Glória a vós', '— Glória a vós',
+       'Palavra da Salvação', 'Glória a vós, Senhor'],
     );
 
     // Referência do Evangelho: ex: "Evangelho (Jo 10,22-30)"

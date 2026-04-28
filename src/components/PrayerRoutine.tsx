@@ -214,15 +214,8 @@ export default function PrayerRoutine() {
     return null;
   });
   const [isLoadingLiturgy, setIsLoadingLiturgy] = useState(false);
-  // Se massLiturgy já foi carregada do cache, exibir o painel imediatamente.
-  const [isReadingMass, setIsReadingMass] = useState<boolean>(() => {
-    try {
-      const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' });
-      const raw = JSON.parse(localStorage.getItem('groq_daily_cache') || '{}');
-      const entry = raw['mass_liturgy'];
-      return !!(entry && entry.date === today && entry.data?.readings?.length >= 2);
-    } catch { return false; }
-  });
+  // A liturgia NÃO abre automaticamente — aguarda o clique do usuário.
+  const [isReadingMass, setIsReadingMass] = useState<boolean>(false);
   const [viewingFeastLiturgy, setViewingFeastLiturgy] = useState(false);
   const [feastLiturgy, setFeastLiturgy] = useState<any>(null);
   const [isLoadingFeast, setIsLoadingFeast] = useState(false);
