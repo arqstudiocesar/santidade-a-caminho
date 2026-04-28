@@ -560,15 +560,15 @@ app.post('/api/settings', (req, res) => {
   res.json({ success: true });
 });
 
-// ── Liturgia (scraping Canção Nova) ───────────────────────────────────────────
-// O site liturgia.cancaonova.com/pb/ usa abas JavaScript para exibir as leituras.
-// O HTML renderizado pelo servidor NÃO contém id="tab-1leitura" etc — essas IDs só
-// existem no DOM após a execução do JS no navegador.
-// A solução é usar os MARCADORES TEXTUAIS do conteúdo (ex: "Leitura dos Atos",
-// "Responsório Sl", "Proclamação do Evangelho") que SÃO incluídos no HTML estático.
+// ── Liturgia do Dia ────────────────────────────────────────────────────────────
+// Estratégia multi-fonte (em ordem de confiabilidade):
+// 1. liturgia.paroquias.org — API JSON gratuita, não bloqueia Vercel
+// 2. evangelizo.org          — API REST, texto da CNBB
+// 3. Canção Nova HTML        — fallback, pode ser bloqueado por IP
+// ─────────────────────────────────────────────────────────────────────────────
+
 app.get('/api/liturgy-today', async (req, res) => {
   try {
-    // Data local do usuário (respeita fuso horário enviado pelo cliente)
     const tzOffset = parseInt((req.query.tz as string) || '-180', 10);
     const safeOffset = isNaN(tzOffset) ? -180 : Math.max(-720, Math.min(720, tzOffset));
     const localNow = new Date(Date.now() + safeOffset * 60 * 1000);
@@ -577,255 +577,217 @@ app.get('/api/liturgy-today', async (req, res) => {
     const yyyy = localNow.getUTCFullYear().toString();
     const dateKey = `${yyyy}-${mm}-${dd}`;
 
-    // Tenta as URLs em ordem de preferência
-    // A URL com data é a mais precisa; a genérica /pb/ sempre mostra o dia atual
-    const urls = [
-      `https://liturgia.cancaonova.com/pb/${yyyy}/${mm}/${dd}/`,
-      'https://liturgia.cancaonova.com/pb/',
-      `https://liturgia.cancaonova.com/pb/?sDia=${dd}&sMes=${mm}&sAno=${yyyy}`,
-    ];
-
-    let html = '';
-    for (const url of urls) {
-      try {
-        const r = await fetch(url, {
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            'Accept-Language': 'pt-BR,pt;q=0.9,en;q=0.5',
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Connection': 'keep-alive',
-            'Upgrade-Insecure-Requests': '1',
-          },
-          redirect: 'follow',
-          signal: AbortSignal.timeout(20000),
-        });
-        if (!r.ok) continue;
-        const h = await r.text();
-        // Aceita HTML que contenha conteúdo litúrgico real
-        if ((h.includes('Leitura dos Atos') || h.includes('Leitura do Livro') || h.includes('Leitura da Carta')) &&
-            h.includes('Evangelho') && h.length > 5000) {
-          html = h;
-          break;
-        }
-        // Fallback menos estrito: qualquer HTML razoável
-        if (h.includes('Leitura') && h.includes('Evangelho') && h.length > 3000 && !html) {
-          html = h;
-        }
-      } catch { continue; }
-    }
-
-    if (!html) return res.json({ success: false, date: dateKey, error: 'Sem resposta do site' });
-
-    // ── Verificação rápida: a página tem conteúdo litúrgico útil? ────────────
-    // O site Canção Nova entrega textos litúrgicos completos no HTML estático.
-    // Verificar pelos marcadores mais básicos.
-    const hasLiturgy = html.includes('Leitura') && html.includes('Evangelho');
-    if (!hasLiturgy) return res.json({ success: false, date: dateKey, error: 'HTML sem conteúdo litúrgico' });
-
-    // ── Limpeza de HTML ─────────────────────────────────────────────────────────
-    const clean = (raw: string): string => raw
-      .replace(/<script[\s\S]*?<\/script>/gi, '')
-      .replace(/<style[\s\S]*?<\/style>/gi, '')
-      .replace(/<br\s*\/?>/gi, '\n')
-      .replace(/<\/p>/gi, '\n')
-      .replace(/<p[^>]*>/gi, '')
-      .replace(/<strong[^>]*>([\s\S]*?)<\/strong>/gi, '$1')
-      .replace(/<b[^>]*>([\s\S]*?)<\/b>/gi, '$1')
-      .replace(/<em[^>]*>([\s\S]*?)<\/em>/gi, '$1')
-      .replace(/<span[^>]*>([\s\S]*?)<\/span>/gi, '$1')
-      .replace(/<div[^>]*>/gi, '\n')
-      .replace(/<\/div>/gi, '\n')
-      .replace(/<[^>]+>/g, '')
-      .replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'")
-      .replace(/&#\d+;/g, '').replace(/&[a-zA-Z]+;/g, '')
-      .replace(/[ \t]{2,}/g, ' ').replace(/ +\n/g, '\n').replace(/\n +/g, '\n')
-      .replace(/\n{3,}/g, '\n\n').trim();
-
-    // ── Extrator por marcadores textuais ────────────────────────────────────────
-    // Extrai o texto entre dois marcadores, limpando o HTML no processo.
-    const extractBetween = (
-      source: string,
-      startMarkers: string[],
-      endMarkers: string[],
-      maxLen = 15000,
-    ): string => {
-      for (const start of startMarkers) {
-        const idx = source.indexOf(start);
-        if (idx === -1) continue;
-        for (const end of endMarkers) {
-          const endIdx = source.indexOf(end, idx + start.length);
-          if (endIdx !== -1 && endIdx - idx <= maxLen) {
-            return clean(source.slice(idx, endIdx + end.length));
-          }
-        }
-        // Sem fim definido: pega até maxLen
-        const raw = clean(source.slice(idx, idx + maxLen));
-        if (raw.length > 30) return raw;
-      }
-      return '';
+    const headers = {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      'Accept': 'application/json, text/html, */*',
+      'Accept-Language': 'pt-BR,pt;q=0.9',
     };
 
-    // ── 1ª Leitura ──────────────────────────────────────────────────────────────
-    // Canção Nova usa: "Leitura dos Atos dos Apóstolos." (com ponto) como marcador de início.
-    // O fim é "- Palavra do Senhor" ou equivalente.
-    const startMarkers1 = [
-      'Leitura dos Atos dos Apóstolos',
-      'Leitura do Livro dos Atos',
-      'Leitura do Livro do', 'Leitura do Livro de',
-      'Leitura dos Atos',
-      'Leitura da Carta', 'Leitura da Primeira Carta',
-      'Leitura da Segunda Carta', 'Leitura da Terceira Carta',
-      'Leitura do Livro do Génesis', 'Leitura do Génesis',
-      'Leitura do Apocalipse',
-    ];
-    const endMarkers1 = [
-      '- Palavra do Senhor', '– Palavra do Senhor', '— Palavra do Senhor',
-      '- Graças a Deus', '– Graças a Deus', '— Graças a Deus',
-      'Palavra do Senhor',
-    ];
-    const leitura1Text = extractBetween(html, startMarkers1, endMarkers1);
-
-    // Referência da 1ª Leitura: extraída do título da leitura no HTML
-    // O site usa: <strong>Primeira Leitura (At 11,19-26)</strong>
-    const ref1Match = html.match(
-      /(?:Primeira\s+Leitura|1[aª]\s*Leitura)\s*\(([^)]{3,40})\)/i
-    ) || html.match(/<strong[^>]*>([A-Z][a-z]{0,5}\s+\d[\d,;.\s\-]{2,20})<\/strong>/i);
-    const ref1 = ref1Match?.[1]?.trim() || '';
-
-    // ── Salmo Responsorial ──────────────────────────────────────────────────────
-    // O salmo começa com "Responsório Sl" e termina antes do Aleluia/Evangelho
-    const salmoRaw = extractBetween(
-      html,
-      ['Responsório Sl', 'Responsório sl', 'RESPONSÓRIO SL', 'Salmo Responsorial'],
-      ['Aclamação ao Evangelho', 'ACLAMAÇÃO AO EVANGELHO',
-       'Proclamação do Evangelho', '- Aleluia', '— Aleluia', 'Aleluia,', 'ALELUIA',
-       '2ª Leitura', 'Segunda Leitura'],
-      5000,
-    );
-
-    // Extrai a referência do salmo (ex: "Responsório Sl 86(87),1-3.4.5.6-7")
-    const salmoRefMatch = salmoRaw.match(/Responsório\s+(Sl[\s\d()/,.;a-zA-Z\-]+)/i);
-    const salmoRef = salmoRefMatch?.[1]?.trim() || '';
-
-    // Formata o salmo no padrão litúrgico: R. [antífona], estrofes com R. intercalado
-    const formatarSalmo = (raw: string): string => {
-      if (!raw) return '';
-      const linhas = raw.split('\n').map(l => l.trim()).filter(l => l.length > 2);
-      let antifona = '';
-      const estrofes: string[] = [];
-
-      for (const linha of linhas) {
-        // Pula linha de título (começa com "Responsório" ou "Salmo")
-        if (/^(Responsório|Salmo\s+Responsorial|Sl\s*\d)/i.test(linha)) continue;
-        // Remove prefixo de traço
-        const limpa = linha.replace(/^[-–—•]\s*/, '').trim();
-        if (!limpa) continue;
-
-        if (!antifona) {
-          // A primeira linha de conteúdo é a antífona
-          antifona = limpa;
-        } else {
-          estrofes.push(limpa);
-        }
-      }
-
-      if (!antifona) return raw; // Fallback: retorna texto bruto se não parseou
-
-      // Monta: R. antífona → estrofe 1 → R. antífona → estrofe 2 → R. antífona
-      const partes: string[] = [`R. ${antifona}`];
-      for (const estrofe of estrofes) {
-        partes.push('');
-        partes.push(estrofe);
-        partes.push('');
-        partes.push(`R. ${antifona}`);
-      }
-      return partes.join('\n');
-    };
-
-    const salmoText = formatarSalmo(salmoRaw);
-
-    // ── 2ª Leitura (domingos/solenidades) ───────────────────────────────────────
-    // Existe uma segunda ocorrência de "Leitura da Carta" nos domingos
-    let leitura2Text = '';
-    const leitura1StartMarkers = ['Leitura do Livro', 'Leitura dos Atos', 'Leitura da Carta',
-                                   'Leitura do Apocalipse'];
-    let firstReadingEnd = -1;
-    for (const m of leitura1StartMarkers) {
-      const idx = html.indexOf(m);
-      if (idx !== -1) {
-        // Encontra o fim da 1ª leitura
-        const endIdx = html.indexOf('Palavra do Senhor', idx);
-        if (endIdx !== -1) firstReadingEnd = endIdx + 'Palavra do Senhor'.length;
-        break;
-      }
-    }
-    if (firstReadingEnd > 0) {
-      leitura2Text = extractBetween(
-        html.slice(firstReadingEnd),
-        ['Leitura da Carta', 'Leitura do Livro', 'Leitura da Primeira', 'Leitura da Segunda'],
-        ['- Palavra do Senhor', '– Palavra do Senhor', '— Palavra do Senhor',
-         'Palavra do Senhor'],
-        12000,
-      );
-    }
-
-    // ── Evangelho ────────────────────────────────────────────────────────────────
-    // Canção Nova: "Proclamação do Evangelho de Jesus Cristo segundo João/Lucas/..."
-    const evangelhoText = extractBetween(
-      html,
-      ['Proclamação do Evangelho de Jesus Cristo',
-       'Proclamação do Evangelho',
-       'PROCLAMAÇÃO DO EVANGELHO'],
-      ['- Palavra da Salvação', '– Palavra da Salvação', '— Palavra da Salvação',
-       '- Glória a vós', '– Glória a vós', '— Glória a vós',
-       'Palavra da Salvação', 'Glória a vós, Senhor'],
-    );
-
-    // Referência do Evangelho: ex: "Evangelho (Jo 10,22-30)"
-    const refEvMatch = html.match(
-      /(?:Evangelho)\s*\(([A-Za-z]{1,4}\s+\d[\d,.\-\s]{2,20})\)/i
-    );
-    const refEv = refEvMatch?.[1]?.trim() || '';
-
-    // ── Monta as leituras estruturadas ──────────────────────────────────────────
     interface Reading { type: string; reference: string; text: string; }
-    const readings: Reading[] = [];
 
-    if (leitura1Text.length > 50) {
-      readings.push({ type: '1ª Leitura', reference: ref1, text: leitura1Text });
-    }
-    if (salmoText.length > 20) {
-      readings.push({ type: 'Salmo Responsorial', reference: salmoRef, text: salmoText });
-    }
-    if (leitura2Text.length > 50) {
-      readings.push({ type: '2ª Leitura', reference: '', text: leitura2Text });
-    }
-    if (evangelhoText.length > 50) {
-      readings.push({ type: 'Evangelho', reference: refEv, text: evangelhoText });
-    }
+    // ── Fonte 1: liturgia.paroquias.org ──────────────────────────────────────
+    // API JSON gratuita usada por apps católicos brasileiros.
+    // Retorna estrutura com leituras completas da CNBB.
+    try {
+      const urls = [
+        `https://liturgia.paroquias.org/?data=${yyyy}-${mm}-${dd}`,
+        `https://liturgia.paroquias.org/?dia=${dd}&mes=${mm}&ano=${yyyy}`,
+        `https://liturgia.paroquias.org/`,
+      ];
+      for (const url of urls) {
+        try {
+          const r = await fetch(url, { headers, signal: AbortSignal.timeout(12000) });
+          if (!r.ok) continue;
 
-    const has1a     = readings.some(r => r.type.includes('1ª'));
-    const hasGospel = readings.some(r => r.type.includes('Evangelho'));
+          // Tenta parsear como JSON primeiro
+          const text = await r.text();
+          let data: any = null;
+          try { data = JSON.parse(text); } catch { /* HTML — tenta próxima URL */ continue; }
 
-    if (has1a && hasGospel) {
-      return res.json({ success: true, structured: { readings }, date: dateKey });
-    }
+          if (!data) continue;
 
-    // Fallback: retorna o texto bruto para que o groqService tente estruturar
-    const fallbackText = clean(html).slice(0, 8000);
-    return res.json({
-      success: fallbackText.length > 200,
-      text: fallbackText,
-      date: dateKey,
-      error: `Scraping parcial: 1ª=${has1a}, Ev=${hasGospel}`,
-    });
+          const readings: Reading[] = [];
+
+          // Normaliza diferentes formatos de resposta do paroquias.org
+          const leituras = data.leituras || data.liturgia?.leituras || data;
+
+          // 1ª Leitura
+          const l1 = leituras.primeira || leituras['1leitura'] || leituras.firstReading;
+          if (l1?.texto && l1.texto.length > 50) {
+            readings.push({ type: '1ª Leitura', reference: l1.referencia || l1.reference || '', text: l1.texto });
+          }
+
+          // Salmo
+          const ls = leituras.salmo || leituras.psalm;
+          if (ls) {
+            const salmoText = ls.texto || ls.text || '';
+            const antifona  = ls.antifona || ls.antiphon || '';
+            const fullText  = antifona ? `R. ${antifona}\n\n${salmoText}` : salmoText;
+            if (fullText.length > 20) {
+              readings.push({ type: 'Salmo Responsorial', reference: ls.referencia || ls.reference || '', text: fullText });
+            }
+          }
+
+          // 2ª Leitura (domingos)
+          const l2 = leituras.segunda || leituras['2leitura'] || leituras.secondReading;
+          if (l2?.texto && l2.texto.length > 50) {
+            readings.push({ type: '2ª Leitura', reference: l2.referencia || '', text: l2.texto });
+          }
+
+          // Evangelho
+          const ev = leituras.evangelho || leituras.gospel;
+          if (ev?.texto && ev.texto.length > 50) {
+            readings.push({ type: 'Evangelho', reference: ev.referencia || ev.reference || '', text: ev.texto });
+          }
+
+          if (readings.filter(r => r.type.includes('1ª') || r.type.includes('Evangelho')).length >= 2) {
+            return res.json({ success: true, source: 'paroquias', structured: { readings }, date: dateKey });
+          }
+        } catch { continue; }
+      }
+    } catch { /* tenta próxima fonte */ }
+
+    // ── Fonte 2: evangelizo.org ───────────────────────────────────────────────
+    // REST API com textos em português CNBB.
+    try {
+      const evUrls = [
+        `https://api.evangelizo.org/v1/reading?lang=PT&date=${yyyy}-${mm}-${dd}`,
+        `https://evangelizo.org/web-service/?lang=BR&date=${yyyy}-${mm}-${dd}&translator=CNBB`,
+        `https://evangelizo.org/web-service/?lang=PT&date=${yyyy}-${mm}-${dd}`,
+      ];
+      for (const url of evUrls) {
+        try {
+          const r = await fetch(url, { headers, signal: AbortSignal.timeout(10000) });
+          if (!r.ok) continue;
+          const text = await r.text();
+          let data: any = null;
+          try { data = JSON.parse(text); } catch { continue; }
+          if (!data) continue;
+
+          const readings: Reading[] = [];
+          // evangelizo retorna: {readings: [{type, reference, text},...]}
+          const rawReadings = data.readings || data.leituras || (Array.isArray(data) ? data : []);
+          for (const rr of rawReadings) {
+            const t = rr.type || rr.tipo || '';
+            const ref = rr.reference || rr.referencia || '';
+            const txt = rr.text || rr.texto || '';
+            if (txt.length > 50) readings.push({ type: t, reference: ref, text: txt });
+          }
+
+          if (readings.length >= 2) {
+            return res.json({ success: true, source: 'evangelizo', structured: { readings }, date: dateKey });
+          }
+        } catch { continue; }
+      }
+    } catch { /* tenta próxima fonte */ }
+
+    // ── Fonte 3: Canção Nova (HTML scraping) ─────────────────────────────────
+    // Pode ser bloqueado por IP em alguns servidores, mas tentamos como fallback.
+    try {
+      const cnUrls = [
+        `https://liturgia.cancaonova.com/pb/${yyyy}/${mm}/${dd}/`,
+        'https://liturgia.cancaonova.com/pb/',
+      ];
+      const cnHeaders = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml',
+        'Accept-Language': 'pt-BR,pt;q=0.9',
+        'Referer': 'https://www.google.com/',
+      };
+
+      let html = '';
+      for (const url of cnUrls) {
+        try {
+          const r = await fetch(url, { headers: cnHeaders, redirect: 'follow', signal: AbortSignal.timeout(18000) });
+          if (!r.ok) continue;
+          const h = await r.text();
+          if ((h.includes('Leitura dos Atos') || h.includes('Leitura do Livro') || h.includes('Leitura da Carta')) && h.includes('Evangelho')) {
+            html = h; break;
+          }
+        } catch { continue; }
+      }
+
+      if (html) {
+        // Antes de limpar o HTML, procura dados JSON embutidos em <script> tags
+        // (alguns sites modernos fazem SSR e incluem os dados como JSON)
+        const jsonScriptMatch = html.match(/<script[^>]*type=["']application\/json["'][^>]*>([\s\S]*?)<\/script>/i)
+          || html.match(/window\.__INITIAL_STATE__\s*=\s*(\{[\s\S]*?\});\s*<\/script>/i)
+          || html.match(/window\.__NUXT__\s*=\s*(\([\s\S]*?\))\s*;<\/script>/i);
+
+        if (jsonScriptMatch) {
+          try {
+            const jsonData = JSON.parse(jsonScriptMatch[1]);
+            // Tenta extrair leituras do JSON embutido
+            const flatJson = JSON.stringify(jsonData);
+            if (flatJson.includes('Leitura') && flatJson.length > 500) {
+              // JSON contém conteúdo litúrgico — retorna para o groqService estruturar
+              return res.json({ success: true, source: 'cancaonova-json', text: flatJson.slice(0, 10000), date: dateKey });
+            }
+          } catch { /* ignora */ }
+        }
+
+        // Extração por marcadores de texto
+        const clean = (raw: string): string => raw
+          .replace(/<script[\s\S]*?<\/script>/gi, '')
+          .replace(/<style[\s\S]*?<\/style>/gi, '')
+          .replace(/<br\s*\/?>/gi, '\n').replace(/<\/p>/gi, '\n').replace(/<p[^>]*>/gi, '')
+          .replace(/<strong[^>]*>([\s\S]*?)<\/strong>/gi, '$1').replace(/<b[^>]*>([\s\S]*?)<\/b>/gi, '$1')
+          .replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ')
+          .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+          .replace(/&#\d+;/g, '').replace(/&[a-zA-Z]+;/g, '')
+          .replace(/[ \t]{2,}/g, ' ').replace(/ +\n/g, '\n').replace(/\n +/g, '\n')
+          .replace(/\n{3,}/g, '\n\n').trim();
+
+        const extractBetween = (src: string, starts: string[], ends: string[], maxLen = 15000): string => {
+          for (const s of starts) {
+            const i = src.indexOf(s); if (i === -1) continue;
+            for (const e of ends) {
+              const j = src.indexOf(e, i + s.length);
+              if (j !== -1 && j - i <= maxLen) return clean(src.slice(i, j + e.length));
+            }
+            const raw = clean(src.slice(i, i + maxLen));
+            if (raw.length > 30) return raw;
+          }
+          return '';
+        };
+
+        const l1Text = extractBetween(html,
+          ['Leitura dos Atos dos Apóstolos', 'Leitura do Livro', 'Leitura dos Atos', 'Leitura da Carta', 'Leitura do Apocalipse'],
+          ['- Palavra do Senhor', '– Palavra do Senhor', '— Palavra do Senhor', 'Palavra do Senhor']
+        );
+        const salmoRaw = extractBetween(html,
+          ['Responsório Sl', 'Responsório sl', 'Salmo Responsorial'],
+          ['Aclamação ao Evangelho', 'Proclamação do Evangelho', 'Aleluia,', '- Aleluia', '— Aleluia'],
+          5000
+        );
+        const evText = extractBetween(html,
+          ['Proclamação do Evangelho de Jesus Cristo', 'Proclamação do Evangelho'],
+          ['- Palavra da Salvação', '– Palavra da Salvação', '— Palavra da Salvação', 'Palavra da Salvação', 'Glória a vós, Senhor']
+        );
+
+        const ref1M = html.match(/(?:Primeira\s+Leitura|1[aª]\s*Leitura)\s*\(([^)]{3,40})\)/i);
+        const refEvM = html.match(/(?:Evangelho)\s*\(([A-Za-z]{1,4}\s+\d[\d,.\-\s]{2,20})\)/i);
+        const salmoRefM = salmoRaw.match(/Responsório\s+(Sl[\s\d()/,.;a-zA-Z\-]+)/i);
+
+        const readings: Reading[] = [];
+        if (l1Text.length > 80) readings.push({ type: '1ª Leitura', reference: ref1M?.[1]?.trim() || '', text: l1Text });
+        if (salmoRaw.length > 20) readings.push({ type: 'Salmo Responsorial', reference: salmoRefM?.[1]?.trim() || '', text: salmoRaw });
+        if (evText.length > 80) readings.push({ type: 'Evangelho', reference: refEvM?.[1]?.trim() || '', text: evText });
+
+        if (readings.filter(r => r.type.includes('1ª') || r.type.includes('Evangelho')).length >= 2) {
+          return res.json({ success: true, source: 'cancaonova', structured: { readings }, date: dateKey });
+        }
+      }
+    } catch { /* ignora */ }
+
+    // ── Todas as fontes falharam ───────────────────────────────────────────────
+    return res.json({ success: false, date: dateKey, error: 'Todas as fontes de liturgia falharam' });
 
   } catch (e: any) {
     res.json({ success: false, error: e.message });
   }
 });
+
 
 // ── Claude API com web search (leituras) ─────────────────────────────────────
 app.get('/api/claude-liturgy', async (req, res) => {

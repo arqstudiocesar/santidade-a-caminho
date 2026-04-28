@@ -373,23 +373,15 @@ JSON: { "title": "...", "sections": [ { "name": "...", "content": "..." }, ... ]
     // Usa o offset do navegador para calcular a data local correta.
     // Se não informado, calcula automaticamente a partir do fuso do ambiente.
     const _tz = tzOffsetMinutes !== undefined ? tzOffsetMinutes : -new Date().getTimezoneOffset();
-    // ── 1. Cache por dia — só reutiliza se as leituras têm TEXTO REAL ─────────
-    // Rejeita cache se: texto ausente, muito curto, ou é o placeholder "⚠️..."
-    // Isso garante que dados inválidos (de falhas anteriores) não fiquem travados.
+    // ── 1. Cache bloqueado por dia: se já existe liturgia válida hoje, usa sem questionar ──
     const cached = getCachedDaily('mass_liturgy');
     if (cached?.readings?.length >= 2) {
-      const hasRealText = cached.readings.every((r: any) => {
-        const t: string = r.text || '';
-        return t.length > 100 && !t.startsWith('⚠️');
-      });
-      if (hasRealText) {
-        if (!cached.feast_checked) { cached.feast_checked = true; setCachedDaily('mass_liturgy', cached); }
-        return cached;
+      // Garante que feast_checked seja marcado para evitar futura invalidação
+      if (!cached.feast_checked) {
+        cached.feast_checked = true;
+        setCachedDaily('mass_liturgy', cached);
       }
-      // Cache existe mas sem texto real → descarta e busca do zero
-      const rawCache = (() => { try { return JSON.parse(localStorage.getItem('groq_daily_cache') || '{}'); } catch { return {}; } })();
-      delete rawCache['mass_liturgy'];
-      try { localStorage.setItem('groq_daily_cache', JSON.stringify(rawCache)); } catch {}
+      return cached;
     }
 
     try {
@@ -459,31 +451,29 @@ JSON: { "title": "...", "sections": [ { "name": "...", "content": "..." }, ... ]
         return text.includes('R.') || text.includes('R ') || text.length < 50;
       };
 
-      // ── 3. Canção Nova — scraping da fonte oficial (CNBB) ────────────────
-      // Esta é a ÚNICA fonte de texto: o site oficial da liturgia em português.
-      // Nenhuma IA deve gerar texto litúrgico.
-      let webText = '';
+      // ── 3. Claude API com web search ─────────────────────────────────────
+      // ── 3. Fontes externas: paroquias.org → evangelizo → Canção Nova ─────
+      // /api/liturgy-today tenta todas as fontes em ordem e retorna a primeira
+      // que tiver texto real. Nunca usa IA para gerar texto litúrgico.
       try {
         const rS = await fetch(`/api/liturgy-today?tz=${_tz}`);
         const dS = await rS.json();
-        if (dS.success) {
-          if (dS.structured?.readings?.length >= 2) {
-            const corrected = applyEngineRefs(dS.structured.readings);
-            // Valida que os textos são reais (não vazios)
-            const allHaveText = corrected.every((r: any) => (r.text || '').length > 80);
-            if (allHaveText) {
-              const result = buildResult(corrected);
-              setCachedDaily('mass_liturgy', result);
-              return result;
-            }
+        if (dS.success && dS.structured?.readings?.length >= 2) {
+          const corrected = applyEngineRefs(dS.structured.readings);
+          const mainHaveText = corrected
+            .filter((r: any) => r.type.includes('1ª') || r.type.includes('Evangelho'))
+            .every((r: any) => (r.text || '').length > 80);
+          if (mainHaveText) {
+            const result = buildResult(corrected);
+            setCachedDaily('mass_liturgy', result);
+            return result;
           }
-          if (dS.text?.length > 300) webText = dS.text.slice(0, 6000);
         }
-      } catch { /* continuar */ }
+      } catch { /* continuar para fallback */ }
 
-      // ── 4. Fallback: referências corretas, sem texto inventado ────────────
-      // O scraping falhou. Exibe as referências com link ao site oficial.
-      // NUNCA gerar texto litúrgico com IA.
+      // ── 4. Todas as fontes falharam ───────────────────────────────────────
+      // Exibe referências corretas com link ao site oficial.
+      // NUNCA gera texto litúrgico com IA.
       return buildResult([
         useR.firstReading && { type: '1ª Leitura', reference: useR.firstReading, title: `Primeira Leitura (${useR.firstReading})`, text: '⚠️ Texto não disponível no momento.\nVerifique o site oficial: liturgia.cancaonova.com' },
         psalmFull && { type: 'Salmo Responsorial', reference: psalmFull, title: `Responsório — ${psalmFull}`, text: '⚠️ Texto não disponível no momento.\nVerifique o site oficial: liturgia.cancaonova.com' },
