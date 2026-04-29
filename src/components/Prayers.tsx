@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ChevronDown, ChevronUp, BookOpen, Heart, Star, Search, Plus, X, Save } from 'lucide-react';
+import { ChevronDown, ChevronUp, BookOpen, Heart, Star, Search, Plus, X, Save, BookMarked, Scroll as ScrollIcon, Cross as CrossIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cacheGet, cacheSet, mergeServerData } from '../utils/cache';
 
-type SubTab = 'daily' | 'adoration' | 'consecration';
+type SubTab = 'daily' | 'adoration' | 'consecration' | 'ritos';
 type PrayerCategory = 'habituais' | 'ladainhas' | 'formais';
 interface PrayerItem { title: string; text: string; }
 interface UserPrayerItem { id: number; title: string; text: string; category: PrayerCategory; }
@@ -693,6 +693,665 @@ function ConsecrationTab() {
   );
 }
 
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RITOS LITÚRGICOS — dados e componente
+// ─────────────────────────────────────────────────────────────────────────────
+
+interface RitoSection { title: string; content: string; }
+interface RitoSubgroup { id: string; title: string; icon: string; sections: RitoSection[]; }
+
+const ritosData: RitoSubgroup[] = [
+
+// ── 1. ORDINÁRIO DA MISSA ────────────────────────────────────────────────────
+{
+  id: 'missa',
+  title: 'Ordinário da Missa',
+  icon: '✝️',
+  sections: [
+    {
+      title: 'RITOS INICIAIS — 1. Saudação',
+      content: `Em nome do Pai e do Filho e do Espírito Santo.
+As: Amém!
+
+OP01 — PR: A graça de nosso Senhor Jesus Cristo, o amor do Pai e a comunhão do Espírito Santo estejam convosco.
+OP02 — PR: O Deus da esperança, que nos cumula de toda alegria e paz em nossa fé, pela ação do Espírito Santo, esteja convosco.
+As: Bendito seja Deus, que nos reuniu no amor de Cristo!
+Pr: O Senhor esteja convosco.
+As: Ele está no meio de nós!
+
+O bispo, nesta primeira saudação, em vez de "O Senhor esteja convosco", diz:
+Pr: A paz esteja convosco.
+As: Bendito seja Deus, que nos reuniu no amor de Cristo!`,
+    },
+    {
+      title: '2. Ato Penitencial',
+      content: `OP01 — Pr: Irmãos e irmãs, reconheçamos os nossos pecados, para celebrarmos dignamente os santos mistérios (pausa).
+Confessemos os nossos pecados:
+As: Confesso a Deus todo-poderoso e a vós, irmãos e irmãs, que pequei muitas vezes por pensamentos e palavras, atos e omissões, (e, batendo no peito, dizem:) por minha culpa, minha culpa, minha tão grande culpa. E peço à Virgem Maria, aos anjos e santos e a vós, irmãos e irmãs, que rogueis por mim a Deus, nosso Senhor.
+
+Pr: Deus todo-poderoso tenha compaixão de nós, perdoe os nossos pecados e nos conduza à vida eterna.
+As: Amém!
+Pr: Senhor, tende piedade de nós (ou: Kýrie, eléison).
+As: Senhor, tende piedade de nós.
+Pr: Cristo, tende piedade de nós (ou: Christe, eleison).
+As: Cristo, tende piedade de nós.
+Pr: Senhor, tende piedade de nós (ou: Kyrie, eleison).
+As: Senhor, tende piedade de nós.
+
+OP02 — Pr: Em Jesus Cristo, o Justo, que intercede por nós e nos reconcilia com o Pai, abramos o nosso espírito ao arrependimento para sermos dignos de nos aproximar da mesa do Senhor (pausa).
+Pr: Senhor, que viestes salvar os corações arrependidos, tende piedade de nós.
+As: Senhor, tende piedade de nós!
+Pr: Cristo, que viestes chamar os pecadores, tende piedade de nós.
+As: Cristo, tende piedade de nós!
+Pr: Senhor, que intercedeis por nós junto do Pai, tende piedade de nós.
+As: Senhor, tende piedade de nós!
+Pr: Deus todo-poderoso...
+As: Amém.
+
+OP03 — (tempo da Páscoa)
+Pr: Senhor, nossa paz, tende piedade de nós.
+As: Senhor, tende piedade de nós!
+Pr: Cristo, nossa Páscoa, tende piedade de nós.
+As: Cristo, tende piedade de nós!
+Pr: Senhor, nossa vida, tende piedade de nós.
+As: Senhor, tende piedade de nós!
+
+OP04 — Pr: Senhor, que sois o eterno sacerdote da Nova Aliança, tende piedade de nós.
+As: Senhor, tende piedade de nós!
+Pr: Cristo, que nos edificais como pedras vivas no templo santo de Deus, tende piedade de nós.
+As: Cristo, tende piedade de nós!
+Pr: Senhor, que nos tornais concidadãos dos santos no Reino dos Céus, tende piedade de nós.
+As: Senhor, tende piedade de nós!`,
+    },
+    {
+      title: '3. Glória',
+      content: `As: Glória a Deus nas alturas, e paz na terra aos homens por ele amados. Senhor Deus, rei dos céus, Deus Pai todo-poderoso: nós vos louvamos, nós vos bendizemos, nós vos adoramos, nós vos glorificamos, nós vos damos graças por vossa imensa glória. Senhor Jesus Cristo, Filho unigênito, Senhor Deus, Cordeiro de Deus, Filho de Deus Pai. Vós que tirais o pecado do mundo, tende piedade de nós. Vós que tirais o pecado do mundo, acolhei a nossa súplica. Vós que estais à direita do Pai, tende piedade de nós. Só vós sois o Santo, só vós, o Senhor, só vós, o Altíssimo, Jesus Cristo, com o Espírito Santo, na glória de Deus Pai. Amém.`,
+    },
+    {
+      title: '4. Coleta — 5. Leitura — 6. Evangelho (próprios do dia)',
+      content: `4 — COLETA (própria do dia)
+
+LITURGIA DA PALAVRA
+
+5 — LEITURA (próprias do dia)
+6 — EVANGELHO (próprio do dia)`,
+    },
+    {
+      title: '7. Profissão de Fé (Credo dos Apóstolos)',
+      content: `Creio em Deus Pai todo poderoso, criador do céu e da terra, e em Jesus Cristo, seu único Filho, nosso Senhor, (breve inclinação até "da Virgem Maria") que foi concebido pelo poder do Espírito Santo; nasceu da Virgem Maria; padeceu sob Pôncio Pilatos, foi crucificado, morto e sepultado; desceu à mansão dos mortos; ressuscitou ao terceiro dia; subiu aos céus; está sentado à direita de Deus Pai todo-poderoso, donde há de vir a julgar os vivos e os mortos. Creio no Espírito Santo, na santa Igreja católica, na comunhão dos santos, na remissão dos pecados, na ressurreição da carne, na vida eterna. Amém.`,
+    },
+    {
+      title: 'LITURGIA EUCARÍSTICA — 8. Preparação das Oferendas',
+      content: `Pr: Bendito sejais, Senhor, Deus do universo, pelo pão que recebemos de vossa bondade, fruto da terra e do trabalho humano, que agora vos apresentamos e para nós se vai tornar pão da vida.
+As: Bendito seja Deus para sempre!
+Pr: Pelo mistério desta água e deste vinho, possamos participar da divindade do vosso Filho, que se dignou assumir a nossa humanidade.
+Pr: Bendito sejais, Senhor, Deus do universo, pelo vinho que recebemos de vossa bondade, fruto da videira e do trabalho humano, que agora vos apresentamos e para nós se vai tornar vinho da salvação.
+As: Bendito seja Deus para sempre!
+Pr: De coração contrito e humilde, sejamos, Senhor, acolhidos por vós; e seja o nosso sacrifício de tal modo oferecido, que vos agrade, Senhor, nosso Deus. Lavai-me, Senhor, de minhas faltas e purificai-me do meu pecado.
+Pr: Orai, irmãos e irmãs, para que o meu e vosso sacrifício seja aceito por Deus Pai todo-poderoso.
+As: Receba o Senhor por tuas mãos este sacrifício, para glória do seu nome, para nosso bem e de toda a sua santa Igreja.
+
+9 — SOBRE AS OFERENDAS (própria do dia)`,
+    },
+    {
+      title: '10. Oração Eucarística — Diálogo Introdutório e Prefácios',
+      content: `Pr: O Senhor esteja convosco.
+As: Ele está no meio de nós!
+Pr: Corações ao alto.
+As: Nosso coração está em Deus!
+Pr: Demos graças ao Senhor, nosso Deus.
+As: É nosso dever e nossa salvação!
+
+PREFÁCIO DOS DEFUNTOS III (Cristo, salvação e vida):
+Na verdade, é digno e justo, é nosso dever e salvação dar-vos graças, sempre e em todo lugar, Senhor, Pai santo, Deus eterno e todo-poderoso, por Cristo, Senhor nosso. Ele é a salvação do mundo, a vida da humanidade, a ressurreição dos mortos. Por ele os coros dos anjos adoram a vossa grandeza e se alegram eternamente na vossa presença. Concedei-nos, também a nós, associar-nos a seus louvores, cantando (dizendo) a uma só voz:
+
+PREFÁCIO DOS APÓSTOLOS II:
+Na verdade, é digno e justo, é nosso dever e salvação dar-vos graças, sempre e em todo lugar, Senhor, Pai santo, Deus eterno e todo-poderoso, por Cristo, Senhor nosso. Vós fundastes a Igreja sobre o alicerce dos apóstolos, a fim de que ela seja na terra sinal permanente da vossa santidade e anuncie a todo o mundo o Evangelho do Reino dos Céus. Por isso, agora e sempre, com todos os coros dos anjos, jubilosos cantamos (dizemos) a uma só voz:
+
+PREFÁCIO DOS SANTOS II:
+Na verdade, é digno e justo, é nosso dever e salvação dar-vos graças, sempre e em todo lugar, Senhor, Pai santo, Deus eterno e todo-poderoso, por Cristo, Senhor nosso. Pois, pelo testemunho admirável dos vossos santos e santas, sempre fecundais com novo vigor a vossa Igreja e nos dais provas evidentes do vosso amor. Para levar à plenitude o mistério da salvação, o exemplo dos santos nos estimula e sua intercessão constantemente nos ajuda. Por isso, também nós, Senhor, com todos os anjos e santos, jubilosos vos louvamos, cantando (dizendo) a uma só voz:
+
+PREFÁCIO DOS MÁRTIRES I:
+Na verdade, é digno e justo, é nosso dever e salvação dar-vos graças, sempre e em todo lugar, Senhor, Pai santo, Deus eterno e todo-poderoso. O sangue que o/a santo/a mártir (...) derramou, à imitação de Cristo, para a glória do vosso nome, manifesta as vossas maravilhas; assim, transformais a fragilidade humana em força e aos fracos dais coragem para o testemunho, por Cristo, Senhor nosso. Por isso, com as Virtudes celestes, vos celebramos na terra louvando vossa majestade, cantando (dizendo) a uma só voz:
+
+PREFÁCIO DOS PASTORES I:
+Na verdade, é digno e justo, é nosso dever e salvação dar-vos graças, sempre e em todo lugar, Senhor, Pai santo, Deus eterno e todo-poderoso, por Cristo, Senhor nosso. Vós nos concedeis a alegria de celebrar a memória (festa, solenidade) de São (...) e fortaleceis a vossa Igreja com o exemplo de sua vida, o ensinamento de sua pregação e o auxílio de suas preces. Por isso, com a multidão dos anjos e dos santos, entoamos o hino da vossa glória, cantando (dizendo) a uma só voz:
+
+PREFÁCIO DOS DOUTORES DA IGREJA II:
+Na verdade, é digno e justo, é nosso dever e salvação dar-vos graças, sempre e em todo lugar, Senhor, Pai santo, Deus eterno e todo-poderoso, por Cristo, Senhor nosso. O vosso Filho é o único Mestre: a sua palavra é lâmpada para nossos passos, a sua cruz, somente ela, é nossa sabedoria. Em vosso desígnio de amor, iluminastes S. (...) e alegrais a vossa Igreja com sua doutrina na sublime beleza do vosso Conhecimento. Por este sinal da vossa bondade, unidos aos anjos e aos santos, entoamos o hino da vossa glória, cantando (dizendo) a uma só voz:
+
+PREFÁCIO DA PAIXÃO II (a vitória da paixão):
+Na verdade, é digno e justo, é nosso dever e salvação dar-vos graças, sempre e em todo lugar, Senhor, Pai santo, Deus eterno e todo-poderoso, por Cristo, Senhor nosso. Pois sabemos que já se aproximam os dias de sua paixão salvadora e de sua gloriosa ressurreição; dias em que é vencido o poder do antigo inimigo e é celebrado o mistério da nossa redenção. Por ele os coros dos anjos, alegrando-se eternamente na vossa presença, adoram a vossa grandeza. Concedei-nos, também a nós, associar-nos a seus louvores cantando (dizendo) a uma só voz:
+
+PREFÁCIO DA PÁSCOA I (o mistério pascal):
+Na verdade, é digno e justo, é nosso dever e salvação proclamar vossa glória, ó Pai, em todo tempo, mas, com maior júbilo, louvar-vos nesta noite (neste dia ou neste tempo), porque Cristo, nossa Páscoa, foi imolado. É ele o verdadeiro Cordeiro, que tirou o pecado do mundo; morrendo, destruiu a nossa morte e, ressurgindo, restaurou a vida. Por isso, transbordando de alegria pascal, exulta a criação por toda a terra; também as Virtudes celestes e as Potestades angélicas proclamam um hino à vossa glória, cantando (dizendo) a uma só voz:
+
+PREFÁCIO DA PÁSCOA II (a vida nova em Cristo):
+Na verdade, é digno e justo, é nosso dever e salvação proclamar vossa glória, ó Pai, em todo tempo, mas, com maior júbilo, louvar-vos neste tempo, porque Cristo, nossa Páscoa, foi para a vida eterna e para os vossos fiéis imolado. Por ele os filhos da luz nascem, abrem-se as portas do Reino dos Céus. Nossa morte foi redimida pela sua, e para todos ressurgiu a vida. Por isso, transbordando de alegria pascal, exulta a criação por toda a terra; também as Virtudes celestes e as Potestades angélicas proclamam um hino à vossa glória, cantando (dizendo) a uma só voz:
+
+PREFÁCIO DA PÁSCOA III (o Cristo vivo, que sempre intercede por nós):
+Na verdade, é digno e justo, é nosso dever e salvação proclamar vossa glória, ó Pai, em todo tempo, mas, com maior júbilo, louvar-vos neste tempo, porque Cristo, nossa Páscoa, foi imolado. Ele continua a oferecer-se por nós, e junto de vós é nosso eterno defensor. Imolado, já não morre; e, morto, agora vive eternamente. Por isso, transbordando de alegria pascal, exulta a criação por toda a terra; também as Virtudes celestes e as Potestades angélicas proclamam um hino à vossa glória, cantando (dizendo) a uma só voz:
+
+PREFÁCIO DA PÁSCOA IV (a restauração do universo pelo mistério pascal):
+Na verdade, é digno e justo, é nosso dever e salvação proclamar vossa glória, ó Pai, em todo tempo, mas, com maior júbilo, louvar-vos neste tempo, porque Cristo, nossa Páscoa, foi imolado. Pois, destruído o que era velho, toda a criação decaída é renovada e em Cristo nos foi recuperada a integridade da vida. Por isso, transbordando de alegria pascal, exulta a criação por toda a terra; também as Virtudes celestes e as Potestades angélicas proclamam um hino à vossa glória, cantando (dizendo) a uma só voz:`,
+    },
+    {
+      title: 'Oração Eucarística I (Missal, p. 523)',
+      content: `Pr: Pai de misericórdia, a quem sobem nossos louvores, suplicantes vos rogamos e pedimos por Jesus Cristo, vosso Filho e Senhor nosso, que aceiteis e abençoeis estes dons, estas oferendas, este sacrifício puro e santo, que oferecemos, antes de tudo, pela vossa Igreja santa e católica: concedei-lhe paz e proteção, unindo-a num só corpo e governando-a por toda a terra, em comunhão com vosso servo o papa (...), o nosso bispo (...) e todos os que guardam a fé católica que receberam dos apóstolos.
+As: Abençoai nossa oferenda, ó Senhor!
+
+Pr: Lembrai-vos, ó Pai, dos vossos filhos e filhas (...) e de todos os que circundam este altar, dos quais conheceis a fé e a dedicação ao vosso serviço. Por eles nós vos oferecemos e também eles vos oferecem este sacrifício de louvor por si e por todos os seus, e elevam a vós as suas preces, Deus eterno, vivo e verdadeiro, para alcançar o perdão de suas faltas, a segurança em suas vidas e a salvação que esperam.
+As: Lembrai-vos, ó Pai, dos vossos filhos!
+
+Pr (Comunhão com a Igreja — Domingos):
+Em comunhão com toda a Igreja, celebramos o glorioso dia em que o Senhor Jesus venceu a morte e nos tornou participantes de sua vida imortal. Veneramos, em primeiro lugar, a memória da Mãe de nosso Deus e Senhor Jesus Cristo, a gloriosa sempre Virgem Maria, a de seu esposo, São José, e também a dos santos apóstolos e mártires: Pedro e Paulo, André e a de todos os vossos santos. Por seus méritos e preces, concedei-nos sem cessar a vossa proteção.
+As: Em comunhão com vossos santos, vos louvamos!
+
+Pr: Aceitai, ó Pai, com bondade, a oblação dos vossos servos e de toda a vossa família; dai-nos sempre a vossa paz, livrai-nos da condenação eterna e acolhei-nos entre os vossos eleitos.
+As: Enviai o vosso Espírito Santo!
+
+Pr (Consagração — Corpo):
+Na véspera de sua paixão, ele tomou o pão em suas santas e veneráveis mãos, elevou os olhos ao céu, a vós, ó Pai todo-poderoso, pronunciou a bênção de ação de graças, partiu o pão e o deu a seus discípulos, dizendo:
+TOMAI, TODOS, E COMEI: ISTO É O MEU CORPO, QUE SERÁ ENTREGUE POR VÓS.
+
+Pr (Consagração — Sangue):
+Do mesmo modo, no fim da Ceia, ele tomou este precioso cálice em suas santas e veneráveis mãos, pronunciou novamente a bênção de ação de graças e o deu a seus discípulos, dizendo:
+TOMAI, TODOS, E BEBEI: ESTE É O CÁLICE DO MEU SANGUE, O SANGUE DA NOVA E ETERNA ALIANÇA, QUE SERÁ DERRAMADO POR VÓS E POR TODOS PARA REMISSÃO DOS PECADOS. FAZEI ISTO EM MEMÓRIA DE MIM.
+
+OP01 — Mistério da fé!
+As: Anunciamos, Senhor, a vossa morte e proclamamos a vossa ressurreição. Vinde, Senhor Jesus!
+OP02 — Mistério da fé e do amor!
+As: Todas as vezes que comemos deste pão e bebemos deste cálice, anunciamos, Senhor, a vossa morte, enquanto esperamos a vossa vinda!
+OP03 — Mistério da fé para a salvação do mundo!
+As: Salvador do mundo, salvai-nos, vós que nos libertastes pela cruz e ressurreição!
+
+Pr: Celebrando, pois, a memória da bem-aventurada paixão do vosso Filho, da sua ressurreição dentre os mortos e gloriosa ascensão aos céus, nós, vossos servos, e também vosso povo santo, vos oferecemos, ó Pai, dentre os bens que nos destes, o sacrifício puro, santo e imaculado, Pão santo da vida eterna e Cálice da perpétua salvação.
+As: Aceitai, ó Senhor, a nossa oferta!
+
+Pr: Suplicantes vos pedimos, ó Deus onipotente, que esta nossa oferenda seja levada à vossa presença, no altar do céu, pelas mãos do vosso santo anjo, para que todos nós, participando deste altar pela comunhão do santíssimo Corpo e Sangue do vosso Filho, sejamos repletos de todas as graças e bênçãos do céu.
+As: O Espírito nos una num só corpo!
+
+Pr: Lembrai-vos, ó Pai, dos vossos filhos e filhas (...) que nos precederam com o sinal da fé e dormem o sono da paz. A eles, e a todos os que descansam no Cristo, concedei o repouso, a luz e a paz.
+As: Concedei-lhes, ó Senhor, a luz eterna!
+
+Pr: A todos nós, pecadores, que esperamos na vossa infinita misericórdia, concedei o convívio dos apóstolos e mártires. Por Cristo, com Cristo e em Cristo, a vós, Deus Pai todo-poderoso, na unidade do Espírito Santo, toda honra e toda glória, por todos os séculos dos séculos.
+As: Amém!`,
+    },
+    {
+      title: 'Oração Eucarística II (Missal, p. 536)',
+      content: `Pr: Na verdade, é digno e justo, é nosso dever e salvação dar-vos graças sempre e em todo lugar, Senhor, Pai santo, por vosso amado Filho, Jesus Cristo. Ele é a vossa Palavra, pela qual tudo criastes. Ele é o nosso Salvador e Redentor, que se encarnou pelo Espírito Santo e nasceu da Virgem Maria. Ele, para cumprir a vossa vontade e adquirir para vós um povo santo, estendeu os braços na hora da sua paixão, a fim de vencer a morte e manifestar a ressurreição. Por isso, com os anjos e todos os santos, proclamamos vossa glória, cantando (dizendo) a uma só voz:
+As: Santo, Santo, Santo...
+
+Pr: Na verdade, ó Pai, vós sois Santo, fonte de toda santidade. Santificai, pois, estes dons, derramando sobre eles o vosso Espírito, a fim de que se tornem para nós o Corpo e Sangue de nosso Senhor Jesus Cristo.
+As: Enviai o vosso Espírito Santo!
+
+Pr (Consagração — Corpo):
+Estando para ser entregue e abraçando livremente a paixão, Jesus tomou o pão, pronunciou a bênção de ação de graças, partiu e o deu a seus discípulos, dizendo:
+TOMAI, TODOS, E COMEI: ISTO É O MEU CORPO, QUE SERÁ ENTREGUE POR VÓS.
+
+Pr (Consagração — Sangue):
+Do mesmo modo, no fim da Ceia, ele tomou o cálice em suas mãos e, dando graças novamente, o entregou a seus discípulos, dizendo:
+TOMAI, TODOS, E BEBEI: ESTE É O CÁLICE DO MEU SANGUE, O SANGUE DA NOVA E ETERNA ALIANÇA, QUE SERÁ DERRAMADO POR VÓS E POR TODOS PARA REMISSÃO DOS PECADOS. FAZEI ISTO EM MEMÓRIA DE MIM.
+
+OP01 — As: Anunciamos, Senhor, a vossa morte e proclamamos a vossa ressurreição. Vinde, Senhor Jesus!
+OP02 — As: Todas as vezes que comemos deste pão e bebemos deste cálice, anunciamos, Senhor, a vossa morte, enquanto esperamos a vossa vinda!
+OP03 — As: Salvador do mundo, salvai-nos, vós que nos libertastes pela cruz e ressurreição!
+
+Pr: Celebrando, pois, o memorial da morte e ressurreição do vosso Filho, nós vos oferecemos, ó Pai, o Pão da vida e o Cálice da salvação; e vos agradecemos porque nos tornastes dignos de estar aqui na vossa presença e vos servir.
+As: Aceitai, ó Senhor, a nossa oferta!
+
+Pr: Suplicantes vos pedimos que, participando do Corpo e Sangue de Cristo, sejamos reunidos pelo Espírito Santo num só corpo.
+As: O Espírito nos una num só corpo!
+
+Pr: Lembrai-vos, ó Pai, da vossa Igreja que se faz presente pelo mundo inteiro; que ela cresça na caridade, em comunhão com o papa (...), com o nosso bispo (...), os bispos do mundo inteiro, os presbíteros, os diáconos e todos os ministros do vosso povo.
+As: Lembrai-vos, ó Pai, da vossa Igreja!
+
+Pr (Defuntos): Lembrai-vos do vosso filho (da vossa filha) N., que (hoje) chamastes deste mundo à vossa presença. Tendo sido sepultado(a) com Cristo em sua morte, no batismo, participe igualmente da sua ressurreição.
+Pr: Enfim, nós vos pedimos, tende piedade de todos nós e dai-nos participar da vida eterna, com a Virgem Maria, Mãe de Deus, São José, seu esposo, os apóstolos e todos os santos que neste mundo viveram na vossa amizade, a fim de vos louvarmos e glorificarmos por Jesus Cristo, vosso Filho. Por Cristo, com Cristo e em Cristo, a vós, Deus Pai todo-poderoso, na unidade do Espírito Santo, toda honra e toda glória, por todos os séculos dos séculos.
+As: Amém!`,
+    },
+    {
+      title: 'Oração Eucarística III (Missal, p. 545)',
+      content: `Pr: Na verdade, vós sois Santo, ó Deus do universo, e tudo o que criastes proclama o vosso louvor, porque, por Jesus Cristo, vosso Filho e Senhor nosso, e pela força do Espírito Santo, dais vida e santidade a todas as coisas e não cessais de reunir para vós um povo que vos ofereça em toda parte, do nascer ao pôr do sol, um sacrifício perfeito.
+
+Pr: Por isso, ó Pai, nós vos suplicamos: santificai pelo Espírito Santo as oferendas que vos apresentamos para serem consagradas, a fim de que se tornem o Corpo e o Sangue de vosso Filho, nosso Senhor Jesus Cristo, que nos mandou celebrar estes mistérios.
+As: Enviai o vosso Espírito Santo!
+
+Pr (Consagração — Corpo):
+Na noite em que ia ser entregue, Jesus tomou o pão, pronunciou a bênção de ação de graças, partiu e o deu a seus discípulos, dizendo:
+TOMAI, TODOS, E COMEI: ISTO É O MEU CORPO, QUE SERÁ ENTREGUE POR VÓS.
+
+Pr (Consagração — Sangue):
+Do mesmo modo, no fim da Ceia, ele tomou o cálice em suas mãos, pronunciou a bênção de ação de graças e o deu a seus discípulos, dizendo:
+TOMAI, TODOS, E BEBEI: ESTE É O CÁLICE DO MEU SANGUE, O SANGUE DA NOVA E ETERNA ALIANÇA, QUE SERÁ DERRAMADO POR VÓS E POR TODOS PARA REMISSÃO DOS PECADOS. FAZEI ISTO EM MEMÓRIA DE MIM.
+
+OP01 — As: Anunciamos, Senhor, a vossa morte e proclamamos a vossa ressurreição. Vinde, Senhor Jesus!
+OP02 — As: Todas as vezes que comemos deste pão e bebemos deste cálice, anunciamos, Senhor, a vossa morte, enquanto esperamos a vossa vinda!
+OP03 — As: Salvador do mundo, salvai-nos, vós que nos libertastes pela cruz e ressurreição!
+
+Pr: Celebrando agora, ó Pai, o memorial da paixão redentora do vosso Filho, da sua gloriosa ressurreição e ascensão ao céu, e enquanto esperamos sua nova vinda, nós vos oferecemos em ação de graças este sacrifício vivo e santo.
+As: Aceitai, ó Senhor, a nossa oferta!
+
+Pr: Olhai com bondade a oblação da vossa Igreja e reconhecei nela o sacrifício que nos reconciliou convosco; concedei que, alimentando-nos com o Corpo e o Sangue do vosso Filho, repletos do Espírito Santo, nos tornemos em Cristo um só corpo e um só espírito.
+As: O Espírito nos una num só corpo!
+
+Pr: Que o mesmo Espírito faça de nós uma eterna oferenda para alcançarmos a herança com os vossos eleitos.
+As: Fazei de nós uma perfeita oferenda!
+
+Pr: Nós vos suplicamos, Senhor, que este sacrifício da nossa reconciliação estenda a paz e a salvação ao mundo inteiro. Confirmai na fé e na caridade a vossa Igreja que caminha neste mundo com o vosso servo o papa (...) e o nosso bispo (...), com os bispos do mundo inteiro, os presbíteros e diáconos.
+As: Lembrai-vos, ó Pai, da vossa Igreja!
+
+Pr: Acolhei com bondade no vosso Reino os nossos irmãos e irmãs que partiram desta vida e todos os que morreram na vossa amizade. Unidos a eles, esperamos também nós saciar-nos eternamente da vossa glória, por Cristo, Senhor nosso. Por Cristo, com Cristo e em Cristo, a vós, Deus Pai todo-poderoso, na unidade do Espírito Santo, toda honra e toda glória, por todos os séculos dos séculos.
+As: Amém!`,
+    },
+    {
+      title: '11. Rito da Comunhão',
+      content: `OP01 — Pr: Obedientes à Palavra do Salvador e formados por seu divino ensinamento, ousamos dizer:
+OP02 — Pr: Guiados pelo Espírito Santo, que ora em nós e por nós, elevemos as mãos ao Pai e rezemos juntos a oração que o próprio Jesus nos ensinou:
+As: Pai nosso que estais nos céus...
+
+Pr: Livrai-nos de todos os males, ó Pai, e dai-nos hoje a vossa paz. Ajudados pela vossa misericórdia, sejamos sempre livres do pecado e protegidos de todos os perigos, enquanto aguardamos a feliz esperança e a vinda do nosso Salvador, Jesus Cristo.
+As: Vosso é o Reino, o poder e a glória para sempre!
+
+Pr: Senhor Jesus Cristo, dissestes aos vossos apóstolos: "Eu vos deixo a paz, eu vos dou a minha paz". Não olheis os nossos pecados, mas a fé que anima vossa Igreja; dai-lhe, segundo o vosso desejo, a paz e a unidade.
+As: Amém!
+
+Pr: A paz do Senhor esteja sempre convosco.
+As: O amor de Cristo nos uniu!
+
+OP01 — Pr: Irmãos e irmãs, saudai-vos em Cristo Jesus.
+OP02 — No Espírito de Cristo ressuscitado, saudai-vos com um sinal de paz.
+
+As: Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós. (2×)
+    Cordeiro de Deus, que tirais o pecado do mundo, dai-nos a paz.
+
+Pr: Senhor Jesus Cristo, o vosso Corpo e o vosso Sangue, que vou receber, não se tornem causa de juízo e condenação; mas, por vossa bondade, sejam proteção e remédio para minha vida.
+
+OP01 — Pr: Felizes os convidados para a Ceia do Senhor. Eis o Cordeiro de Deus, que tira o pecado do mundo!
+OP02 — Pr: Eu sou o Pão vivo, que desceu do céu: se alguém come deste Pão, viverá eternamente. Eis o Cordeiro de Deus, que tira o pecado do mundo!
+As: Senhor, eu não sou digno(a) de que entreis em minha morada, mas dizei uma palavra e serei salvo(a).
+
+Pr: O Corpo de Cristo me guarde para a vida eterna.
+    O Sangue de Cristo me guarde para a vida eterna.
+
+APÓS A COMUNHÃO, O PADRE REZA:
+Fazei, Senhor, que conservemos num coração puro o que a nossa boca recebeu. E que esta dádiva temporal se transforme para nós em remédio eterno.
+
+12 — DEPOIS DA COMUNHÃO (própria do dia)`,
+    },
+    {
+      title: 'RITOS FINAIS — 13. Bênção Final',
+      content: `OP01 — Pr: O Senhor esteja convosco.
+As: Ele está no meio de nós!
+Pr: Abençoe-vos Deus todo-poderoso, Pai e Filho e Espírito Santo.
+As: Amém!
+Pr: Ide em paz, e o Senhor vos acompanhe.
+As: Graças a Deus!
+
+(Vigília Pascal e Oitava da Páscoa)
+OP02 — Pr: Deus todo-poderoso vos abençoe nesta solenidade pascal e vos proteja contra todo pecado.
+As: Amém!
+Pr: Aquele que vos renova para a vida eterna, pela ressurreição do seu Filho vos enriqueça com o dom da imortalidade.
+As: Amém!
+Pr: E vós, que, transcorridos os dias da paixão do Senhor, celebrais com júbilo a festa da Páscoa, possais chegar, pela graça de Deus, com o coração exultante, à festa das alegrias eternas.
+As: Amém!
+Pr: E a bênção de Deus todo-poderoso, Pai e Filho e Espírito Santo, desça sobre vós e permaneça para sempre.
+As: Amém!
+Pr: Ide em paz, e o Senhor vos acompanhe, aleluia, aleluia.
+As: Graças a Deus, aleluia, aleluia!
+
+(TEMPO PASCAL)
+OP03 — Pr: Deus, que, pela ressurreição do seu Filho único, vos deu a graça da redenção e vos tornou seus filhos, vos conceda a alegria de sua bênção.
+As: Amém!
+Pr: Deus, que, pela redenção de Cristo, vos concedeu o dom da verdadeira liberdade, por sua misericórdia vos torne participantes da herança eterna.
+As: Amém!
+Pr: E, vivendo agora retamente, possais no céu unir-vos a Deus, para o qual, pela fé, já ressuscitastes no batismo.
+As: Amém!
+Pr: E a bênção de Deus todo-poderoso, Pai e Filho e Espírito Santo, desça sobre vós e permaneça para sempre.
+As: Amém!
+Pr: Ide em paz, e o Senhor vos acompanhe.
+As: Graças a Deus!`,
+    },
+  ],
+},
+
+// ── 2. VISITA E COMUNHÃO AOS DOENTES E IDOSOS ───────────────────────────────
+{
+  id: 'doentes',
+  title: 'Visita e Comunhão aos Doentes e Idosos',
+  icon: '🕊️',
+  sections: [
+    {
+      title: 'Orientação Inicial',
+      content: `Se possível, providenciar que a família do doente ou do idoso esteja presente e participe da celebração.`,
+    },
+    {
+      title: '1. Saudação Inicial',
+      content: `MESC: Em nome do Pai e do Filho e do Espírito Santo.
+TODOS: Amém.
+MESC: A paz do Senhor esteja sempre nesta casa.
+TODOS: E com todos os que nela moram.`,
+    },
+    {
+      title: '2. Momento Penitencial',
+      content: `MESC: Reconheçamos que necessitamos do amor e da misericórdia de Deus para bem celebrar este momento. Por isso, peçamos perdão. Tende compaixão de nós, Senhor.
+TODOS: Porque somos pecadores.
+MESC: Manifestai, Senhor, a vossa misericórdia.
+TODOS: E dai-nos vossa salvação.
+MESC: Senhor, Deus da vida e do amor, perdoe nossas ofensas e nos dê a paz.
+TODOS: Amém.`,
+    },
+    {
+      title: '3. Oração',
+      content: `MESC: Manifestai, Senhor nosso Deus, vossa bondade para com este/a vosso/a filho/a (...), concedendo-lhe a graça da saúde e da paz, para que vos sirva com alegria e generosidade e a todos edifique com seu testemunho de fé. Por Cristo, nosso Senhor.
+TODOS: Amém.`,
+    },
+    {
+      title: '4. Palavra de Deus',
+      content: `Proclamar o Evangelho do dia ou o seguinte (Jo 6,54-56):
+"Quem come a minha carne e bebe o meu sangue tem a vida eterna, e eu o ressuscitarei no último dia. Pois a minha carne é verdadeiro alimento e o meu sangue é verdadeira bebida. Quem come a minha carne e bebe o meu sangue permanece em mim e eu nele."
+
+Pode haver breve reflexão sobre a Palavra proclamada.`,
+    },
+    {
+      title: '5. Pai-Nosso e Comunhão',
+      content: `O ministro motiva a oração do Pai Nosso e todos rezam. Em seguida, erguendo a hóstia consagrada, diz:
+MESC: Somos felizes porque podemos comungar o Corpo do Senhor. Eis o Cordeiro...
+TODOS: Senhor, eu não sou digno/a...
+MESC: O Corpo de Cristo.
+Pode haver breve silêncio após a comunhão.`,
+    },
+    {
+      title: '6. Oração de Ação de Graças',
+      content: `MESC: Ó Deus, que este alimento sagrado fortifique e conserve na paz vosso/a filho/a (...). Fazei que ele/a persevere na sinceridade de vosso amor e de vossa misericórdia. Por Cristo, nosso Senhor.
+TODOS: Amém.`,
+    },
+    {
+      title: '7. Bênção Final',
+      content: `MESC: Deus Pai nos abençoe e nos guarde.
+TODOS: Amém.
+MESC: Deus Filho nos conceda a saúde.
+TODOS: Amém.
+MESC: Deus Espírito Santo nos ilumine.
+TODOS: Amém.
+MESC: Em nome do Pai e do Filho e do Espírito Santo.
+TODOS: Amém.
+MESC: Permaneçamos firmes na fé e na paz do Senhor.
+TODOS: Agora e sempre. Amém.`,
+    },
+  ],
+},
+
+// ── 3. CELEBRAÇÃO DE EXÉQUIAS ────────────────────────────────────────────────
+{
+  id: 'exequias',
+  title: 'Celebração de Exéquias',
+  icon: '🕯️',
+  sections: [
+    {
+      title: '1. Ritos Iniciais',
+      content: `Pode se entoar o refrão "Quem nos separará".
+
+Min: O Senhor da vida console nossa tristeza e confirme nossa esperança de nos encontrarmos todos, um dia, na pátria celeste. Iniciemos a celebração com o sinal da nossa fé: em nome do Pai e do Filho e do Espírito Santo.
+TODOS: Amém.
+
+Min: Ó Pai, vós que sois justo, sede misericordioso com este/a nosso/a irmão/ã (...), que chamastes deste mundo. Acolhei-o/a na alegria eterna. Criado/a à vossa imagem e semelhança e adotado/a por vós como filho/a pelo batismo, participe da comunhão de vossos santos. Por Cristo, nosso Senhor.
+TODOS: Amém.`,
+    },
+    {
+      title: '2. Palavra de Deus',
+      content: `Pode-se entoar breve refrão à Palavra de Deus.
+
+EVANGELHO (João 6,37-39)
+Proclamação do Evangelho de Jesus Cristo segundo João:
+"Todos aqueles que o Pai me dá virão a mim, e aqueles que vêm a mim não os rejeitarei, porque desci do céu não para fazer a minha vontade, mas a vontade daquele que me enviou. E a vontade daquele que me enviou é esta: que eu não perca nenhum dos que ele me deu, mas os ressuscite no último dia."
+— Palavra da Salvação.
+TODOS: Glória a vós, Senhor!
+
+Pode haver breve reflexão e preces dos fiéis.`,
+    },
+    {
+      title: '3. Encomendação',
+      content: `Min: Com fé e esperança na vida eterna, recomendemos ao Pai do céu este/a nosso/a irmão/ã (...), que morreu na paz de Cristo. O Pai de misericórdia, em vossas mãos o/a entregamos na firme esperança de que ele/a ressuscitará no último dia com todos os que em Cristo adormeceram. Abri para ele/a as portas do paraíso, e a nós, que aqui ficamos, consolai-nos com a certeza de que um dia nos encontraremos todos em vossa casa. Por Cristo, nosso Senhor.
+TODOS: Amém.
+
+Enquanto o corpo é aspergido, pode-se rezar o Pai Nosso. A seguir, o ministro continua...
+
+Min: Santos de Deus, vinde em seu auxílio; anjos do Senhor, recebei na glória eterna este/a vosso/a servidor/a (...). Cristo, nosso Senhor, te chamou; ele te acolha no paraíso para o descanso eterno.
+TODOS: Amém.
+
+Min: Dai-lhe, Senhor, o repouso eterno.
+TODOS: E brilhe para ele/a vossa luz.
+Min: Descanse em paz.
+TODOS: Amém.
+
+(Canto)
+Enquanto as pessoas se despedem do morto, a assembleia pode cantar o Sl 23 ou outro canto apropriado. Pode-se concluir com a oração da Salve-Rainha.`,
+    },
+    {
+      title: '4. Sepultamento ou Cremação',
+      content: `O ministro reza a seguinte oração:
+Min: Ó Pai de bondade, vossos dias não conhecem fim e vossa misericórdia não tem limites. Lembrando a brevidade de nossa vida e a incerteza da hora da morte, nós vos pedimos que vosso Espírito Santo nos conduza neste mundo na santidade e na justiça. E, depois de vos servirmos na terra, possamos chegar ao vosso Reino no céu. Por Cristo, nosso Senhor.
+TODOS: Amém.
+
+Concluir com canto apropriado.`,
+    },
+  ],
+},
+
+// ── 4. CELEBRAÇÃO DA PALAVRA ─────────────────────────────────────────────────
+{
+  id: 'palavra',
+  title: 'Celebração da Palavra',
+  icon: '📖',
+  sections: [
+    {
+      title: '1. Saudação',
+      content: `M — Em nome do Pai...
+T — Amém.
+
+O Ministro poderá falar da alegria e da importância de estarem reunidos para cultuar a Deus, terminando com estas ou outras palavras semelhantes:
+FAZER A ORAÇÃO DO DIA / LITURGIA DIÁRIA
+
+M — A Misericórdia do Pai, o amor do Filho e a comunhão do Espírito Santo, estejam conosco.
+T — Amém.`,
+    },
+    {
+      title: '2. Rito Penitencial',
+      content: `Quem preside motiva a assembleia ao pedido de perdão. Após, rezar o Confesso a Deus ou entoar um canto apropriado.
+
+M — Meus irmãos, reconheçamos as nossas faltas e peçamos perdão a Deus para recebermos dignamente a Comunhão no Corpo do Senhor.
+T — Confesso a Deus todo poderoso e a vós irmãos e irmãs, que pequei muitas vezes por pensamentos e palavras, atos e omissões, por minha culpa, minha tão grande culpa. E Peço a Virgem Maria, aos Anjos e Santos, e a vós irmãos e irmãs, que rogueis por mim a Deus, nosso Senhor.
+M — Deus todo poderoso tenha compaixão de nós, perdoe os nossos pecados e nos conduza à vida eterna.
+T — Amém.`,
+    },
+    {
+      title: '3. Liturgia da Palavra',
+      content: `1ª Leitura, Salmo, 2ª Leitura (quando houver)...
+
+EVANGELHO:
+M — O Senhor esteja conosco.
+T — Ele está no meio de nós.
+M — Proclamação do Evangelho de Jesus Cristo Segundo...
+T — Glória a Vós Senhor.
+M — Palavra da Salvação.
+T — Glória a Vós Senhor.`,
+    },
+    {
+      title: '4. Homilia — 5. Profissão de Fé',
+      content: `4 — HOMILIA.
+
+5 — CREIO (Profissão de Fé)
+Após essa reflexão que possamos juntos renovar a nossa Fé rezando...
+CREIO EM DEUS PAI TODO PODEROSO, criador do céu e da terra, e em Jesus Cristo, seu único Filho, nosso Senhor, que foi concebido pelo poder do Espírito Santo; nasceu da Virgem Maria; padeceu sob Pôncio Pilatos, foi crucificado, morto e sepultado; desceu à mansão dos mortos; ressuscitou ao terceiro dia; subiu aos céus; está sentado à direita de Deus Pai todo-poderoso, donde há de vir a julgar os vivos e os mortos. Creio no Espírito Santo, na santa Igreja católica, na comunhão dos santos, na remissão dos pecados, na ressurreição da carne, na vida eterna. Amém.`,
+    },
+    {
+      title: '6. Rito da Comunhão',
+      content: `Trazer Âmbula com Reserva Eucarística e colocar sobre o Altar ainda fechada.
+
+M — Antes de participar da Eucaristia, sinal de reconciliação e vínculo de união fraterna, rezemos juntos como o Senhor nos ensinou:
+T — Pai Nosso que estais nos céus...
+
+M — Senhor, livrai-nos do mal e dai-nos a graça de sempre mais vos amar e de amar também nossos irmãos. Fazei, Senhor, que o vosso Corpo que vamos receber com fé, nos fortaleça, a fim de cumprirmos em tudo a vossa vontade e permaneçamos sempre unidos a vós e aos vossos irmãos.
+
+Tirar o Conopel da Âmbula e abri-la. Fazer Genuflexão. Fazer breve Adoração. Pegar uma hóstia nas mãos e mostrar aos irmãos.
+M — Felizes os convidados para a Ceia do Senhor! Eis O Cordeiro de Deus, que tira o pecado do mundo.
+T — Senhor, eu não sou digno de que entreis em minha morada, mas dizei uma palavra e serei salvo.
+M — O Corpo do Senhor Jesus Cristo me guarde para a vida eterna.`,
+    },
+    {
+      title: '7. Ação de Graças',
+      content: `Pode-se guardar, durante algum tempo, um sagrado silêncio ou algum canto de louvor. A seguir o ministro conclui, com a seguinte oração.
+
+M — Oremos: Senhor Jesus Cristo, neste admirável sacramento, nos deixastes o memorial da vossa paixão. Dai-nos venerar com tão grande amor o mistério do vosso Corpo e do vosso Sangue, que possamos continuamente colher os frutos da vossa redenção. Vós que reinais com o Pai, na unidade do Espírito Santo.
+T — Amém!`,
+    },
+    {
+      title: '8. Bênção Final — 9. Antífona Mariana',
+      content: `8 — BÊNÇÃO FINAL
+M — Que o Senhor todo-poderoso e cheio de misericórdia, Pai, e Filho, e Espírito Santo, nos abençoe e nos guarde agora e sempre.
+Vamos em Paz e que o Senhor nos acompanhe.
+T — Amém!
+
+9 — ANTÍFONA MARIANA
+T — Dai-nos a benção ó Virgem Maria, Luz para a noite e paz para o Dia.
+Santo Anjo do Senhor, meu Zeloso guardador,
+se a Ti me confiou a piedade Divina,
+Sempre me rege, me guarde, me governe e me ilumine.
+Amém.`,
+    },
+  ],
+},
+
+];
+
+// ── Componente RitosLiturgicosTab ─────────────────────────────────────────────
+function RitosLiturgicosTab() {
+  const [openSubgroup, setOpenSubgroup] = React.useState<string | null>(null);
+  const [openSections, setOpenSections] = React.useState<Record<string, boolean>>({});
+
+  const toggleSubgroup = (id: string) => {
+    setOpenSubgroup(prev => prev === id ? null : id);
+  };
+
+  const toggleSection = (key: string) => {
+    setOpenSections(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const expandAll = (subgroupId: string, sections: RitoSection[]) => {
+    const keys: Record<string, boolean> = {};
+    sections.forEach((_, i) => { keys[`${subgroupId}-${i}`] = true; });
+    setOpenSections(prev => ({ ...prev, ...keys }));
+  };
+
+  const collapseAll = (subgroupId: string, sections: RitoSection[]) => {
+    const keys: Record<string, boolean> = {};
+    sections.forEach((_, i) => { keys[`${subgroupId}-${i}`] = false; });
+    setOpenSections(prev => ({ ...prev, ...keys }));
+  };
+
+  return (
+    <div className="space-y-4">
+      <p className="text-sm text-[#1A1A1A]/50 italic">
+        Ritos litúrgicos oficiais da Igreja Católica. Selecione um subgrupo para ver o conteúdo completo.
+      </p>
+
+      {ritosData.map((subgroup) => {
+        const isOpen = openSubgroup === subgroup.id;
+        const anyOpen = subgroup.sections.some((_, i) => openSections[`${subgroup.id}-${i}`]);
+
+        return (
+          <div key={subgroup.id} className="bg-white rounded-[2rem] border border-[#1A1A1A]/5 overflow-hidden">
+            {/* Cabeçalho do subgrupo */}
+            <button
+              onClick={() => toggleSubgroup(subgroup.id)}
+              className="w-full flex items-center justify-between p-5 text-left hover:bg-[#F5F2ED] transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">{subgroup.icon}</span>
+                <div>
+                  <p className="font-bold text-base">{subgroup.title}</p>
+                  <p className="text-xs text-[#1A1A1A]/40 mt-0.5">{subgroup.sections.length} seções</p>
+                </div>
+              </div>
+              {isOpen
+                ? <ChevronUp className="w-5 h-5 text-[#5A5A40] flex-shrink-0" />
+                : <ChevronDown className="w-5 h-5 text-[#1A1A1A]/30 flex-shrink-0" />}
+            </button>
+
+            <AnimatePresence>
+              {isOpen && (
+                <motion.div
+                  initial={{ height: 0 }}
+                  animate={{ height: 'auto' }}
+                  exit={{ height: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="px-5 pb-5 space-y-2 border-t border-[#1A1A1A]/5 pt-4">
+                    {/* Botões Expandir/Recolher todos */}
+                    <div className="flex gap-2 mb-3">
+                      <button
+                        onClick={() => expandAll(subgroup.id, subgroup.sections)}
+                        className="text-[11px] font-bold text-[#5A5A40] px-3 py-1.5 bg-[#5A5A40]/10 rounded-xl hover:bg-[#5A5A40]/20 transition-colors"
+                      >
+                        Expandir tudo
+                      </button>
+                      <button
+                        onClick={() => collapseAll(subgroup.id, subgroup.sections)}
+                        className="text-[11px] font-bold text-[#1A1A1A]/40 px-3 py-1.5 bg-[#F5F2ED] rounded-xl hover:bg-[#1A1A1A]/10 transition-colors"
+                      >
+                        Recolher tudo
+                      </button>
+                    </div>
+
+                    {/* Seções accordion */}
+                    {subgroup.sections.map((section, idx) => {
+                      const sectionKey = `${subgroup.id}-${idx}`;
+                      const isSectionOpen = !!openSections[sectionKey];
+
+                      return (
+                        <div key={idx} className="rounded-2xl border border-[#1A1A1A]/5 overflow-hidden bg-[#F5F2ED]/50">
+                          <button
+                            onClick={() => toggleSection(sectionKey)}
+                            className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-[#F5F2ED] transition-colors"
+                          >
+                            <span className="font-semibold text-sm pr-2">{section.title}</span>
+                            {isSectionOpen
+                              ? <ChevronUp className="w-4 h-4 text-[#5A5A40] flex-shrink-0" />
+                              : <ChevronDown className="w-4 h-4 text-[#1A1A1A]/30 flex-shrink-0" />}
+                          </button>
+
+                          <AnimatePresence>
+                            {isSectionOpen && (
+                              <motion.div
+                                initial={{ height: 0 }}
+                                animate={{ height: 'auto' }}
+                                exit={{ height: 0 }}
+                                className="overflow-hidden"
+                              >
+                                <div className="px-5 pb-5 pt-1 border-t border-[#1A1A1A]/5">
+                                  <pre className="whitespace-pre-wrap text-sm text-[#1A1A1A]/80 font-serif leading-relaxed">
+                                    {section.content}
+                                  </pre>
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 // ── Componente Principal ──────────────────────────────────────────────────────
 export default function Prayers() {
   const [sub, setSub] = useState<SubTab>('daily');
@@ -782,6 +1441,7 @@ export default function Prayers() {
     { id: 'daily' as SubTab, label: 'Orações Cotidianas', icon: <Heart className="w-4 h-4" /> },
     { id: 'adoration' as SubTab, label: 'Adoração Eucarística', icon: <Star className="w-4 h-4" /> },
     { id: 'consecration' as SubTab, label: 'Consagração a Jesus Cristo', icon: <BookOpen className="w-4 h-4" /> },
+    { id: 'ritos' as SubTab, label: 'Ritos Litúrgicos', icon: <BookMarked className="w-4 h-4" /> },
   ];
 
   return (
@@ -841,6 +1501,7 @@ export default function Prayers() {
           )}
           {sub === 'adoration' && <AdorationModelsTab />}
           {sub === 'consecration' && <ConsecrationTab />}
+          {sub === 'ritos' && <RitosLiturgicosTab />}
         </motion.div>
       </AnimatePresence>
 
