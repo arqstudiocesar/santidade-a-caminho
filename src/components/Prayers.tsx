@@ -506,6 +506,9 @@ function getConsecrationKey(): string {
 function ConsecrationTab() {
   const [openWeek, setOpenWeek] = useState<number | null>(null);
   const [openDay, setOpenDay] = useState<number | null>(null);
+  const [openReview, setOpenReview] = useState(false);
+  const [openSintese, setOpenSintese] = useState(false);
+  const [openAto, setOpenAto] = useState(false);
 
   // Dias marcados como concluídos — persiste no localStorage
   const [completedDays, setCompletedDays] = useState<Set<number>>(() => {
@@ -571,6 +574,144 @@ function ConsecrationTab() {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* ── Revisão Geral do Tratado ─────────────────────────────────────── */}
+      <div className="bg-white rounded-[2rem] border border-[#1A1A1A]/5 overflow-hidden">
+        <button
+          onClick={() => setOpenReview(v => !v)}
+          className="w-full flex items-center justify-between p-5 text-left hover:bg-[#F5F2ED]/50 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <span className="text-lg">📖</span>
+            <div>
+              <p className="font-bold">Revisão Geral do Tratado</p>
+              <p className="text-xs text-[#1A1A1A]/40">Fichamento da Verdadeira Devoção — São Luís de Montfort</p>
+            </div>
+          </div>
+          <ChevronDown className={`w-5 h-5 text-[#5A5A40] transition-transform ${openReview ? 'rotate-180' : ''}`} />
+        </button>
+        {openReview && (
+          <div className="px-5 pb-6 space-y-5 text-sm leading-relaxed text-[#1A1A1A]/80">
+            {[
+              { title: 'I. Período Preliminar: Desapego do Mundo', items: [
+                { ref: '§78 (A Necessidade de Purificação)', text: '"As nossas melhores ações são geralmente manchadas e corrompidas pela má inclinação que há em nós... É de extrema importância esvaziarmo-nos do que temos de mau, senão Nosso Senhor, que é infinitamente puro e odeia a menor mancha na alma, não poderá habitar em nós."' },
+                { ref: '§80 (A Renúncia)', text: '"Para nos esvaziarmos de nós mesmos, é preciso morrer todos os dias a nossos sentimentos e faculdades. É preciso não ver como se não víssemos, não ouvir como se não ouvíssemos, e não usar das coisas deste mundo como se delas não usássemos."' },
+                { ref: '§100 (O Perigo da Falsa Devoção)', text: '"O mundo está cheio de devotos presunçosos que, sob o pretexto de serem devotos da Santíssima Virgem, se entregam ao pecado e não se esforçam por se emendar."' },
+                { ref: '§110 (A Pureza de Intenção)', text: '"A verdadeira devoção é desinteressada, isto é, não move a alma a buscar-se a si mesma, mas somente a Deus em Sua Santíssima Mãe."' },
+                { ref: '§120 (A Meta Final)', text: '"Toda a nossa perfeição consiste em sermos conformados, unidos e consagrados a Jesus Cristo. Por isso, a mais perfeita de todas as devoções é, indiscutivelmente, aquela que nos conforma, une e consagra mais perfeitamente a Jesus Cristo."' },
+              ]},
+              { title: 'II. Primeira Semana: Conhecimento de Si Mesmo', items: [
+                { ref: '§79 (A Raiz do Mal Interior)', text: '"Somos todos feitos de lama e de corrupção... temos em nós um fundo de orgulho e de amor-próprio que nos torna indignos de aparecer diante de Deus."' },
+                { ref: '§81 (O Valor da Humildade)', text: '"Deus resiste aos soberbos, mas dá a Sua graça aos humildes. Ora, tu não podes ser verdadeiramente humilde sem te conheceres tal qual és."' },
+                { ref: '§213 (A Graça do Autoconhecimento)', text: '"Pela luz que o Espírito Santo te dará por meio de Maria... conhecerás a tua má semente, a tua corrupção e incapacidade para todo o bem."' },
+                { ref: '§223 (A Dependência)', text: '"Nada somos por nós mesmos, nada temos senão pecado e miséria. Por isso, temos necessidade de um apoio seguro para não cairmos a cada passo."' },
+              ]},
+              { title: 'III. Segunda Semana: Conhecimento de Maria', items: [
+                { ref: '§1 (A Porta de Entrada)', text: '"Foi por intermédio da Santíssima Virgem Maria que Jesus Cristo veio ao mundo, e é também por meio dela que deve reinar no mundo."' },
+                { ref: '§50 (O Segredo de Maria)', text: '"Maria é o santuário e o repouso da Santíssima Trindade, onde Deus está mais magnífica e divinamente que em qualquer outro lugar do universo."' },
+                { ref: '§152 (O Caminho Fácil)', text: '"Maria é o caminho fácil, curto, perfeito e seguro para chegar à união com Deus, em que consiste a perfeição cristã."' },
+                { ref: '§219 (A Metáfora do Molde)', text: '"Maria é o grande molde de Deus, feito pelo Espírito Santo, para formar ao natural um Deus feito homem pela União Hipostática, e para formar um homem-Deus pela graça."' },
+              ]},
+              { title: 'IV. Terceira Semana: Conhecimento de Jesus Cristo', items: [
+                { ref: '§61 (Cristocentrismo)', text: '"Jesus Cristo, nosso Salvador, verdadeiro Deus e verdadeiro homem, deve ser o fim último de todas as nossas devoções; de outra sorte, seriam falsas e enganadoras."' },
+                { ref: '§64 (A Submissão de Cristo)', text: '"Jesus Cristo deu mais glória a Deus, seu Pai, submetendo-se a Maria durante trinta anos, do que se tivesse convertido toda a terra operando os maiores prodígios."' },
+                { ref: '§118 (A Sabedoria Encarnada)', text: '"Conhecer a Jesus Cristo, a Sabedoria encarnada, é saber tudo; não o conhecer é nada saber, ainda que se saiba tudo o mais."' },
+                { ref: '§121 (A Entrega no Batismo)', text: '"Toda a nossa perfeição consiste em renovar as promessas do santo Batismo, e esta devoção consiste em nos darmos inteiramente a Maria para sermos todos de Jesus por meio d\'Ela."' },
+              ]},
+              { title: 'V. Semana Final: Preparação para a Consagração', items: [
+                { ref: '§126 (A Escravidão de Amor)', text: '"Devemos dar-lhe: 1º o nosso corpo... 2º a nossa alma... 3º os nossos bens exteriores... 4º os nossos bens interiores e espirituais."' },
+                { ref: '§158 (A Conservação da Graça)', text: '"Maria é a virgem fiel que, por sua fidelidade a Deus, repara as perdas que a Eva infiel causou por sua desobediência. Ela guarda e conserva os tesouros que Lhe confiamos."' },
+                { ref: '§257 (Agir Por Maria)', text: '"É preciso fazer todas as ações por Maria, isto é, obedecer-lhe em tudo e conduzir-se em tudo pelo seu espírito, que é o Espírito Santo de Deus."' },
+                { ref: '§261 (Agir Em Maria)', text: '"É preciso fazer todas as coisas em Maria... para que ela se torne o lugar onde a alma reza, age e repousa, para que nela encontre a Deus."' },
+              ]},
+            ].map((sec, si) => (
+              <div key={si} className="border-l-2 border-[#5A5A40]/20 pl-4 space-y-3">
+                <p className="font-bold text-[#5A5A40] text-xs uppercase tracking-widest">{sec.title}</p>
+                {sec.items.map((item, ii) => (
+                  <div key={ii}>
+                    <p className="text-[11px] font-bold text-[#1A1A1A]/50 mb-1">{item.ref}</p>
+                    <p className="italic">{item.text}</p>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* ── Síntese Espiritual ────────────────────────────────────────────── */}
+      <div className="bg-white rounded-[2rem] border border-[#1A1A1A]/5 overflow-hidden">
+        <button
+          onClick={() => setOpenSintese(v => !v)}
+          className="w-full flex items-center justify-between p-5 text-left hover:bg-[#F5F2ED]/50 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <span className="text-lg">✨</span>
+            <div>
+              <p className="font-bold">Síntese Espiritual</p>
+              <p className="text-xs text-[#1A1A1A]/40">O Caminho da Consagração — fase por fase</p>
+            </div>
+          </div>
+          <ChevronDown className={`w-5 h-5 text-[#5A5A40] transition-transform ${openSintese ? 'rotate-180' : ''}`} />
+        </button>
+        {openSintese && (
+          <div className="px-5 pb-6 space-y-5 text-sm leading-relaxed text-[#1A1A1A]/80">
+            <p className="italic text-[#1A1A1A]/60 border-l-4 border-[#5A5A40]/30 pl-4">
+              O objetivo central do Tratado é a perfeita renovação das promessas do Batismo pelas mãos de Maria. São Luís propõe que, para ser de Jesus, precisamos deixar de ser "de nós mesmos".
+            </p>
+            {[
+              { n: '1.', title: 'Período Preliminar: Desapego do Mundo (Purificação)', sinteseText: 'O mundo nos escraviza através do orgulho, da concupiscência e da vaidade. Esta etapa é um "detox" da alma. Não se pode colocar o vinho novo de Cristo em odres velhos e mundanos.', keyPar: '§78-79: "As nossas melhores ações são geralmente manchadas e corrompidas pela má inclinação que há em nós... É de extrema importância esvaziarmo-nos do que temos de mau, senão Nosso Senhor, que é infinitamente puro, não poderá habitar em nós."' },
+              { n: '2.', title: 'Primeira Semana: Conhecimento de Si Mesmo (Humildade)', sinteseText: 'Aqui a alma olha para o espelho da verdade. Percebemos que, por nós mesmos, somos instáveis e inclinados ao egoísmo. A humildade não é sentir-se mal, mas reconhecer a verdade de que precisamos de ajuda divina.', keyPar: '§213: "Pela luz que o Espírito Santo te dará por meio de Maria... conhecerás a tua má semente, a tua corrupção e incapacidade para todo o bem. Tu te olharás como um caracol que tudo suja com sua baba, ou como um sapo que tudo envenena com seu veneno."' },
+              { n: '3.', title: 'Segunda Semana: Conhecimento de Maria (Devoção Verdadeira)', sinteseText: 'Maria não é um obstáculo entre nós e Deus, mas o caminho mais curto. Conhecê-la é entender que ela é a criatura que melhor glorifica o Criador.', keyPar: '§219: "Maria é o grande molde de Deus, feito pelo Espírito Santo, para formar ao natural um Deus feito homem... e para formar também um homem-Deus pela graça. A alma que encontra este molde e nele se lança, em pouco tempo torna-se uma imagem viva de Jesus Cristo."' },
+              { n: '4.', title: 'Terceira Semana: Conhecimento de Jesus Cristo', sinteseText: 'Todo o esforço anterior deságua aqui. O devoto olha para Jesus como o Verbo Encarnado e o seu Único Mestre. Através de Maria, o conhecimento de Jesus deixa de ser teórico e torna-se íntimo.', keyPar: '§61: "Jesus Cristo, nosso Salvador, verdadeiro Deus e verdadeiro homem, deve ser o fim último de todas as nossas devoções... Se alguém estabelecesse a sólida devoção à Santíssima Virgem, era apenas para estabelecer mais perfeitamente a de Jesus Cristo."' },
+            ].map((phase, pi) => (
+              <div key={pi} className="bg-[#F5F2ED] rounded-2xl p-4 space-y-2">
+                <p className="font-bold text-[#5A5A40]">{phase.n} {phase.title}</p>
+                <p>{phase.sinteseText}</p>
+                <p className="text-[11px] italic text-[#1A1A1A]/50 border-t border-[#1A1A1A]/10 pt-2">{phase.keyPar}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* ── Ato de Consagração Final ──────────────────────────────────────── */}
+      <div className="bg-white rounded-[2rem] border border-[#5A5A40]/20 overflow-hidden">
+        <button
+          onClick={() => setOpenAto(v => !v)}
+          className="w-full flex items-center justify-between p-5 text-left hover:bg-[#F5F2ED]/50 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <span className="text-lg">📜</span>
+            <div>
+              <p className="font-bold text-[#5A5A40]">Ato de Consagração Final</p>
+              <p className="text-xs text-[#1A1A1A]/40">Fórmula de São Luís Maria de Montfort — para o Dia 33</p>
+            </div>
+          </div>
+          <ChevronDown className={`w-5 h-5 text-[#5A5A40] transition-transform ${openAto ? 'rotate-180' : ''}`} />
+        </button>
+        {openAto && (
+          <div className="px-5 pb-6 space-y-4 text-sm leading-loose text-[#1A1A1A]/80 font-serif">
+            <p className="text-[11px] font-sans font-bold text-[#5A5A40] uppercase tracking-widest text-center pb-2 border-b border-[#5A5A40]/10">
+              Ato de Consagração de si mesmo a Jesus Cristo, Sabedoria Encarnada, pelas mãos de Maria
+            </p>
+            {[
+              'Ó Sabedoria eterna e encarnada! Ó amabilíssimo e adorável Jesus, verdadeiro Deus e verdadeiro homem, Filho único do Pai Eterno e da sempre Virgem Maria! Adoro-Vos profundamente no seio e nos esplendores de Vosso Pai, durante a eternidade, e no seio virginal de Maria, Vossa digníssima Mãe, no tempo de Vossa Encarnação.',
+              'Eu Vos dou graças por Vos terdes aniquilado a Vós mesmo, tomando a forma de escravo, para me livrardes do cruel cativeiro do demônio. Eu Vos louvo e glorifico por Vos terdes querido submeter a Maria, Vossa Santa Mãe, em todas as coisas, a fim de, por Ela, me tornardes Vosso fiel escravo.',
+              'Mas, ai de mim! Criatura ingrata e infiel, não guardei as promessas que tão solenemente fiz no meu Batismo; não cumpri as minhas obrigações; não mereço ser chamado Vosso filho, nem Vosso escravo; e, como nada há em mim que não mereça a Vossa repulsa e a Vossa cólera, não ouso aproximar-me por mim mesmo da Vossa santíssima e augustíssima Majestade.',
+              'É por esta razão que recorro à intercessão de Vossa Mãe Santíssima, que me destes para mediadora junto de Vós; e é por meio d\'Ela que espero obter de Vós a contrição e o perdão dos meus pecados, a aquisição e a conservação da Sabedoria.',
+              'Ave, pois, ó Maria Imaculada, Tabernáculo vivo da Divindade, onde a Sabedoria eterna escondida quer ser adorada pelos anjos e pelos homens! Ave, ó Rainha do céu e da terra, a cujo império tudo está submetido, tanto quanto está abaixo de Deus! Ave, ó refúgio seguro dos pecadores, cuja misericórdia a ninguém falece! Atendei aos desejos que tenho da divina Sabedoria, e recebei, para esse fim, os votos e ofertas que a minha baixeza Vos apresenta.',
+              'Eu, _____________________, pecador infiel, renovo e ratifico hoje, em Vossas mãos, os votos do meu Batismo; renuncio para sempre a Satanás, às suas pompas e às suas obras; e dou-me inteiramente a Jesus Cristo, a Sabedoria Encarnada, para levar a minha cruz atrás d\'Ele todos os dias da minha vida, e para Lhe ser mais fiel do que tenho sido até agora.',
+              'Escolho-Vos hoje, ó Maria, na presença de toda a corte celeste, para minha Mãe e minha Senhora. Entrego-Vos e consagro-Vos, na qualidade de escravo, o meu corpo e a minha alma, os meus bens interiores e exteriores, e o próprio valor das minhas boas obras passadas, presentes e futuras, deixando-Vos pleno e inteiro direito de dispor de mim e de tudo o que me pertence, sem exceção, à Vossa vontade, para maior glória de Deus, no tempo e na eternidade.',
+              'Recebei, ó Virgem benigna, esta pequena oferta da minha escravidão, em união com a submissão que a Sabedoria eterna quis ter à Vossa maternidade; em homenagem ao poder que ambos tendes sobre este vermezinho e miserável pecador; e em ação de graças pelos privilégios com que a Santíssima Trindade Vos favoreceu. Protesto que quero, daqui em diante e como Vosso verdadeiro escravo, buscar a Vossa honra e obedecer-Vos em todas as coisas.',
+              'Ó Mãe admirável! Apresentai-me ao Vosso amado Filho, na qualidade de escravo eterno, para que, tendo-me resgatado por Vós, por Vós me receba. Ó Mãe de misericórdia! Concedei-me a graça de obter a verdadeira Sabedoria de Deus, e de me colocar, para esse fim, no número daqueles que amais, ensinais, guiais, alimentais e protegeis como Vossos filhos e Vossos escravos.',
+              'Ó Virgem fiel! Tornai-me em todas as coisas um tão perfeito discípulo, imitador e escravo da Sabedoria Encarnada, Jesus Cristo, Vosso Filho, que eu chegue, por Vossa intercessão e a Vosso exemplo, à plenitude da Sua idade na terra e da Sua glória nos céus. Assim seja.',
+            ].map((para, pi) => (
+              <p key={pi} className={pi === 5 ? 'bg-[#F5F2ED] rounded-xl px-4 py-3 font-bold' : ''}>{para}</p>
+            ))}
+          </div>
+        )}
       </div>
 
       <div>

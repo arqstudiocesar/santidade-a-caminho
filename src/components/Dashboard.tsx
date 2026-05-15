@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Flame, Star, BookOpen, Quote, Calendar, Bell, Shield, CheckCircle2, Cross } from 'lucide-react';
 import { TabType } from '../types';
+import { cacheGet } from '../utils/cache';
 
 // ── Versículos do dia (rotação por dia do ano) ──────────────────────────────
 const DAILY_VERSES = [
@@ -108,22 +109,6 @@ function getWeekIndex(arr: unknown[]): number {
   return week % arr.length;
 }
 
-// ── Helper: lê chave do localStorage por usuário ─────────────────────────────
-function getUserKey(base: string): string {
-  try {
-    const s = localStorage.getItem('caminho_session');
-    const id = s ? JSON.parse(s).user?.id : 'anon';
-    return `${base}_${id}`;
-  } catch { return `${base}_anon`; }
-}
-
-function lsGet<T>(base: string, fallback: T): T {
-  try {
-    const raw = localStorage.getItem(getUserKey(base));
-    return raw ? JSON.parse(raw) : fallback;
-  } catch { return fallback; }
-}
-
 // ── Tipos para sincronização com PrayerRoutine ────────────────────────────────
 interface PrayerItem {
   id: string;
@@ -144,16 +129,35 @@ const DEFAULT_PRAYERS: PrayerItem[] = [
   { id: '9', name: 'Oração da Noite (Completas)', period: 'night', completed: false },
 ];
 
+// ── Helper: período do dia atual ─────────────────────────────────────────────
+function getCurrentPeriod(): 'morning' | 'afternoon' | 'night' {
+  const h = new Date().getHours();
+  if (h < 12) return 'morning';
+  if (h < 18) return 'afternoon';
+  return 'night';
+}
+
+// ── Lê orações do Ritmo de Oração (novo formato: _done + _custom) ─────────────
 function loadPrayers(): PrayerItem[] {
   try {
-    const today = new Date().toDateString();
-    const key = getUserKey('prayer_routine');
-    const raw = localStorage.getItem(key);
-    if (!raw) return DEFAULT_PRAYERS;
-    const parsed = JSON.parse(raw);
-    // Verifica se é do dia atual
-    if (parsed.date !== today) return DEFAULT_PRAYERS;
-    return parsed.prayers || DEFAULT_PRAYERS;
+    const s = localStorage.getItem('caminho_session');
+    const uid = s ? JSON.parse(s).user?.id : 'anon';
+    const base = `prayer_routine_${uid}`;
+
+    // Lê orações personalizadas
+    const customRaw = localStorage.getItem(`${base}_custom`);
+    const custom: PrayerItem[] = customRaw ? JSON.parse(customRaw) : [];
+
+    // Lê IDs concluídos hoje
+    const doneRaw = localStorage.getItem(`${base}_done`);
+    let doneIds: string[] = [];
+    if (doneRaw) {
+      const parsed = JSON.parse(doneRaw);
+      if (parsed.date === new Date().toDateString()) doneIds = parsed.ids || [];
+    }
+
+    const all = [...DEFAULT_PRAYERS, ...custom];
+    return all.map(p => ({ ...p, completed: doneIds.includes(p.id) }));
   } catch {
     return DEFAULT_PRAYERS;
   }
@@ -176,11 +180,11 @@ export default function Dashboard({ setActiveTab }: { setActiveTab: (tab: TabTyp
     setThought(DAILY_THOUGHTS[getDayIndex(DAILY_THOUGHTS)]);
     setVirtue(WEEKLY_VIRTUES[getWeekIndex(WEEKLY_VIRTUES)]);
 
-    const sins: { id: number }[] = lsGet('sins', []);
+    const sins: { id: number }[] = cacheGet<{ id: number }[]>('sins', []);
     setPendingSins(sins.length);
 
     const today = new Date().toISOString().split('T')[0];
-    const dates: string[] = lsGet('confession_dates', []);
+    const dates: string[] = cacheGet<string[]>('confession_dates', []);
     const future = dates.filter(d => d >= today).sort();
     setNextConfession(future[0] || null);
 
@@ -200,12 +204,15 @@ export default function Dashboard({ setActiveTab }: { setActiveTab: (tab: TabTyp
     ? new Date(nextConfession + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })
     : 'Não agendada';
 
-  // Orações concluídas e próximas pendentes
+  // Orações pendentes do período atual (manhã/tarde/noite)
+  const period = getCurrentPeriod();
+  const pendingPrayers = prayers.filter(p => !p.completed);
   const completedPrayers = prayers.filter(p => p.completed);
-  const pendingPrayers   = prayers.filter(p => !p.completed);
-  const nextTwoPending   = pendingPrayers.slice(0, 2);
-  // Mostra: as concluídas + as 2 próximas pendentes, max 3 cards
-  const displayPrayers = [...completedPrayers, ...nextTwoPending].slice(0, 3);
+
+  // Prioriza orações do período atual; se não houver suficientes, pega das outras
+  const periodPending = pendingPrayers.filter(p => p.period === period);
+  const otherPending  = pendingPrayers.filter(p => p.period !== period);
+  const displayPrayers = [...periodPending, ...otherPending].slice(0, 3);
 
   return (
     <div className="space-y-8">

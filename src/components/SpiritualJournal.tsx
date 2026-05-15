@@ -191,28 +191,25 @@ export default function SpiritualJournal() {
         const finalData = mergeServerData<JournalEntryWithTitle[]>(
           'journal', serverData, afterUserDelete
         );
-        setEntries(finalData);
-        // Ao carregar, todos os cards ficam minimizados (só título visível)
+        // Se o servidor retornou menos dados que o cache (cold start após save),
+        // mantém os do cache que têm IDs temporários negativos (salvos localmente)
+        const toShow = finalData.length > 0 ? finalData : cacheGet<JournalEntryWithTitle[]>('journal', []);
+        setEntries(toShow);
         const collapsed: Record<number, boolean> = {};
-        finalData.forEach(e => { collapsed[e.id] = true; });
+        toShow.forEach(e => { collapsed[e.id] = true; });
         setCollapsedCards(collapsed);
       })
       .catch(() => {
-        // Erro de rede → restaura do cache local
         const cached = cacheGet<JournalEntryWithTitle[]>('journal', []);
         setEntries(cached);
         const collapsed: Record<number, boolean> = {};
         cached.forEach(e => { collapsed[e.id] = true; });
         setCollapsedCards(collapsed);
       })
-      .finally(() => {
-        setIsLoading(false);
-      });
+      .finally(() => setIsLoading(false));
   };
 
   // ── Salvar / Editar ────────────────────────────────────────────────────────
-  // CORREÇÃO: handleSubmit usa e.preventDefault() e controla estado isSaving
-  // para evitar duplo envio e garantir que o botão funcione corretamente
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -223,17 +220,54 @@ export default function SpiritualJournal() {
       const payload = { title: newTitle.trim(), content: newContent.trim(), type };
 
       if (editingEntry) {
+        // EDIÇÃO: atualiza cache otimisticamente antes da API
+        const optimisticEdited = entries.map(en =>
+          en.id === editingEntry.id
+            ? { ...en, ...payload }
+            : en
+        );
+        setEntries(optimisticEdited);
+        cacheSet<JournalEntryWithTitle[]>('journal', optimisticEdited);
+
         await apiFetch(`/api/journal/${editingEntry.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
       } else {
-        await apiFetch('/api/journal', {
+        // CRIAÇÃO: gera ID temporário e salva no cache ANTES da API
+        // Isso garante que o registro não se perca em cold start do Vercel
+        const tempId = -(Date.now());
+        const tempEntry: JournalEntryWithTitle = {
+          id: tempId,
+          ...payload,
+          created_at: new Date().toISOString(),
+        };
+        const withNew = [tempEntry, ...entries];
+        setEntries(withNew);
+        cacheSet<JournalEntryWithTitle[]>('journal', withNew);
+
+        // Tenta salvar no servidor
+        const res = await apiFetch('/api/journal', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
+
+        if (res.ok) {
+          // Servidor salvou → atualiza para ID real (sem mudar collapseCards)
+          const saved = await res.json();
+          if (saved?.id) {
+            setEntries(prev => {
+              const updated = prev.map(en =>
+                en.id === tempId ? { ...en, id: saved.id } : en
+              );
+              cacheSet<JournalEntryWithTitle[]>('journal', updated);
+              return updated;
+            });
+          }
+        }
+        // Se servidor falhou → registro já está no cache com ID temporário
       }
 
       setNewTitle('');
@@ -241,12 +275,9 @@ export default function SpiritualJournal() {
       setType('free');
       setIsAdding(false);
       setEditingEntry(null);
-      // Marca como não-inicial para que o fetchEntries pós-mutação
-      // não confunda servidor vazio com cold start
-      initialLoadDone.current = true;
-      fetchEntries();
     } catch (err) {
       console.error('Erro ao salvar registro:', err);
+      // Mesmo em erro, o registro já foi salvo no cache acima
     } finally {
       setIsSaving(false);
     }
