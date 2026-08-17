@@ -3,7 +3,7 @@ import { ChevronDown, ChevronUp, BookOpen, Heart, Star, Search, Plus, X, Save, B
 import { motion, AnimatePresence } from 'motion/react';
 import { cacheGet, cacheSet, mergeServerData } from '../utils/cache';
 
-type SubTab = 'daily' | 'adoration' | 'consecration' | 'ritos';
+type SubTab = 'daily' | 'adoration' | 'consecration' | 'quaresma' | 'ritos';
 type PrayerCategory = 'habituais' | 'ladainhas' | 'formais';
 interface PrayerItem { title: string; text: string; }
 interface UserPrayerItem { id: number; title: string; text: string; category: PrayerCategory; }
@@ -1493,6 +1493,304 @@ function RitosLiturgicosTab() {
   );
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// QUARESMA DE SÃO MIGUEL ARCANJO
+// ─────────────────────────────────────────────────────────────────────────────
+
+const quaresmaDays = [
+  { day: 1,  title: 'DEUS É O SENHOR',                    leitura: 'Gênesis 1,1-5',             meditacao: 'Antes de qualquer batalha espiritual existe uma verdade fundamental: Deus é Deus. O primeiro passo não é olhar para o demônio, mas olhar para Deus. São Miguel significa: "Quem como Deus?" A primeira vitória acontece quando colocamos Deus no centro.', reflexao: 'O que ocupa hoje o lugar que deveria pertencer a Deus?', proposito: 'Entregar conscientemente o dia ao Senhor.', oracao: 'Senhor, colocai novamente minha vida sob o vosso senhorio. Que eu nunca coloque criatura alguma acima de Vós. Por intercessão de São Miguel, dai-me fidelidade e coragem. Amém.\nRezar: Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel.' },
+  { day: 2,  title: '"QUEM COMO DEUS?"',                  leitura: 'Êxodo 20,1-6',               meditacao: 'O combate espiritual começa pela adoração verdadeira. Não podemos servir simultaneamente a Deus e aos ídolos.', reflexao: 'Quais são os "ídolos" modernos que podem ocupar meu coração?', proposito: 'Renunciar conscientemente a algo que esteja ocupando excessivamente meu coração.', oracao: 'São Miguel, ensinai-me a colocar Deus acima de todas as coisas.' },
+  { day: 3,  title: 'A CRIAÇÃO DOS ANJOS',               leitura: 'Colossenses 1,15-17',        meditacao: 'Os anjos são criaturas de Deus. Tudo foi criado por Cristo e para Cristo.', reflexao: 'Minha devoção aos anjos conduz minha atenção para Cristo?', proposito: 'Agradecer a Deus pela criação.', oracao: '' },
+  { day: 4,  title: 'OS ANJOS SERVEM A DEUS',            leitura: 'Hebreus 1,5-14',             meditacao: 'Os anjos são espíritos servidores enviados para auxiliar aqueles que caminham para a salvação. São Miguel é grande porque serve ao Deus Altíssimo.', reflexao: '', proposito: 'Realizar hoje um serviço escondido sem esperar reconhecimento.', oracao: '' },
+  { day: 5,  title: 'A OBEDIÊNCIA',                       leitura: '1 Samuel 15,22',             meditacao: 'Deus deseja uma obediência verdadeira. A santidade não consiste apenas em realizar práticas religiosas, mas em fazer a vontade de Deus.', reflexao: '', proposito: 'Obedecer prontamente em uma situação na qual normalmente você resistiria.', oracao: '' },
+  { day: 6,  title: 'A QUEDA',                            leitura: 'Gênesis 3,1-19',             meditacao: 'O pecado começa quando a criatura desconfia de Deus. A tentação apresenta a desobediência como liberdade.', reflexao: 'Onde tenho acreditado mais em minhas próprias vontades do que na Palavra de Deus?', proposito: '', oracao: '' },
+  { day: 7,  title: 'A PROMESSA DA VITÓRIA',              leitura: 'Gênesis 3,14-15',            meditacao: 'Desde o princípio existe a promessa da vitória sobre o mal. A história da salvação caminhará para Cristo.', reflexao: '', proposito: '', oracao: 'Senhor, fortalecei minha esperança na vitória definitiva de Cristo.' },
+  { day: 8,  title: 'O COMBATE ESPIRITUAL',               leitura: 'Efésios 6,10-18',            meditacao: 'São Paulo fala da necessidade de permanecer firmes. O cristão não combate com ódio contra pessoas. O verdadeiro combate é espiritual.', reflexao: '', proposito: 'Não responder ao mal com outro mal.', oracao: '' },
+  { day: 9,  title: 'A ARMADURA DE DEUS',                 leitura: 'Efésios 6,13-17',            meditacao: 'Verdade, justiça, fé, salvação e Palavra de Deus formam a verdadeira armadura.', reflexao: 'Qual dessas virtudes está mais fraca em mim?', proposito: 'Escolher uma virtude para praticar conscientemente.', oracao: '' },
+  { day: 10, title: 'A ESPADA DO ESPÍRITO',               leitura: 'Efésios 6,17',               meditacao: 'A espada espiritual é a Palavra de Deus. Não vencemos o pecado simplesmente pela força de vontade. Precisamos conhecer e viver a Palavra.', reflexao: '', proposito: 'Ler novamente o Evangelho do dia.', oracao: '' },
+  { day: 11, title: 'JESUS VENCE A TENTAÇÃO',             leitura: 'Mateus 4,1-11',              meditacao: 'Jesus responde às tentações com a Palavra de Deus. O demônio não é vencido pela superstição, mas pela fidelidade a Deus.', reflexao: '', proposito: 'Guardar uma frase do Evangelho durante todo o dia.', oracao: '' },
+  { day: 12, title: 'FÉ',                                  leitura: 'Hebreus 11,1-6',             meditacao: 'A fé nos faz confiar em Deus mesmo quando não compreendemos tudo.', reflexao: '', proposito: 'Entregar ao Senhor uma preocupação.', oracao: '' },
+  { day: 13, title: 'CONFIANÇA',                           leitura: 'Salmo 23',                   meditacao: '"O Senhor é meu pastor." O combate espiritual não deve gerar paranoia, mas confiança.', reflexao: '', proposito: '', oracao: 'Senhor, livrai-me do medo desordenado e concedei-me confiança em Vós.' },
+  { day: 14, title: 'NÃO TEMER',                           leitura: 'Salmo 27',                   meditacao: '"O Senhor é minha luz e salvação."', reflexao: '', proposito: 'Quando surgir medo, repetir: "O Senhor é minha luz e salvação."', oracao: '' },
+  { day: 15, title: 'ARREPENDIMENTO',                      leitura: 'Lucas 15,11-32',             meditacao: 'O filho pródigo retorna à casa do Pai. A verdadeira vitória espiritual começa com o arrependimento.', reflexao: '', proposito: 'Examinar a consciência.', oracao: '' },
+  { day: 16, title: 'MISERICÓRDIA',                        leitura: 'Salmo 51',                   meditacao: 'O pecado não precisa ser o fim da história. Deus pode restaurar um coração quebrantado.', reflexao: '', proposito: 'Pedir sinceramente perdão a Deus.', oracao: '' },
+  { day: 17, title: 'CONFISSÃO',                           leitura: 'João 20,19-23',              meditacao: 'Cristo confiou à Igreja o ministério da reconciliação.', reflexao: '', proposito: 'Preparar-se para uma boa Confissão.', oracao: '' },
+  { day: 18, title: 'PERDÃO',                              leitura: 'Mateus 18,21-35',            meditacao: 'Quem recebeu misericórdia é chamado a oferecer misericórdia.', reflexao: '', proposito: 'Perdoar alguém interiormente.', oracao: '' },
+  { day: 19, title: 'CARIDADE',                            leitura: '1 Coríntios 13,1-13',       meditacao: 'Não existe combate espiritual verdadeiro sem caridade.', reflexao: '', proposito: 'Fazer uma obra concreta de caridade.', oracao: '' },
+  { day: 20, title: 'HUMILDADE',                           leitura: 'Filipenses 2,5-11',          meditacao: 'Cristo venceu pela humildade e obediência. São Miguel não é modelo de orgulho, mas de serviço.', reflexao: '', proposito: 'Evitar hoje uma disputa desnecessária.', oracao: '' },
+  { day: 21, title: 'MARIA, RAINHA DOS ANJOS',             leitura: 'Lucas 1,26-38',              meditacao: 'Maria responde: "Eis aqui a serva do Senhor." A verdadeira grandeza está em servir.', reflexao: '', proposito: 'Rezar o Angelus ou uma Ave-Maria conscientemente.', oracao: '' },
+  { day: 22, title: 'MARIA E O COMBATE',                   leitura: 'Apocalipse 12,1-17',         meditacao: 'A mulher e o dragão aparecem no grande drama da salvação.', reflexao: '', proposito: '', oracao: 'Maria Santíssima, conduzi-me sempre para Cristo.' },
+  { day: 23, title: 'SÃO MIGUEL NO APOCALIPSE',            leitura: 'Apocalipse 12,7-12',         meditacao: 'Miguel combate o dragão. Mas a vitória pertence a Deus. Frase do dia: "Quem como Deus?"', reflexao: '', proposito: '', oracao: '' },
+  { day: 24, title: 'FIDELIDADE',                          leitura: 'Daniel 6,1-23',              meditacao: 'Daniel permanece fiel mesmo sob ameaça.', reflexao: '', proposito: 'Não abandonar uma prática boa por medo da opinião dos outros.', oracao: '' },
+  { day: 25, title: 'O LEÃO DE JUDÁ',                     leitura: 'Apocalipse 5,1-14',          meditacao: 'Cristo é o verdadeiro vencedor. A devoção a São Miguel sempre deve terminar em Cristo.', reflexao: '', proposito: 'Adorar Jesus conscientemente.', oracao: '' },
+  { day: 26, title: 'A CRUZ',                              leitura: '1 Coríntios 1,18-25',       meditacao: 'A vitória cristã passa pela Cruz. Não existe verdadeira santidade sem conversão e sacrifício.', reflexao: '', proposito: 'Aceitar uma dificuldade do dia sem murmuração.', oracao: '' },
+  { day: 27, title: 'OS ESTIGMAS DE SÃO FRANCISCO',        leitura: 'Gálatas 6,14-18',            meditacao: 'São Francisco desejava conformar-se profundamente a Cristo. A tradição associa sua Quaresma de São Miguel de 1224 à experiência dos estigmas. O objetivo não era experimentar algo extraordinário, mas pertencer cada vez mais a Cristo.', reflexao: '', proposito: 'Contemplar o Crucificado por alguns minutos.', oracao: '' },
+  { day: 28, title: 'AMOR A JESUS',                        leitura: 'João 15,9-17',               meditacao: 'Jesus não chama seus discípulos apenas para combater. Ele os chama para permanecer no amor.', reflexao: '', proposito: 'Fazer uma oração de amor a Jesus.', oracao: '' },
+  { day: 29, title: 'PERSEVERANÇA',                        leitura: 'Mateus 24,13',               meditacao: 'A santidade exige perseverança. Não basta começar bem. É necessário permanecer.', reflexao: '', proposito: 'Renovar a decisão de continuar a vida de oração depois da Quaresma.', oracao: '' },
+  { day: 30, title: 'VIGILÂNCIA',                          leitura: '1 Pedro 5,8-11',             meditacao: '"Vigiai." A vigilância cristã não significa viver com medo. Significa permanecer sóbrio e próximo de Deus.', reflexao: '', proposito: 'Evitar hoje uma ocasião habitual de pecado.', oracao: '' },
+  { day: 31, title: 'A PALAVRA PERMANECE',                 leitura: 'Isaías 55,10-11',            meditacao: 'A Palavra de Deus não retorna vazia.', reflexao: '', proposito: 'Ler um capítulo inteiro de um Evangelho.', oracao: '' },
+  { day: 32, title: 'A EUCARISTIA',                        leitura: 'João 6,48-58',               meditacao: 'O centro da vida cristã é Cristo. A devoção aos anjos não pode substituir a Eucaristia.', reflexao: '', proposito: 'Participar da Santa Missa, se possível além do domingo.', oracao: '' },
+  { day: 33, title: 'O TEMPLO DO ESPÍRITO SANTO',          leitura: '1 Coríntios 6,19-20',       meditacao: 'Nossa vida pertence a Deus.', reflexao: '', proposito: 'Tratar o próprio corpo e a própria vida com maior respeito.', oracao: '' },
+  { day: 34, title: 'SANTIDADE',                           leitura: '1 Pedro 1,13-16',            meditacao: 'Deus nos chama à santidade. São Miguel nos recorda a necessidade de pertencermos completamente a Deus.', reflexao: '', proposito: 'Escolher uma virtude para cultivar durante a próxima semana.', oracao: '' },
+  { day: 35, title: 'A IGREJA',                            leitura: 'Mateus 16,13-19',            meditacao: 'O combate espiritual do cristão acontece dentro da comunhão da Igreja, não de maneira isolada.', reflexao: '', proposito: '', oracao: 'São Miguel, protegei a Igreja de Cristo e ajudai seus filhos a permanecerem fiéis.' },
+  { day: 36, title: 'INTERCESSÃO',                         leitura: '1 Timóteo 2,1-6',            meditacao: 'O cristão é chamado a interceder pelos outros.', reflexao: '', proposito: 'Fazer uma lista de pessoas pelas quais deseja rezar.', oracao: '' },
+  { day: 37, title: 'OS ANJOS E A SALVAÇÃO',               leitura: 'Hebreus 1,13-14',            meditacao: 'Os anjos são servidores de Deus. Sua missão conduz à glória daquele que os criou.', reflexao: '', proposito: 'Agradecer a Deus pela proteção recebida ao longo da vida.', oracao: '' },
+  { day: 38, title: 'SÃO MIGUEL E A VITÓRIA DE DEUS',      leitura: 'Judas 8-10',                 meditacao: 'Miguel combate sob a autoridade de Deus. A lição fundamental é humildade. Frase do dia: "Quem como Deus?"', reflexao: '', proposito: '', oracao: '' },
+  { day: 39, title: 'CONSAGRAÇÃO',                         leitura: 'Romanos 12,1-2',             meditacao: 'A verdadeira consagração é entregar a própria vida a Deus. São Miguel deve nos ensinar a dizer: "Senhor, eu pertenço a Vós."', reflexao: '', proposito: '', oracao: 'Ó glorioso São Miguel Arcanjo, príncipe da milícia celeste, eu me coloco espiritualmente sob vossa proteção e, acima de tudo, sob a soberania de Deus. Ajudai-me a permanecer fiel a Cristo. Defendei-me nas tentações. Fortalecei-me nas dificuldades. Ajudai-me a rejeitar o pecado. Conduzi-me sempre para Jesus Cristo. Ensina-me a viver na verdade, na humildade, na pureza, na caridade e na obediência. Que eu possa repetir durante toda a minha vida: Quem como Deus? São Miguel Arcanjo, rogai por mim. Amém.' },
+  { day: 40, title: 'FESTA DOS SANTOS ARCANJOS',           leitura: '1ª Leitura: Daniel 7,9-10.13-14 | Salmo: 138(137) | Evangelho: João 1,47-51', meditacao: 'Chegamos ao término da Quaresma. A verdadeira pergunta não é "O que consegui durante esses 40 dias?" mas "Quem estou me tornando diante de Deus?" São Miguel nos ensina que a vida inteira deve ser uma resposta à pergunta: Quem como Deus? Não existe ninguém como Deus. Ele é o Criador, o Senhor, o Salvador.', reflexao: '', proposito: '', oracao: 'Ó glorioso São Miguel Arcanjo, Príncipe da Milícia Celeste, guardião e defensor do povo de Deus, eu vos agradeço por terdes me acompanhado durante esta Quaresma. Peço-vos que apresenteis minhas súplicas diante do Senhor. Defendei minha família. Protegei aqueles que amo. Ajudai-me nas tentações. Fortalecei-me nas dificuldades. Afastai de mim tudo aquilo que me conduz ao pecado. Obtende para mim a graça de permanecer fiel a Cristo. Ajudai-me a viver na verdade, na caridade e a perseverar na fé. Ensinai-me a dizer: QUEM COMO DEUS? Ninguém como Deus! Ninguém acima de Deus! Nada sem Deus! Tudo para Deus! Por Cristo, com Cristo e em Cristo. Amém.\n\nEm seguida rezar solenemente a Ladainha de São Miguel, Pai-Nosso, Ave-Maria, Glória ao Pai, e três vezes: "São Miguel Arcanjo, defendei-nos no combate." E: "Quem como Deus? Ninguém como Deus!"' },
+];
+
+function QuaresmaTab() {
+  const [openSection, setOpenSection] = useState<string | null>(null);
+  const [openDay, setOpenDay] = useState<number | null>(null);
+
+  const toggleSection = (s: string) => setOpenSection(prev => prev === s ? null : s);
+
+  const SectionBlock = ({ id, title, children }: { id: string; title: string; children: React.ReactNode }) => (
+    <div className="bg-white rounded-[1.5rem] border border-[#1A1A1A]/5 shadow-sm overflow-hidden">
+      <button
+        onClick={() => toggleSection(id)}
+        className="w-full flex items-center justify-between p-5 hover:bg-[#F5F2ED]/50 transition-colors text-left gap-3"
+      >
+        <span className="font-bold text-sm text-[#5A5A40]">{title}</span>
+        {openSection === id
+          ? <ChevronUp className="w-4 h-4 flex-shrink-0 text-[#5A5A40]" />
+          : <ChevronDown className="w-4 h-4 flex-shrink-0 text-[#5A5A40]" />}
+      </button>
+      <AnimatePresence>
+        {openSection === id && (
+          <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} className="overflow-hidden">
+            <div className="px-5 pb-6 pt-1 space-y-3 text-sm leading-relaxed text-[#1A1A1A]/80">
+              {children}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="bg-[#5A5A40] text-white p-7 rounded-[2rem]">
+        <div className="flex items-center gap-3 mb-3">
+          <span className="text-3xl">⚔️</span>
+          <div>
+            <h3 className="text-xl font-bold">Quaresma de São Miguel Arcanjo</h3>
+            <p className="text-white/60 text-xs italic">15 de agosto → 29 de setembro · 40 dias</p>
+          </div>
+        </div>
+        <p className="text-white/80 text-sm leading-relaxed">
+          Antiga devoção católica de tradição franciscana: um período de oração, penitência, conversão e combate espiritual em honra de São Miguel Arcanjo.
+        </p>
+      </div>
+
+      {/* SEÇÃO 1 — O QUE É */}
+      <SectionBlock id="oque" title="1. O QUE É A QUARESMA DE SÃO MIGUEL?">
+        <p>A Quaresma de São Miguel Arcanjo é uma antiga devoção católica de tradição franciscana, constituída por um período especial de oração, penitência, conversão e combate espiritual, realizado em honra de São Miguel Arcanjo.</p>
+        <p>Tradicionalmente, ela é iniciada em <strong>15 de agosto</strong>, solenidade da Assunção da Bem-Aventurada Virgem Maria, e conduz o fiel até a festa de São Miguel, celebrada em <strong>29 de setembro</strong> juntamente com os Santos Arcanjos Gabriel e Rafael.</p>
+        <p className="font-semibold text-[#5A5A40]">A finalidade é:</p>
+        <ul className="list-disc list-inside space-y-1 text-[#1A1A1A]/70">
+          <li>Voltar-se mais profundamente para Deus</li>
+          <li>Combater o pecado e fortalecer a vida de oração</li>
+          <li>Crescer na fé e buscar a conversão</li>
+          <li>Pedir proteção espiritual</li>
+          <li>Confiar a Deus as necessidades pessoais e familiares</li>
+          <li>Interceder pela Igreja e pelas almas</li>
+          <li>Aprender, com São Miguel, a dizer: "Quem como Deus?"</li>
+          <li>Preparar-se para uma vida mais santa</li>
+        </ul>
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+          <p className="font-bold text-amber-800 text-xs uppercase tracking-widest mb-1">Nota importante</p>
+          <p className="text-amber-700">São Miguel não ocupa o lugar de Deus. Ele é criatura e servo de Deus. Toda a devoção cristã aos anjos está orientada para a glória de Deus.</p>
+        </div>
+      </SectionBlock>
+
+      {/* SEÇÃO 2 — ORIGEM */}
+      <SectionBlock id="origem" title="2. ORIGEM">
+        <p>A origem tradicional da Quaresma de São Miguel está ligada à profunda espiritualidade penitencial de <strong>São Francisco de Assis</strong>.</p>
+        <p>São Francisco possuía grande devoção aos anjos e, de maneira particular, a São Miguel. A tradição franciscana relata que Francisco realizava três períodos especiais de quarenta dias de oração e penitência durante o ano, um deles dedicado a São Miguel.</p>
+        <p>O <strong>Monte Alverne (La Verna)</strong>, na Toscana, Itália, é o lugar mais importante dessa história. Em 1224, durante seu retiro nesse local, Francisco teve a experiência mística do Serafim crucificado e recebeu os estigmas da Paixão de Cristo.</p>
+        <p>O nome Miguel vem do hebraico <em>"Mi-ka-el?"</em> — <strong>"Quem como Deus?"</strong> — uma profissão de fé. São Miguel representa a fidelidade absoluta a Deus.</p>
+        <div className="bg-[#F5F2ED] rounded-xl p-4 space-y-1.5">
+          <p className="font-bold text-[#5A5A40] text-xs uppercase tracking-widest mb-2">Resumo da origem</p>
+          <p>• <strong>Origem espiritual:</strong> São Francisco de Assis e a tradição franciscana</p>
+          <p>• <strong>Local associado:</strong> Monte Alverne, Itália</p>
+          <p>• <strong>Período tradicional:</strong> da Assunção de Nossa Senhora à festa de São Miguel</p>
+          <p>• <strong>Finalidade:</strong> oração, penitência, conversão, proteção espiritual e união com Cristo</p>
+          <p>• <strong>Natureza:</strong> devoção privada/piedade popular, não um tempo litúrgico obrigatório</p>
+        </div>
+      </SectionBlock>
+
+      {/* SEÇÃO 3 — QUANDO E COMO FAZER */}
+      <SectionBlock id="quando" title="3. QUANDO E COMO FAZER">
+        <div className="bg-[#5A5A40]/10 rounded-xl p-4">
+          <p className="font-bold text-[#5A5A40] mb-2">Período</p>
+          <p>• <strong>Início:</strong> 15 de agosto — Assunção de Nossa Senhora</p>
+          <p>• <strong>Término:</strong> 29 de setembro — Festa dos Santos Arcanjos</p>
+          <p>• <strong>Duração:</strong> 40 dias</p>
+        </div>
+        <p className="font-semibold text-[#5A5A40]">O que preparar:</p>
+        <ul className="list-disc list-inside text-[#1A1A1A]/70 space-y-1">
+          <li>Uma Bíblia</li>
+          <li>Uma imagem ou estampa de São Miguel</li>
+          <li>Um crucifixo</li>
+          <li>Um local reservado para oração</li>
+          <li>Um caderno para intenções</li>
+          <li>Uma penitência voluntariamente escolhida</li>
+        </ul>
+        <p className="font-semibold text-[#5A5A40]">Estrutura diária recomendada:</p>
+        <ol className="list-decimal list-inside text-[#1A1A1A]/70 space-y-1">
+          <li>Sinal da Cruz</li>
+          <li>Invocação ao Espírito Santo</li>
+          <li>Leitura da Palavra de Deus</li>
+          <li>Meditação do tema do dia</li>
+          <li>Pedido de conversão</li>
+          <li>Oração a São Miguel</li>
+          <li>Ladainha de São Miguel</li>
+          <li>Consagração a São Miguel</li>
+          <li>Pai-Nosso, Ave-Maria e Glória</li>
+          <li>Penitência ou propósito do dia</li>
+          <li>Oração final</li>
+        </ol>
+        <div className="bg-[#F5F2ED] rounded-xl p-4">
+          <p className="font-bold text-[#5A5A40] text-xs uppercase tracking-widest mb-2">Oração a São Miguel — Papa Leão XIII</p>
+          <p className="italic font-serif text-base leading-relaxed">"São Miguel Arcanjo, defendei-nos no combate, sede o nosso refúgio contra as maldades e ciladas do demônio. Ordene-lhe Deus, instantemente o pedimos; e vós, Príncipe da Milícia Celeste, pela virtude divina, precipitai no inferno a Satanás e aos outros espíritos malignos que andam pelo mundo para perder as almas. Amém."</p>
+        </div>
+        <div className="bg-[#F5F2ED] rounded-xl p-4">
+          <p className="font-bold text-[#5A5A40] text-xs uppercase tracking-widest mb-2">Ladainha de São Miguel Arcanjo</p>
+          <pre className="text-sm leading-relaxed font-serif whitespace-pre-wrap text-[#1A1A1A]/80">{`Senhor, tende piedade de nós.
+Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Cristo, ouvi-nos. Cristo, atendei-nos.
+Deus Pai Celeste, tende piedade de nós.
+Deus Filho, Redentor do mundo, tende piedade de nós.
+Deus Espírito Santo, tende piedade de nós.
+Santíssima Trindade, que sois um só Deus, tende piedade de nós.
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo de Deus, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte da verdadeira fé, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da Cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós.
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Jesus Cristo.
+Para que sejamos dignos de suas promessas.
+Oremos: Senhor Jesus Cristo, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos bens eternos. Vós que viveis e reinais pelos séculos dos séculos. Amém.`}</pre>
+        </div>
+      </SectionBlock>
+
+      {/* SEÇÃO 4 — ROTEIRO DOS 40 DIAS */}
+      <SectionBlock id="roteiro" title="4. ROTEIRO DOS 40 DIAS">
+        <p className="text-[#1A1A1A]/50 italic text-xs">Clique em cada dia para ver a leitura, meditação e oração.</p>
+        <div className="space-y-2 mt-2">
+          {quaresmaDays.map(d => (
+            <div key={d.day} className="bg-[#F5F2ED] rounded-xl overflow-hidden">
+              <button
+                onClick={() => setOpenDay(openDay === d.day ? null : d.day)}
+                className="w-full flex items-center gap-3 p-3 text-left hover:bg-[#5A5A40]/5 transition-colors"
+              >
+                <div className="w-8 h-8 rounded-full bg-[#5A5A40] text-white flex items-center justify-center text-xs font-bold flex-shrink-0">
+                  {d.day}
+                </div>
+                <span className="font-semibold text-sm flex-1">{d.title}</span>
+                {openDay === d.day
+                  ? <ChevronUp className="w-4 h-4 flex-shrink-0 text-[#5A5A40]" />
+                  : <ChevronDown className="w-4 h-4 flex-shrink-0 text-[#5A5A40]" />}
+              </button>
+              <AnimatePresence>
+                {openDay === d.day && (
+                  <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} className="overflow-hidden">
+                    <div className="px-4 pb-4 space-y-3 border-t border-[#1A1A1A]/5 pt-3">
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40] mb-1">Leitura</p>
+                        <p className="text-sm font-medium">{d.leitura}</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40] mb-1">Meditação</p>
+                        <p className="text-sm text-[#1A1A1A]/70">{d.meditacao}</p>
+                      </div>
+                      {d.reflexao && (
+                        <div>
+                          <p className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40] mb-1">Reflexão</p>
+                          <p className="text-sm text-[#1A1A1A]/70 italic">{d.reflexao}</p>
+                        </div>
+                      )}
+                      {d.proposito && (
+                        <div>
+                          <p className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40] mb-1">Propósito</p>
+                          <p className="text-sm text-[#1A1A1A]/70">{d.proposito}</p>
+                        </div>
+                      )}
+                      {d.oracao && (
+                        <div className="bg-white rounded-xl p-3">
+                          <p className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40] mb-2">Oração</p>
+                          <p className="text-sm italic font-serif text-[#1A1A1A]/80 leading-relaxed whitespace-pre-line">{d.oracao}</p>
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ))}
+        </div>
+      </SectionBlock>
+
+      {/* SEÇÃO 5 — ORAÇÃO DIÁRIA RESUMIDA */}
+      <SectionBlock id="resumida" title="5. ORAÇÃO DIÁRIA RESUMIDA">
+        <p className="italic text-[#1A1A1A]/50">Para quem não conseguir fazer todo o roteiro diariamente:</p>
+        <ol className="list-decimal list-inside text-[#1A1A1A]/70 space-y-1">
+          <li>Sinal da Cruz</li>
+          <li>Invocação ao Espírito Santo</li>
+          <li>Leitura bíblica do dia</li>
+          <li>Meditação</li>
+          <li>Apresentação das intenções</li>
+          <li>Oração a São Miguel (Papa Leão XIII)</li>
+          <li>Ladainha de São Miguel</li>
+          <li>Pai-Nosso</li>
+          <li>Ave-Maria</li>
+          <li>Glória</li>
+          <li>Propósito do dia</li>
+          <li>Sinal da Cruz</li>
+        </ol>
+        <div className="bg-[#F5F2ED] rounded-xl p-4">
+          <p className="font-bold text-[#5A5A40] text-xs uppercase tracking-widest mb-3">Intenções sugeridas para os 40 dias</p>
+          <div className="space-y-1.5 text-sm text-[#1A1A1A]/70">
+            <p>• <strong>Dias 1–5:</strong> Conversão pessoal</p>
+            <p>• <strong>Dias 6–10:</strong> Libertação dos pecados e vícios</p>
+            <p>• <strong>Dias 11–15:</strong> Família</p>
+            <p>• <strong>Dias 16–20:</strong> Casamento e relacionamentos</p>
+            <p>• <strong>Dias 21–25:</strong> Filhos e pessoas que amamos</p>
+            <p>• <strong>Dias 26–30:</strong> Igreja e sacerdotes</p>
+            <p>• <strong>Dias 31–34:</strong> Doentes, necessitados e sofredores</p>
+            <p>• <strong>Dias 35–37:</strong> Almas dos falecidos</p>
+            <p>• <strong>Dias 38–39:</strong> Proteção espiritual e perseverança</p>
+            <p>• <strong>Dia 40:</strong> Ação de graças e entrega completa a Deus</p>
+          </div>
+        </div>
+      </SectionBlock>
+    </div>
+  );
+}
+
 // ── Componente Principal ──────────────────────────────────────────────────────
 export default function Prayers() {
   const [sub, setSub] = useState<SubTab>('daily');
@@ -1582,6 +1880,7 @@ export default function Prayers() {
     { id: 'daily' as SubTab, label: 'Orações Cotidianas', icon: <Heart className="w-4 h-4" /> },
     { id: 'adoration' as SubTab, label: 'Adoração Eucarística', icon: <Star className="w-4 h-4" /> },
     { id: 'consecration' as SubTab, label: 'Consagração a Jesus Cristo', icon: <BookOpen className="w-4 h-4" /> },
+    { id: 'quaresma' as SubTab, label: 'Quaresma de São Miguel', icon: <ScrollIcon className="w-4 h-4" /> },
     { id: 'ritos' as SubTab, label: 'Ritos Litúrgicos', icon: <BookMarked className="w-4 h-4" /> },
   ];
 
@@ -1642,6 +1941,7 @@ export default function Prayers() {
           )}
           {sub === 'adoration' && <AdorationModelsTab />}
           {sub === 'consecration' && <ConsecrationTab />}
+          {sub === 'quaresma' && <QuaresmaTab />}
           {sub === 'ritos' && <RitosLiturgicosTab />}
         </motion.div>
       </AnimatePresence>

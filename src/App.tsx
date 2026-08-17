@@ -99,11 +99,11 @@ function AppContent() {
         </div>
       </header>
 
-      <div className="flex">
+      <div className="flex overflow-hidden">
         {/* Sidebar */}
         <aside className={`
           fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-[#1A1A1A]/10
-          transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0
+          transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 lg:flex-shrink-0
           ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
         `}>
           <div className="h-full flex flex-col p-6 overflow-y-auto">
@@ -206,8 +206,8 @@ function AppContent() {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 min-h-screen overflow-y-auto">
-          <div className="max-w-5xl mx-auto p-6 lg:p-12">
+        <main className="flex-1 min-h-screen overflow-y-auto w-0">
+          <div className="max-w-5xl mx-auto p-4 sm:p-6 lg:p-12">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTab}
