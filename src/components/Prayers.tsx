@@ -64,7 +64,7 @@ const habituais: PrayerItem[] = [
   { title: 'Credo Apostólico', text: 'Creio em Deus Pai todo-poderoso,\nCriador do céu e da terra;\ne em Jesus Cristo, seu único Filho, nosso Senhor;\nque foi concebido pelo poder do Espírito Santo;\nnasceu da Virgem Maria;\npadeceu sob Pôncio Pilatos,\nfoi crucificado, morto e sepultado;\ndesceu à mansão dos mortos;\nressuscitou ao terceiro dia;\nsubiu aos céus,\nestá sentado à direita de Deus Pai todo-poderoso;\nd\'onde há de vir a julgar os vivos e os mortos.\nCreio no Espírito Santo;\nna santa Igreja Católica;\nna comunhão dos santos;\nna remissão dos pecados;\nna ressurreição da carne;\nna vida eterna.\nAmém.' },
   { title: 'Credo Niceno-Constantinopolitano', text: 'Creio em um só Deus, Pai todo-poderoso,\nCriador do céu e da terra,\nde todas as coisas visíveis e invisíveis.\nCreio em um só Senhor, Jesus Cristo,\nFilho Unigênito de Deus,\nnascido do Pai antes de todos os séculos:\nDeus de Deus, Luz da Luz,\nDeus verdadeiro de Deus verdadeiro;\ngerado, não criado, consubstancial ao Pai.\nPor ele todas as coisas foram feitas.\nE por nós, homens, e para nossa salvação\ndesceu dos céus: encarnando pelo Espírito Santo,\nnasceu da Virgem Maria e se fez homem.\nFoi crucificado por nós sob Pôncio Pilatos;\npadeceu e foi sepultado.\nRessuscitou ao terceiro dia, cumprindo as Escrituras;\nsubiu aos céus e está sentado à direita do Pai.\nDe novo há de vir em glória para julgar os vivos e os mortos;\ne o seu reino não terá fim.\nCreio no Espírito Santo, Senhor que dá a vida,\nque procede do Pai e do Filho;\ncom o Pai e o Filho é adorado e glorificado;\nfalou pelos profetas.\nCreio na Igreja una, santa, católica e apostólica.\nConfesso um só batismo para a remissão dos pecados.\nEspero a ressurreição dos mortos\ne a vida do mundo que há de vir.\nAmém.' },
   { title: 'Oração ao Santo Anjo da Guarda', text: 'Anjo de Deus, meu fiel guardião,\nque a tua santa custódia me foi dada\npela Piedade Divina,\nilumina-me, guarda-me,\nrege-me e governa-me.\nAmém.' },
-  { title: 'Oração a São Miguel Arcanjo', text: 'São Miguel Arcanjo,\ndefendei-nos no combate;\nsede nosso refúgio contra a maldade\ne as ciladas do demônio.\nQue Deus o repreenda, humildemente o pedimos;\ne vós, príncipe da milícia celestial,\npela virtude divina,\nterrai no inferno Satanás\ne os outros espíritos malignos\nque vagam pelo mundo\npara perder as almas.\nAmém.' },
+  { title: 'Oração a São Miguel Arcanjo', text: 'São Miguel Arcanjo,\ndefendei-nos no combate;\nsede nosso refúgio contra a maldade\ne as ciladas do demônio.\nOrdene-lhe Deus, instantemente O pedimos;\ne vós, príncipe da milícia celestial,\npela virtude divina,\nprecipitai no inferno Satanás\ne os outros espíritos malignos\nque vagam pelo mundo\npara perder as almas.\nAmém.' },
   { title: 'Memorare', text: 'Lembrai-vos, ó piíssima Virgem Maria,\nque jamais se ouviu dizer\nque algum daqueles que recorreram à vossa proteção,\nimplorou o vosso auxílio ou pediu o vosso socorro,\nfosse abandonado.\nAnimado por esta confiança,\ncorro a vós, ó Virgem das virgens e Mãe;\nvenho a vós, e, gemendo sob o peso dos meus pecados,\nprostro-me a vossos pés.\nÓ Mãe do Verbo Encarnado,\nnão desprezeis as minhas súplicas;\nmas ouvi-as e atendei-as propiciamente.\nAmém.' },
   { title: 'Sub Tuum Praesidium', text: 'Sob a vossa proteção nos acolhemos,\nSanta Mãe de Deus;\nnão desprezeis as nossas súplicas nas nossas necessidades,\nmas livrai-nos sempre de todos os perigos,\nó Virgem gloriosa e bendita.' },
   { title: 'Ato de Esperança', text: 'Senhor meu Deus,\nespero em Vós com toda firmeza\nque, pela vossa graça e os méritos de Jesus Cristo,\nme concedereis a vida eterna\ne os meios necessários para merecê-la.\nNesta esperança estou resolvido a viver e morrer.\nAmém.' },
@@ -81,7 +81,7 @@ const habituais: PrayerItem[] = [
   { title: 'Renúncia 1 — Ao espírito do mundo', text: 'Em nome de Jesus Cristo, Filho do Deus vivo,\ne pelo poder do Seu Sangue precioso,\nrenuncio ao espírito do mundo:\nà sua vaidade, ao seu orgulho,\nao amor desordenado das riquezas e dos prazeres,\nao espírito de competição e ambição,\nà indiferença religiosa e ao relativismo moral.\n\nReceio a Vós, Senhor Jesus, como meu único bem,\ne escolho viver segundo o Vosso Evangelho.\nAmém.' },
   { title: 'Renúncia 2 — Às influências hereditárias e maldições', text: 'Senhor Jesus Cristo,\nem Vosso Santo Nome renuncio a toda maldição,\na todo feitiço, a toda ligação espiritual maligna\nque possa ter entrado na minha família\npor gerações passadas,\npor pecados cometidos por meus antepassados,\npor práticas de ocultismo, maçonaria ou religiões pagãs.\n\nPelo poder do Vosso Sangue Precioso,\nquebro toda corrente e todo laço espiritual maligno\nherdado ou adquirido.\nDecreta-me livre em Vosso Nome.\nAmém.' },
   { title: 'Renúncia 3 — Oração de libertação pessoal', text: 'Pai Eterno, em nome de Jesus Cristo,\npelo poder do Seu Sangue Precioso\ne pela intercessão de Nossa Senhora,\npresenteio-me diante de Vós pedindo libertação\nde tudo que me aprisiona e separa de Vós.\n\nRenuncio a todo pecado, hábito ou vício\nque escraviza minha alma.\nRenuncio ao espírito de medo, de angústia,\nde depressão e de desesperança.\nRenuncio a toda amargura e falta de perdão.\n\nRecebo Vossa paz, Vossa liberdade e Vossa alegria.\nQue o Espírito Santo preencha todos os espaços vazios\nda minha alma com Vossa presença divina.\nAmém.' },
-  { title: 'Oração de Comunhão Espiritual - Santo Afonso', text: 'Meu Jesus,Eu creio que estais presente no Santíssimo Sacramento do Altar.Amo-vos sobre todas as coisas,e minha alma suspira por Vós.Mas como não posso receber-Vos agora no Santíssimo Sacramento,vinde, ao menos espiritualmente,ao meu coração. Abraço-me convosco como se já estivésseis comigo:uno-me Convosco inteiramente. Ah! Não permitais que torne a Separar-me de vós!' },
+  { title: 'Oração de Comunhão Espiritual - Santo Afonso', text: 'Meu Jesus,Eu creio que estais presente no Santíssimo Sacramento do Altar. \nAmo-vos sobre todas as coisas,e minha alma suspira por Vós. \nMas como não posso receber-Vos agora no Santíssimo Sacramento,\nvinde, ao menos espiritualmente,ao meu coração. \nUno-me convosco como se já estivésseis comigo:uno-me Convosco inteiramente. \nAh! Não permitais que torne a Separar-me de vós!' },
   { title: 'Adoro Te Devote', text: 'Adoro-te devotamente, Divindade oculta,\nque sob estas aparências te escondes verdadeiramente;\na ti se submete o meu coração totalmente,\nporque, contemplando-te, tudo desfalece.\n\nA vista, o tato e o gosto enganam-se em ti;\nmas o ouvido firme faz crer o que ouviu;\ncreio em tudo o que disse o Filho de Deus;\nnão há nada mais verdadeiro que esta Palavra de Verdade.\n\nNa Cruz estava oculta somente a Divindade;\naqui também está oculta a Humanidade;\nmas crendo e confessando ambas,\npeço o que pediu o ladrão arrependido.\n\nNão vejo as chagas como Tomé viu,\nmas confesso-te meu Deus;\nfazei-me crer cada vez mais em vós,\nneste vós esperar e vos amar.\n\nÓ Memória da morte do Senhor,\nPão vivo que dais vida ao homem:\nconcedei que a minha alma viva de vós\ne sempre saboreie de vós a doçura.\n\nAmém. (São Tomás de Aquino)' },
 ];
 
@@ -96,7 +96,7 @@ const ladainhas: PrayerItem[] = [
   { title: 'Ladainha de São Bento', text: 'Senhor, tende piedade. Cristo, tende piedade. Senhor, tende piedade.\n\nSão Bento, pai dos monges — rogai por nós.\nSão Bento, espelho de humildade — rogai por nós.\nSão Bento, coluna da Igreja — rogai por nós.\nSão Bento, luz dos monges — rogai por nós.\nSão Bento, modelo de penitência — rogai por nós.\nSão Bento, exemplo de obediência — rogai por nós.\nSão Bento, mestre espiritual — rogai por nós.\nSão Bento, protetor da Europa — rogai por nós.\nSão Bento, terror do demônio — rogai por nós.\nSão Bento, patrono dos moribundos — rogai por nós.\n\nCordeiro de Deus — perdoai-nos, Senhor.\nCordeiro de Deus — ouvi-nos, Senhor.\nCordeiro de Deus — tende misericórdia de nós.\nRogai por nós, São Bento. Amém.' },
   { title: 'Ladainha do Espírito Santo', text: 'Espírito Santo, que procedes do Pai e do Filho — vinde a nós.\nEspírito de sabedoria — iluminai-nos.\nEspírito de entendimento — esclarecei-nos.\nEspírito de conselho — guiai-nos.\nEspírito de fortaleza — fortalecei-nos.\nEspírito de ciência — instruí-nos.\nEspírito de piedade — santificai-nos.\nEspírito de temor de Deus — ensinai-nos.\nEspírito de amor — inflamai-nos.\nEspírito de graça — enriquecei-nos.\nEspírito de oração — animai-nos.\nEspírito de paz — tranquilizai-nos.\nEspírito de humildade — abençoai-nos.\nEspírito de pureza — santificai-nos.\nEspírito de verdade — guiai-nos.\n\nEnviai o vosso Espírito e tudo será criado.\nE renovareis a face da terra.\nOremos: Deus, que instruístes os corações dos vossos fiéis com a luz do Espírito Santo, concedei-nos que apreciemos sempre o reto e gozemos de sua consolação. Amém.' },
   { title: 'Ladainha de Nossa Senhora de Fátima', text: 'Senhora do Rosário de Fátima — rogai por nós.\nSenhora que veio do Céu — rogai por nós.\nSenhora da paz — rogai por nós.\nSenhora do coração imaculado — rogai por nós.\nSenhora que pede penitência — rogai por nós.\nSenhora que pede rezar o Rosário — rogai por nós.\nSenhora da esperança — rogai por nós.\nSenhora de Portugal — rogai por nós.\nSenhora dos pastorinhos — rogai por nós.\nSenhora que intercede pelos pecadores — rogai por nós.\nSenhora que acolhe os que sofrem — rogai por nós.\nSenhora que consola os aflitos — rogai por nós.\n\nCordeiro de Deus — perdoai-nos, Senhor.\nCordeiro de Deus — ouvi-nos, Senhor.\nCordeiro de Deus — tende misericórdia de nós.\nNossa Senhora de Fátima, rogai por nós. Amém.' },
-  { title: 'Ladainha de São Miguel Arcanjo', text: 'Senhor, tende piedade de nós. \nJesus Cristo, tende piedade de nós. \nSenhor, tende piedade de nós. \nJesus Cristo, ouvi-nos. \nJesus Cristo, atendei-nos. \nPai Celeste, que sois Deus, tende piedade de nós. \nFilho Redentor do Mundo, que sois Deus, tende piedade de nós.\nEspírito Santo, que sois Deus, tende piedade de nós. \nTrindade Santa, que sois um único Deus, tende piedade de nós. \nSanta Maria, Rainha dos Anjos, rogai por nós. \nSão Miguel, rogai por nós. \nSão Miguel, cheio da graça de Deus, rogai por nós. \nSão Miguel, perfeito adorador do Verbo Divino, rogai por nós. \nSão Miguel, coroado de honra e de glória, rogai por nós. \nSão Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós. \nSão Miguel, porta-estandarte da Santíssima Trindade, rogai por nós. \nSão Miguel, guardião do Paraíso, rogai por nós. \nSão Miguel, guia e consolador do povo israelita, rogai por nós. \nSão Miguel, esplendor e fortaleza da Igreja militante, rogai por nós. \nSão Miguel, honra e alegria da Igreja triunfante, rogai por nós. \nSão Miguel, luz dos anjos, rogai por nós. \nSão Miguel, baluarte dos cristãos, rogai por nós. \nSão Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós. \nSão Miguel, luz e confiança das almas no último momento da vida, rogai por nós. \nSão Miguel, socorro muito certo, rogai por nós. \nSão Miguel, nosso auxílio em todas as adversidades, rogai por nós. \nSão Miguel, arauto da sentença eterna, rogai por nós. \nSão Miguel, consolador das almas que estão no Purgatório, rogai por nós. \nSão Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós. \nSão Miguel, nosso príncipe, rogai por nós. \nSão Miguel, nosso advogado, rogai por nós. \n\nCordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.\n\nCordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.\n\nCordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor. \nRogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas. \n\nOração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.' },
+  { title: 'Ladainha de São Miguel Arcanjo', text: 'Senhor, tende piedade de nós. \nJesus Cristo, tende piedade de nós. \nSenhor, tende piedade de nós. \nJesus Cristo, ouvi-nos. \nJesus Cristo, atendei-nos. \nPai Celeste, que sois Deus, tende piedade de nós. \nFilho Redentor do Mundo, que sois Deus, tende piedade de nós.\nEspírito Santo, que sois Deus, tende piedade de nós. \nTrindade Santa, que sois um único Deus, tende piedade de nós. \nSanta Maria, Rainha dos Anjos, rogai por nós. \nSão Miguel, rogai por nós. \nSão Miguel, cheio da graça de Deus, rogai por nós. \nSão Miguel, perfeito adorador do Verbo Divino, rogai por nós. \nSão Miguel, coroado de honra e de glória, rogai por nós. \nSão Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós. \nSão Miguel, porta-estandarte da Santíssima Trindade, rogai por nós. \nSão Miguel, guardião do Paraíso, rogai por nós. \nSão Miguel, guia e consolador do povo israelita, rogai por nós. \nSão Miguel, esplendor e fortaleza da Igreja militante, rogai por nós. \nSão Miguel, honra e alegria da Igreja triunfante, rogai por nós. \nSão Miguel, luz dos anjos, rogai por nós. \nSão Miguel, baluarte dos cristãos, rogai por nós. \nSão Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós. \nSão Miguel, luz e confiança das almas no último momento da vida, rogai por nós. \nSão Miguel, socorro muito certo, rogai por nós. \nSão Miguel, nosso auxílio em todas as adversidades, rogai por nós. \nSão Miguel, arauto da sentença eterna, rogai por nós. \nSão Miguel, consolador das almas que estão no Purgatório, rogai por nós. \nSão Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós. \nSão Miguel, nosso príncipe, rogai por nós. \nSão Miguel, nosso advogado, rogai por nós. \n\nCordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.\n\nCordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.\n\nCordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor. \n\nRogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas. \n\nOração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.' },
   { title: 'Ladainha de Ação de Graças', text: 'Por termos sido criados à imagem e semelhança de Deus — graças vos damos, Senhor.\nPela redenção de Jesus Cristo — graças vos damos, Senhor.\nPelos sacramentos da Igreja — graças vos damos, Senhor.\nPelas graças recebidas na vida — graças vos damos, Senhor.\nPelas pessoas que nos amam — graças vos damos, Senhor.\nPelas dificuldades que nos purificam — graças vos damos, Senhor.\nPelo dom da fé — graças vos damos, Senhor.\nPela intercessão de Maria — graças vos damos, Senhor.\nPela comunhão dos santos — graças vos damos, Senhor.\nPela esperança do Paraíso — graças vos damos, Senhor.\n\nLouvai ao Senhor todas as nações.\nExaltai-o todos os povos.\nPois é poderoso o seu amor por nós.\nA fidelidade do Senhor é eterna. Aleluia! Amém.' },
 ];
 
@@ -1501,46 +1501,1922 @@ function RitosLiturgicosTab() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const quaresmaDays = [
-  { day: 1,  title: 'DEUS É O SENHOR',                    leitura: 'Gênesis 1,1-5',             meditacao: 'Antes de qualquer batalha espiritual existe uma verdade fundamental: Deus é Deus. O primeiro passo não é olhar para o demônio, mas olhar para Deus. São Miguel significa: "Quem como Deus?" A primeira vitória acontece quando colocamos Deus no centro.', reflexao: 'O que ocupa hoje o lugar que deveria pertencer a Deus?', proposito: 'Entregar conscientemente o dia ao Senhor.', oracao: 'Senhor, colocai novamente minha vida sob o vosso senhorio. Que eu nunca coloque criatura alguma acima de Vós. Por intercessão de São Miguel, dai-me fidelidade e coragem. Amém.\nRezar: Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel.' },
-  { day: 2,  title: '"QUEM COMO DEUS?"',                  leitura: 'Êxodo 20,1-6',               meditacao: 'O combate espiritual começa pela adoração verdadeira. Não podemos servir simultaneamente a Deus e aos ídolos.', reflexao: 'Quais são os "ídolos" modernos que podem ocupar meu coração?', proposito: 'Renunciar conscientemente a algo que esteja ocupando excessivamente meu coração.', oracao: 'São Miguel, ensinai-me a colocar Deus acima de todas as coisas.' },
-  { day: 3,  title: 'A CRIAÇÃO DOS ANJOS',               leitura: 'Colossenses 1,15-17',        meditacao: 'Os anjos são criaturas de Deus. Tudo foi criado por Cristo e para Cristo.', reflexao: 'Minha devoção aos anjos conduz minha atenção para Cristo?', proposito: 'Agradecer a Deus pela criação.', oracao: '' },
-  { day: 4,  title: 'OS ANJOS SERVEM A DEUS',            leitura: 'Hebreus 1,5-14',             meditacao: 'Os anjos são espíritos servidores enviados para auxiliar aqueles que caminham para a salvação. São Miguel é grande porque serve ao Deus Altíssimo.', reflexao: '', proposito: 'Realizar hoje um serviço escondido sem esperar reconhecimento.', oracao: '' },
-  { day: 5,  title: 'A OBEDIÊNCIA',                       leitura: '1 Samuel 15,22',             meditacao: 'Deus deseja uma obediência verdadeira. A santidade não consiste apenas em realizar práticas religiosas, mas em fazer a vontade de Deus.', reflexao: '', proposito: 'Obedecer prontamente em uma situação na qual normalmente você resistiria.', oracao: '' },
-  { day: 6,  title: 'A QUEDA',                            leitura: 'Gênesis 3,1-19',             meditacao: 'O pecado começa quando a criatura desconfia de Deus. A tentação apresenta a desobediência como liberdade.', reflexao: 'Onde tenho acreditado mais em minhas próprias vontades do que na Palavra de Deus?', proposito: '', oracao: '' },
-  { day: 7,  title: 'A PROMESSA DA VITÓRIA',              leitura: 'Gênesis 3,14-15',            meditacao: 'Desde o princípio existe a promessa da vitória sobre o mal. A história da salvação caminhará para Cristo.', reflexao: '', proposito: '', oracao: 'Senhor, fortalecei minha esperança na vitória definitiva de Cristo.' },
-  { day: 8,  title: 'O COMBATE ESPIRITUAL',               leitura: 'Efésios 6,10-18',            meditacao: 'São Paulo fala da necessidade de permanecer firmes. O cristão não combate com ódio contra pessoas. O verdadeiro combate é espiritual.', reflexao: '', proposito: 'Não responder ao mal com outro mal.', oracao: '' },
-  { day: 9,  title: 'A ARMADURA DE DEUS',                 leitura: 'Efésios 6,13-17',            meditacao: 'Verdade, justiça, fé, salvação e Palavra de Deus formam a verdadeira armadura.', reflexao: 'Qual dessas virtudes está mais fraca em mim?', proposito: 'Escolher uma virtude para praticar conscientemente.', oracao: '' },
-  { day: 10, title: 'A ESPADA DO ESPÍRITO',               leitura: 'Efésios 6,17',               meditacao: 'A espada espiritual é a Palavra de Deus. Não vencemos o pecado simplesmente pela força de vontade. Precisamos conhecer e viver a Palavra.', reflexao: '', proposito: 'Ler novamente o Evangelho do dia.', oracao: '' },
-  { day: 11, title: 'JESUS VENCE A TENTAÇÃO',             leitura: 'Mateus 4,1-11',              meditacao: 'Jesus responde às tentações com a Palavra de Deus. O demônio não é vencido pela superstição, mas pela fidelidade a Deus.', reflexao: '', proposito: 'Guardar uma frase do Evangelho durante todo o dia.', oracao: '' },
-  { day: 12, title: 'FÉ',                                  leitura: 'Hebreus 11,1-6',             meditacao: 'A fé nos faz confiar em Deus mesmo quando não compreendemos tudo.', reflexao: '', proposito: 'Entregar ao Senhor uma preocupação.', oracao: '' },
-  { day: 13, title: 'CONFIANÇA',                           leitura: 'Salmo 23',                   meditacao: '"O Senhor é meu pastor." O combate espiritual não deve gerar paranoia, mas confiança.', reflexao: '', proposito: '', oracao: 'Senhor, livrai-me do medo desordenado e concedei-me confiança em Vós.' },
-  { day: 14, title: 'NÃO TEMER',                           leitura: 'Salmo 27',                   meditacao: '"O Senhor é minha luz e salvação."', reflexao: '', proposito: 'Quando surgir medo, repetir: "O Senhor é minha luz e salvação."', oracao: '' },
-  { day: 15, title: 'ARREPENDIMENTO',                      leitura: 'Lucas 15,11-32',             meditacao: 'O filho pródigo retorna à casa do Pai. A verdadeira vitória espiritual começa com o arrependimento.', reflexao: '', proposito: 'Examinar a consciência.', oracao: '' },
-  { day: 16, title: 'MISERICÓRDIA',                        leitura: 'Salmo 51',                   meditacao: 'O pecado não precisa ser o fim da história. Deus pode restaurar um coração quebrantado.', reflexao: '', proposito: 'Pedir sinceramente perdão a Deus.', oracao: '' },
-  { day: 17, title: 'CONFISSÃO',                           leitura: 'João 20,19-23',              meditacao: 'Cristo confiou à Igreja o ministério da reconciliação.', reflexao: '', proposito: 'Preparar-se para uma boa Confissão.', oracao: '' },
-  { day: 18, title: 'PERDÃO',                              leitura: 'Mateus 18,21-35',            meditacao: 'Quem recebeu misericórdia é chamado a oferecer misericórdia.', reflexao: '', proposito: 'Perdoar alguém interiormente.', oracao: '' },
-  { day: 19, title: 'CARIDADE',                            leitura: '1 Coríntios 13,1-13',       meditacao: 'Não existe combate espiritual verdadeiro sem caridade.', reflexao: '', proposito: 'Fazer uma obra concreta de caridade.', oracao: '' },
-  { day: 20, title: 'HUMILDADE',                           leitura: 'Filipenses 2,5-11',          meditacao: 'Cristo venceu pela humildade e obediência. São Miguel não é modelo de orgulho, mas de serviço.', reflexao: '', proposito: 'Evitar hoje uma disputa desnecessária.', oracao: '' },
-  { day: 21, title: 'MARIA, RAINHA DOS ANJOS',             leitura: 'Lucas 1,26-38',              meditacao: 'Maria responde: "Eis aqui a serva do Senhor." A verdadeira grandeza está em servir.', reflexao: '', proposito: 'Rezar o Angelus ou uma Ave-Maria conscientemente.', oracao: '' },
-  { day: 22, title: 'MARIA E O COMBATE',                   leitura: 'Apocalipse 12,1-17',         meditacao: 'A mulher e o dragão aparecem no grande drama da salvação.', reflexao: '', proposito: '', oracao: 'Maria Santíssima, conduzi-me sempre para Cristo.' },
-  { day: 23, title: 'SÃO MIGUEL NO APOCALIPSE',            leitura: 'Apocalipse 12,7-12',         meditacao: 'Miguel combate o dragão. Mas a vitória pertence a Deus. Frase do dia: "Quem como Deus?"', reflexao: '', proposito: '', oracao: '' },
-  { day: 24, title: 'FIDELIDADE',                          leitura: 'Daniel 6,1-23',              meditacao: 'Daniel permanece fiel mesmo sob ameaça.', reflexao: '', proposito: 'Não abandonar uma prática boa por medo da opinião dos outros.', oracao: '' },
-  { day: 25, title: 'O LEÃO DE JUDÁ',                     leitura: 'Apocalipse 5,1-14',          meditacao: 'Cristo é o verdadeiro vencedor. A devoção a São Miguel sempre deve terminar em Cristo.', reflexao: '', proposito: 'Adorar Jesus conscientemente.', oracao: '' },
-  { day: 26, title: 'A CRUZ',                              leitura: '1 Coríntios 1,18-25',       meditacao: 'A vitória cristã passa pela Cruz. Não existe verdadeira santidade sem conversão e sacrifício.', reflexao: '', proposito: 'Aceitar uma dificuldade do dia sem murmuração.', oracao: '' },
-  { day: 27, title: 'OS ESTIGMAS DE SÃO FRANCISCO',        leitura: 'Gálatas 6,14-18',            meditacao: 'São Francisco desejava conformar-se profundamente a Cristo. A tradição associa sua Quaresma de São Miguel de 1224 à experiência dos estigmas. O objetivo não era experimentar algo extraordinário, mas pertencer cada vez mais a Cristo.', reflexao: '', proposito: 'Contemplar o Crucificado por alguns minutos.', oracao: '' },
-  { day: 28, title: 'AMOR A JESUS',                        leitura: 'João 15,9-17',               meditacao: 'Jesus não chama seus discípulos apenas para combater. Ele os chama para permanecer no amor.', reflexao: '', proposito: 'Fazer uma oração de amor a Jesus.', oracao: '' },
-  { day: 29, title: 'PERSEVERANÇA',                        leitura: 'Mateus 24,13',               meditacao: 'A santidade exige perseverança. Não basta começar bem. É necessário permanecer.', reflexao: '', proposito: 'Renovar a decisão de continuar a vida de oração depois da Quaresma.', oracao: '' },
-  { day: 30, title: 'VIGILÂNCIA',                          leitura: '1 Pedro 5,8-11',             meditacao: '"Vigiai." A vigilância cristã não significa viver com medo. Significa permanecer sóbrio e próximo de Deus.', reflexao: '', proposito: 'Evitar hoje uma ocasião habitual de pecado.', oracao: '' },
-  { day: 31, title: 'A PALAVRA PERMANECE',                 leitura: 'Isaías 55,10-11',            meditacao: 'A Palavra de Deus não retorna vazia.', reflexao: '', proposito: 'Ler um capítulo inteiro de um Evangelho.', oracao: '' },
-  { day: 32, title: 'A EUCARISTIA',                        leitura: 'João 6,48-58',               meditacao: 'O centro da vida cristã é Cristo. A devoção aos anjos não pode substituir a Eucaristia.', reflexao: '', proposito: 'Participar da Santa Missa, se possível além do domingo.', oracao: '' },
-  { day: 33, title: 'O TEMPLO DO ESPÍRITO SANTO',          leitura: '1 Coríntios 6,19-20',       meditacao: 'Nossa vida pertence a Deus.', reflexao: '', proposito: 'Tratar o próprio corpo e a própria vida com maior respeito.', oracao: '' },
-  { day: 34, title: 'SANTIDADE',                           leitura: '1 Pedro 1,13-16',            meditacao: 'Deus nos chama à santidade. São Miguel nos recorda a necessidade de pertencermos completamente a Deus.', reflexao: '', proposito: 'Escolher uma virtude para cultivar durante a próxima semana.', oracao: '' },
-  { day: 35, title: 'A IGREJA',                            leitura: 'Mateus 16,13-19',            meditacao: 'O combate espiritual do cristão acontece dentro da comunhão da Igreja, não de maneira isolada.', reflexao: '', proposito: '', oracao: 'São Miguel, protegei a Igreja de Cristo e ajudai seus filhos a permanecerem fiéis.' },
-  { day: 36, title: 'INTERCESSÃO',                         leitura: '1 Timóteo 2,1-6',            meditacao: 'O cristão é chamado a interceder pelos outros.', reflexao: '', proposito: 'Fazer uma lista de pessoas pelas quais deseja rezar.', oracao: '' },
-  { day: 37, title: 'OS ANJOS E A SALVAÇÃO',               leitura: 'Hebreus 1,13-14',            meditacao: 'Os anjos são servidores de Deus. Sua missão conduz à glória daquele que os criou.', reflexao: '', proposito: 'Agradecer a Deus pela proteção recebida ao longo da vida.', oracao: '' },
-  { day: 38, title: 'SÃO MIGUEL E A VITÓRIA DE DEUS',      leitura: 'Judas 8-10',                 meditacao: 'Miguel combate sob a autoridade de Deus. A lição fundamental é humildade. Frase do dia: "Quem como Deus?"', reflexao: '', proposito: '', oracao: '' },
-  { day: 39, title: 'CONSAGRAÇÃO',                         leitura: 'Romanos 12,1-2',             meditacao: 'A verdadeira consagração é entregar a própria vida a Deus. São Miguel deve nos ensinar a dizer: "Senhor, eu pertenço a Vós."', reflexao: '', proposito: '', oracao: 'Ó glorioso São Miguel Arcanjo, príncipe da milícia celeste, eu me coloco espiritualmente sob vossa proteção e, acima de tudo, sob a soberania de Deus. Ajudai-me a permanecer fiel a Cristo. Defendei-me nas tentações. Fortalecei-me nas dificuldades. Ajudai-me a rejeitar o pecado. Conduzi-me sempre para Jesus Cristo. Ensina-me a viver na verdade, na humildade, na pureza, na caridade e na obediência. Que eu possa repetir durante toda a minha vida: Quem como Deus? São Miguel Arcanjo, rogai por mim. Amém.' },
-  { day: 40, title: 'FESTA DOS SANTOS ARCANJOS',           leitura: '1ª Leitura: Daniel 7,9-10.13-14 | Salmo: 138(137) | Evangelho: João 1,47-51', meditacao: 'Chegamos ao término da Quaresma. A verdadeira pergunta não é "O que consegui durante esses 40 dias?" mas "Quem estou me tornando diante de Deus?" São Miguel nos ensina que a vida inteira deve ser uma resposta à pergunta: Quem como Deus? Não existe ninguém como Deus. Ele é o Criador, o Senhor, o Salvador.', reflexao: '', proposito: '', oracao: 'Ó glorioso São Miguel Arcanjo, Príncipe da Milícia Celeste, guardião e defensor do povo de Deus, eu vos agradeço por terdes me acompanhado durante esta Quaresma. Peço-vos que apresenteis minhas súplicas diante do Senhor. Defendei minha família. Protegei aqueles que amo. Ajudai-me nas tentações. Fortalecei-me nas dificuldades. Afastai de mim tudo aquilo que me conduz ao pecado. Obtende para mim a graça de permanecer fiel a Cristo. Ajudai-me a viver na verdade, na caridade e a perseverar na fé. Ensinai-me a dizer: QUEM COMO DEUS? Ninguém como Deus! Ninguém acima de Deus! Nada sem Deus! Tudo para Deus! Por Cristo, com Cristo e em Cristo. Amém.\n\nEm seguida rezar solenemente a Ladainha de São Miguel, Pai-Nosso, Ave-Maria, Glória ao Pai, e três vezes: "São Miguel Arcanjo, defendei-nos no combate." E: "Quem como Deus? Ninguém como Deus!"' },
+  { day: 1,  title: 'DEUS É O SENHOR',                    leitura: 'Gênesis 1,1-5',             meditacao: 'Antes de qualquer batalha espiritual existe uma verdade fundamental: Deus é Deus. O primeiro passo não é olhar para o demônio, mas olhar para Deus. São Miguel significa: "Quem como Deus?" A primeira vitória acontece quando colocamos Deus no centro.', reflexao: 'O que ocupa hoje o lugar que deveria pertencer a Deus?', proposito: 'Entregar conscientemente o dia ao Senhor.', oracao: 'Senhor, colocai novamente minha vida sob o vosso senhorio. Que eu nunca coloque criatura alguma acima de Vós. Por intercessão de São Miguel, dai-me fidelidade e coragem. Amém.\nRezar: Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.' },
+  { day: 2,  title: '"QUEM COMO DEUS?"',                  leitura: 'Êxodo 20,1-6',               meditacao: 'O combate espiritual começa pela adoração verdadeira. Não podemos servir simultaneamente a Deus e aos ídolos.', reflexao: 'Quais são os "ídolos" modernos que podem ocupar meu coração?', proposito: 'Renunciar conscientemente a algo que esteja ocupando excessivamente meu coração.', oracao: 'São Miguel, ensinai-me a colocar Deus acima de todas as coisas. 
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.' },
+  { day: 3,  title: 'A CRIAÇÃO DOS ANJOS',               leitura: 'Colossenses 1,15-17',        meditacao: 'Os anjos são criaturas de Deus. Tudo foi criado por Cristo e para Cristo.', reflexao: 'Minha devoção aos anjos conduz minha atenção para Cristo?', proposito: 'Agradecer a Deus pela criação.', oracao: Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém. '' },
+  { day: 4,  title: 'OS ANJOS SERVEM A DEUS',            leitura: 'Hebreus 1,5-14',             meditacao: 'Os anjos são espíritos servidores enviados para auxiliar aqueles que caminham para a salvação. São Miguel é grande porque serve ao Deus Altíssimo.', reflexao: '', proposito: 'Realizar hoje um serviço escondido sem esperar reconhecimento.', oracao: 
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.'' },
+  { day: 5,  title: 'A OBEDIÊNCIA',                       leitura: '1 Samuel 15,22',             meditacao: 'Deus deseja uma obediência verdadeira. A santidade não consiste apenas em realizar práticas religiosas, mas em fazer a vontade de Deus.', reflexao: '', proposito: 'Obedecer prontamente em uma situação na qual normalmente você resistiria.', oracao:
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém. '' },
+  { day: 6,  title: 'A QUEDA',                            leitura: 'Gênesis 3,1-19',             meditacao: 'O pecado começa quando a criatura desconfia de Deus. A tentação apresenta a desobediência como liberdade.', reflexao: 'Onde tenho acreditado mais em minhas próprias vontades do que na Palavra de Deus?', proposito: '', oracao: 
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.'' },
+  { day: 7,  title: 'A PROMESSA DA VITÓRIA',              leitura: 'Gênesis 3,14-15',            meditacao: 'Desde o princípio existe a promessa da vitória sobre o mal. A história da salvação caminhará para Cristo.', reflexao: '', proposito: '', oracao: 'Senhor, fortalecei minha esperança na vitória definitiva de Cristo.
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.' },
+  { day: 8,  title: 'O COMBATE ESPIRITUAL',               leitura: 'Efésios 6,10-18',            meditacao: 'São Paulo fala da necessidade de permanecer firmes. O cristão não combate com ódio contra pessoas. O verdadeiro combate é espiritual.', reflexao: '', proposito: 'Não responder ao mal com outro mal.', oracao: 
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.'' },
+  { day: 9,  title: 'A ARMADURA DE DEUS',                 leitura: 'Efésios 6,13-17',            meditacao: 'Verdade, justiça, fé, salvação e Palavra de Deus formam a verdadeira armadura.', reflexao: 'Qual dessas virtudes está mais fraca em mim?', proposito: 'Escolher uma virtude para praticar conscientemente.', oracao: 
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.'' },
+  { day: 10, title: 'A ESPADA DO ESPÍRITO',               leitura: 'Efésios 6,17',               meditacao: 'A espada espiritual é a Palavra de Deus. Não vencemos o pecado simplesmente pela força de vontade. Precisamos conhecer e viver a Palavra.', reflexao: '', proposito: 'Ler novamente o Evangelho do dia.', oracao: 
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.'' },
+  { day: 11, title: 'JESUS VENCE A TENTAÇÃO',             leitura: 'Mateus 4,1-11',              meditacao: 'Jesus responde às tentações com a Palavra de Deus. O demônio não é vencido pela superstição, mas pela fidelidade a Deus.', reflexao: '', proposito: 'Guardar uma frase do Evangelho durante todo o dia.', oracao:
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém. '' },
+  { day: 12, title: 'FÉ',                                  leitura: 'Hebreus 11,1-6',             meditacao: 'A fé nos faz confiar em Deus mesmo quando não compreendemos tudo.', reflexao: '', proposito: 'Entregar ao Senhor uma preocupação.', oracao: 
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.'' },
+  { day: 13, title: 'CONFIANÇA',                           leitura: 'Salmo 23',                   meditacao: '"O Senhor é meu pastor." O combate espiritual não deve gerar paranoia, mas confiança.', reflexao: '', proposito: '', oracao: 'Senhor, livrai-me do medo desordenado e concedei-me confiança em Vós.
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.' },
+  { day: 14, title: 'NÃO TEMER',                           leitura: 'Salmo 27',                   meditacao: '"O Senhor é minha luz e salvação."', reflexao: '', proposito: 'Quando surgir medo, repetir: "O Senhor é minha luz e salvação."', oracao: 
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.'' },
+  { day: 15, title: 'ARREPENDIMENTO',                      leitura: 'Lucas 15,11-32',             meditacao: 'O filho pródigo retorna à casa do Pai. A verdadeira vitória espiritual começa com o arrependimento.', reflexao: '', proposito: 'Examinar a consciência.', oracao: 
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.'' },
+  { day: 16, title: 'MISERICÓRDIA',                        leitura: 'Salmo 51',                   meditacao: 'O pecado não precisa ser o fim da história. Deus pode restaurar um coração quebrantado.', reflexao: '', proposito: 'Pedir sinceramente perdão a Deus.', oracao: 
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.'' },
+  { day: 17, title: 'CONFISSÃO',                           leitura: 'João 20,19-23',              meditacao: 'Cristo confiou à Igreja o ministério da reconciliação.', reflexao: '', proposito: 'Preparar-se para uma boa Confissão.', oracao: Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.'' },
+  { day: 18, title: 'PERDÃO',                              leitura: 'Mateus 18,21-35',            meditacao: 'Quem recebeu misericórdia é chamado a oferecer misericórdia.', reflexao: '', proposito: 'Perdoar alguém interiormente.', oracao: Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém. '' },
+  { day: 19, title: 'CARIDADE',                            leitura: '1 Coríntios 13,1-13',       meditacao: 'Não existe combate espiritual verdadeiro sem caridade.', reflexao: '', proposito: 'Fazer uma obra concreta de caridade.', oracao: 
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.'' },
+  { day: 20, title: 'HUMILDADE',                           leitura: 'Filipenses 2,5-11',          meditacao: 'Cristo venceu pela humildade e obediência. São Miguel não é modelo de orgulho, mas de serviço.', reflexao: '', proposito: 'Evitar hoje uma disputa desnecessária.', oracao: 
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.'' },
+  { day: 21, title: 'MARIA, RAINHA DOS ANJOS',             leitura: 'Lucas 1,26-38',              meditacao: 'Maria responde: "Eis aqui a serva do Senhor." A verdadeira grandeza está em servir.', reflexao: '', proposito: 'Rezar o Angelus ou uma Ave-Maria conscientemente.', oracao: 
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.'' },
+  { day: 22, title: 'MARIA E O COMBATE',                   leitura: 'Apocalipse 12,1-17',         meditacao: 'A mulher e o dragão aparecem no grande drama da salvação.', reflexao: '', proposito: '', oracao: 'Maria Santíssima, conduzi-me sempre para Cristo.
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.' },
+  { day: 23, title: 'SÃO MIGUEL NO APOCALIPSE',            leitura: 'Apocalipse 12,7-12',         meditacao: 'Miguel combate o dragão. Mas a vitória pertence a Deus. Frase do dia: "Quem como Deus?"', reflexao: '', proposito: '', oracao: 
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.'' },
+  { day: 24, title: 'FIDELIDADE',                          leitura: 'Daniel 6,1-23',              meditacao: 'Daniel permanece fiel mesmo sob ameaça.', reflexao: '', proposito: 'Não abandonar uma prática boa por medo da opinião dos outros.', oracao: 
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.'' },
+  { day: 25, title: 'O LEÃO DE JUDÁ',                     leitura: 'Apocalipse 5,1-14',          meditacao: 'Cristo é o verdadeiro vencedor. A devoção a São Miguel sempre deve terminar em Cristo.', reflexao: '', proposito: 'Adorar Jesus conscientemente.', oracao: 
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.'' },
+  { day: 26, title: 'A CRUZ',                              leitura: '1 Coríntios 1,18-25',       meditacao: 'A vitória cristã passa pela Cruz. Não existe verdadeira santidade sem conversão e sacrifício.', reflexao: '', proposito: 'Aceitar uma dificuldade do dia sem murmuração.', oracao: 
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.'' },
+  { day: 27, title: 'OS ESTIGMAS DE SÃO FRANCISCO',        leitura: 'Gálatas 6,14-18',            meditacao: 'São Francisco desejava conformar-se profundamente a Cristo. A tradição associa sua Quaresma de São Miguel de 1224 à experiência dos estigmas. O objetivo não era experimentar algo extraordinário, mas pertencer cada vez mais a Cristo.', reflexao: '', proposito: 'Contemplar o Crucificado por alguns minutos.', oracao: 
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.'' },
+  { day: 28, title: 'AMOR A JESUS',                        leitura: 'João 15,9-17',               meditacao: 'Jesus não chama seus discípulos apenas para combater. Ele os chama para permanecer no amor.', reflexao: '', proposito: 'Fazer uma oração de amor a Jesus.', oracao: 
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.'' },
+  { day: 29, title: 'PERSEVERANÇA',                        leitura: 'Mateus 24,13',               meditacao: 'A santidade exige perseverança. Não basta começar bem. É necessário permanecer.', reflexao: '', proposito: 'Renovar a decisão de continuar a vida de oração depois da Quaresma.', oracao: 
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.'' },
+  { day: 30, title: 'VIGILÂNCIA',                          leitura: '1 Pedro 5,8-11',             meditacao: '"Vigiai." A vigilância cristã não significa viver com medo. Significa permanecer sóbrio e próximo de Deus.', reflexao: '', proposito: 'Evitar hoje uma ocasião habitual de pecado.', oracao: 
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.'' },
+  { day: 31, title: 'A PALAVRA PERMANECE',                 leitura: 'Isaías 55,10-11',            meditacao: 'A Palavra de Deus não retorna vazia.', reflexao: '', proposito: 'Ler um capítulo inteiro de um Evangelho.', oracao: 
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.'' },
+  { day: 32, title: 'A EUCARISTIA',                        leitura: 'João 6,48-58',               meditacao: 'O centro da vida cristã é Cristo. A devoção aos anjos não pode substituir a Eucaristia.', reflexao: '', proposito: 'Participar da Santa Missa, se possível além do domingo.', oracao:
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém. '' },
+  { day: 33, title: 'O TEMPLO DO ESPÍRITO SANTO',          leitura: '1 Coríntios 6,19-20',       meditacao: 'Nossa vida pertence a Deus.', reflexao: '', proposito: 'Tratar o próprio corpo e a própria vida com maior respeito.', oracao:
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém. '' },
+  { day: 34, title: 'SANTIDADE',                           leitura: '1 Pedro 1,13-16',            meditacao: 'Deus nos chama à santidade. São Miguel nos recorda a necessidade de pertencermos completamente a Deus.', reflexao: '', proposito: 'Escolher uma virtude para cultivar durante a próxima semana.', oracao:
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém. '' },
+  { day: 35, title: 'A IGREJA',                            leitura: 'Mateus 16,13-19',            meditacao: 'O combate espiritual do cristão acontece dentro da comunhão da Igreja, não de maneira isolada.', reflexao: '', proposito: '', oracao: 'São Miguel, protegei a Igreja de Cristo e ajudai seus filhos a permanecerem fiéis.
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.' },
+  { day: 36, title: 'INTERCESSÃO',                         leitura: '1 Timóteo 2,1-6',            meditacao: 'O cristão é chamado a interceder pelos outros.', reflexao: '', proposito: 'Fazer uma lista de pessoas pelas quais deseja rezar.', oracao:
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém. '' },
+  { day: 37, title: 'OS ANJOS E A SALVAÇÃO',               leitura: 'Hebreus 1,13-14',            meditacao: 'Os anjos são servidores de Deus. Sua missão conduz à glória daquele que os criou.', reflexao: '', proposito: 'Agradecer a Deus pela proteção recebida ao longo da vida.', oracao:
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém. '' },
+  { day: 38, title: 'SÃO MIGUEL E A VITÓRIA DE DEUS',      leitura: 'Judas 8-10',                 meditacao: 'Miguel combate sob a autoridade de Deus. A lição fundamental é humildade. Frase do dia: "Quem como Deus?"', reflexao: '', proposito: '', oracao: 
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.'' },
+  { day: 39, title: 'CONSAGRAÇÃO',                         leitura: 'Romanos 12,1-2',             meditacao: 'A verdadeira consagração é entregar a própria vida a Deus. São Miguel deve nos ensinar a dizer: "Senhor, eu pertenço a Vós."', reflexao: '', proposito: '', oracao: 'Ó glorioso São Miguel Arcanjo, príncipe da milícia celeste, eu me coloco espiritualmente sob vossa proteção e, acima de tudo, sob a soberania de Deus. Ajudai-me a permanecer fiel a Cristo. Defendei-me nas tentações. Fortalecei-me nas dificuldades. Ajudai-me a rejeitar o pecado. Conduzi-me sempre para Jesus Cristo. Ensina-me a viver na verdade, na humildade, na pureza, na caridade e na obediência. Que eu possa repetir durante toda a minha vida: Quem como Deus? São Miguel Arcanjo, rogai por mim. Amém.
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.' },
+  { day: 40, title: 'FESTA DOS SANTOS ARCANJOS',           leitura: '1ª Leitura: Daniel 7,9-10.13-14 | Salmo: 138(137) | Evangelho: João 1,47-51', meditacao: 'Chegamos ao término da Quaresma. A verdadeira pergunta não é "O que consegui durante esses 40 dias?" mas "Quem estou me tornando diante de Deus?" São Miguel nos ensina que a vida inteira deve ser uma resposta à pergunta: Quem como Deus? Não existe ninguém como Deus. Ele é o Criador, o Senhor, o Salvador.', reflexao: '', proposito: '', oracao: 'Ó glorioso São Miguel Arcanjo, Príncipe da Milícia Celeste, guardião e defensor do povo de Deus, eu vos agradeço por terdes me acompanhado durante esta Quaresma. Peço-vos que apresenteis minhas súplicas diante do Senhor. Defendei minha família. Protegei aqueles que amo. Ajudai-me nas tentações. Fortalecei-me nas dificuldades. Afastai de mim tudo aquilo que me conduz ao pecado. Obtende para mim a graça de permanecer fiel a Cristo. Ajudai-me a viver na verdade, na caridade e a perseverar na fé. Ensinai-me a dizer: QUEM COMO DEUS? Ninguém como Deus! Ninguém acima de Deus! Nada sem Deus! Tudo para Deus! Por Cristo, com Cristo e em Cristo. Amém.\n\nEm seguida rezar solenemente a Ladainha de São Miguel, Pai-Nosso, Ave-Maria, Glória ao Pai, e três vezes: "São Miguel Arcanjo, defendei-nos no combate." E: "Quem como Deus? Ninguém como Deus!
+Oração de São Miguel Arcanjo + Pai-Nosso + Ave-Maria + Glória + Ladainha de São Miguel. 
+Senhor, tende piedade de nós.
+Jesus Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Jesus Cristo, ouvi-nos.
+Jesus Cristo, atendei-nos.
+Pai Celeste, que sois Deus, tende piedade de nós.
+Filho Redentor do Mundo, que sois Deus, tende piedade de nós.
+Espírito Santo, que sois Deus, tende piedade de nós.
+Trindade Santa, que sois um único Deus, tende piedade de nós.
+
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e de glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo israelita, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte dos cristãos, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, a quem o Senhor incumbiu de receber as almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós, Senhor.
+
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que sejamos dignos de Suas promessas.
+
+Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.
+
+Consagração a São Miguel Arcanjo
+Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém."' },
 ];
 
 function QuaresmaTab() {
