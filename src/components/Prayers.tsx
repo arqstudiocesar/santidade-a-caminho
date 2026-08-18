@@ -3419,7 +3419,8 @@ Obtende-me aqueles auxílios que me são necessários para obter a coroa da eter
 São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém."' },
 ];
 
-// ── Textos fixos das orações (iguais em todos os 40 dias) ────────────────────
+
+// ── Textos fixos das orações (aparecem dentro de cada um dos 40 dias) ─────────
 const ORACAO_SAO_MIGUEL = `São Miguel Arcanjo, defendei-nos no combate, sede o nosso refúgio contra as maldades e ciladas do demônio. Ordene-lhe Deus, instantemente o pedimos; e vós, Príncipe da Milícia Celeste, pela virtude divina, precipitai no inferno a Satanás e aos outros espíritos malignos que andam pelo mundo para perder as almas. Amém.`;
 
 const LADAINHA_SAO_MIGUEL = `Senhor, tende piedade de nós.
@@ -3480,17 +3481,19 @@ function getQuaresmaKey(): string {
   } catch { return 'quaresma_miguel_anon'; }
 }
 function loadQuaresmaProgress(): Record<string, boolean> {
-  try { const r = localStorage.getItem(getQuaresmaKey()); return r ? JSON.parse(r) : {}; }
-  catch { return {}; }
+  try {
+    const r = localStorage.getItem(getQuaresmaKey());
+    return r ? JSON.parse(r) : {};
+  } catch { return {}; }
 }
 function saveQuaresmaProgress(data: Record<string, boolean>) {
   try { localStorage.setItem(getQuaresmaKey(), JSON.stringify(data)); } catch { /* ok */ }
 }
 
-// ── Componente QuaresmaTab ────────────────────────────────────────────────────
+// ── QuaresmaTab ───────────────────────────────────────────────────────────────
 function QuaresmaTab() {
-  const [openSection, setOpenSection] = useState<string | null>(null);
   const [openDay, setOpenDay] = useState<number | null>(null);
+  const [openSection, setOpenSection] = useState<string | null>(null);
   const [completed, setCompleted] = useState<Record<string, boolean>>(() => loadQuaresmaProgress());
   const [showConcluded, setShowConcluded] = useState(false);
 
@@ -3501,7 +3504,7 @@ function QuaresmaTab() {
   const dayKey = (n: number) => `day${String(n).padStart(2, '0')}`;
   const isDone = (n: number) => !!completed[dayKey(n)];
 
-  // Marcar / desmarcar — reset SOMENTE ao atingir todos os 40
+  // Marcar/desmarcar — só reseta quando TODOS os 40 estiverem marcados
   const toggleDay = (day: number) => {
     const updated = { ...completed, [dayKey(day)]: !completed[dayKey(day)] };
     const newCount = Object.values(updated).filter(Boolean).length;
@@ -3510,7 +3513,7 @@ function QuaresmaTab() {
     if (newCount === TOTAL) setShowConcluded(true);
   };
 
-  // Fechar modal de conclusão → resetar para novo ciclo
+  // Fechar modal → resetar para novo ciclo
   const handleConclusionClose = () => {
     const reset: Record<string, boolean> = {};
     saveQuaresmaProgress(reset);
@@ -3574,7 +3577,7 @@ function QuaresmaTab() {
         )}
       </AnimatePresence>
 
-      {/* ── Header com Progresso ── */}
+      {/* ── Header com Barra de Progresso ── */}
       <div className="bg-[#5A5A40] text-white p-7 rounded-[2rem]">
         <div className="flex items-center gap-3 mb-3">
           <span className="text-3xl">⚔️</span>
@@ -3586,7 +3589,6 @@ function QuaresmaTab() {
         <p className="text-white/80 text-sm leading-relaxed mb-5">
           40 dias de oração, penitência, conversão e combate espiritual.
         </p>
-        {/* Barra de progresso */}
         <div>
           <div className="flex items-center justify-between mb-2">
             <span className="text-white/80 text-sm font-bold">Seu progresso</span>
@@ -3604,50 +3606,49 @@ function QuaresmaTab() {
         <h4 className="text-xs font-bold uppercase tracking-widest text-[#5A5A40] px-1 mb-3">
           Quarenta dias com São Miguel Arcanjo
         </h4>
+
         {quaresmaDays.map(d => (
           <div key={d.day}
-            className={`rounded-[1.5rem] border overflow-hidden transition-colors ${isDone(d.day)
-              ? 'bg-[#5A5A40]/5 border-[#5A5A40]/20'
-              : 'bg-white border-[#1A1A1A]/5'}`}>
+            className={`rounded-[1.5rem] border overflow-hidden transition-colors ${
+              isDone(d.day)
+                ? 'bg-[#5A5A40]/5 border-[#5A5A40]/20'
+                : 'bg-white border-[#1A1A1A]/5'
+            }`}>
 
-            {/* Cabeçalho do dia */}
+            {/* Cabeçalho do dia — clique para abrir */}
             <button
               onClick={() => setOpenDay(openDay === d.day ? null : d.day)}
               className="w-full flex items-center gap-3 p-4 text-left hover:bg-[#F5F2ED]/60 transition-colors">
-              {/* Número */}
-              <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0
-                ${isDone(d.day) ? 'bg-[#5A5A40] text-white' : 'bg-[#F5F2ED] text-[#5A5A40]'}`}>
+              <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
+                isDone(d.day) ? 'bg-[#5A5A40] text-white' : 'bg-[#F5F2ED] text-[#5A5A40]'
+              }`}>
                 {String(d.day).padStart(2, '0')}
               </div>
-              {/* Título */}
               <div className="flex-1 min-w-0">
                 <p className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40]/60">Dia {d.day}</p>
-                <p className={`font-semibold text-sm leading-tight ${isDone(d.day) ? 'text-[#1A1A1A]/50 line-through' : ''}`}>
+                <p className={`font-semibold text-sm leading-tight ${isDone(d.day) ? 'text-[#1A1A1A]/40 line-through' : ''}`}>
                   {d.title}
                 </p>
               </div>
-              {/* Indicador de conclusão */}
               <div className="flex items-center gap-2 flex-shrink-0">
-                {isDone(d.day)
-                  ? <span className="text-xs text-[#5A5A40] font-bold hidden sm:block">Concluído</span>
-                  : null}
+                {isDone(d.day) && <span className="text-xs text-[#5A5A40] font-bold hidden sm:block">Concluído</span>}
                 {openDay === d.day
                   ? <ChevronUp className="w-4 h-4 text-[#5A5A40]" />
                   : <ChevronDown className="w-4 h-4 text-[#1A1A1A]/30" />}
               </div>
             </button>
 
-            {/* Conteúdo do dia expandido */}
+            {/* Conteúdo expandido do dia */}
             <AnimatePresence>
               {openDay === d.day && (
                 <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }}
                   className="overflow-hidden">
-                  <div className="px-5 pb-6 pt-2 space-y-5 border-t border-[#1A1A1A]/5">
+                  <div className="px-5 pb-6 pt-2 space-y-5 border-t border-[#1A1A1A]/10">
 
                     {/* 1. Leitura Bíblica */}
                     <div className="bg-[#F5F2ED] rounded-xl p-4">
                       <p className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40] mb-1">📖 Leitura Bíblica</p>
-                      <p className="text-sm font-semibold text-[#1A1A1A]">{d.leitura}</p>
+                      <p className="text-sm font-semibold">{d.leitura}</p>
                     </div>
 
                     {/* 2. Meditação */}
@@ -3672,6 +3673,7 @@ function QuaresmaTab() {
                       </div>
                     )}
 
+                    {/* ── Orações ── */}
                     <div className="border-t border-[#1A1A1A]/10 pt-4 space-y-4">
                       <p className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40] text-center">⚔️ Orações do Dia</p>
 
@@ -3693,7 +3695,7 @@ function QuaresmaTab() {
                         <p className="text-sm italic font-serif text-[#1A1A1A]/80 leading-relaxed whitespace-pre-line">{CONSAGRACAO_SAO_MIGUEL}</p>
                       </div>
 
-                      {/* 8. Orações Finais */}
+                      {/* 8. Orações finais */}
                       <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
                         <p className="text-sm font-bold text-amber-800">
                           Rezar também 1 Pai-Nosso, 1 Ave-Maria e 1 Glória ao Pai.
@@ -3704,15 +3706,14 @@ function QuaresmaTab() {
                     {/* 9. Botão Marcar como Concluído */}
                     <button
                       onClick={() => toggleDay(d.day)}
-                      className={`w-full py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all
-                        ${isDone(d.day)
+                      className={`w-full py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all ${
+                        isDone(d.day)
                           ? 'bg-[#5A5A40] text-white'
-                          : 'bg-[#F5F2ED] text-[#5A5A40] hover:bg-[#5A5A40]/15 border-2 border-dashed border-[#5A5A40]/30'}`}>
-                      {isDone(d.day) ? (
-                        <><CheckCircle2 className="w-5 h-5" /> Dia Concluído — Toque para desmarcar</>
-                      ) : (
-                        <><Circle className="w-5 h-5" /> Marcar Dia como Concluído</>
-                      )}
+                          : 'bg-[#F5F2ED] text-[#5A5A40] hover:bg-[#5A5A40]/15 border-2 border-dashed border-[#5A5A40]/30'
+                      }`}>
+                      {isDone(d.day)
+                        ? <><CheckCircle2 className="w-5 h-5" /> Dia Concluído — Toque para desmarcar</>
+                        : <><Circle className="w-5 h-5" /> Marcar Dia como Concluído</>}
                     </button>
 
                   </div>
@@ -3723,10 +3724,10 @@ function QuaresmaTab() {
         ))}
       </div>
 
-      {/* ── Informações adicionais (colapsáveis) ── */}
+      {/* ── Seções informativas (colapsáveis, abaixo dos 40 dias) ── */}
       <SectionBlock id="oque" title="ℹ️ O que é a Quaresma de São Miguel?">
         <p>A Quaresma de São Miguel Arcanjo é uma antiga devoção católica de tradição franciscana, constituída por um período especial de oração, penitência, conversão e combate espiritual, realizado em honra de São Miguel Arcanjo.</p>
-        <p>Tradicionalmente, ela é iniciada em <strong>15 de agosto</strong>, solenidade da Assunção da Bem-Aventurada Virgem Maria, e conduz o fiel até a festa de São Miguel, celebrada em <strong>29 de setembro</strong> juntamente com os Santos Arcanjos Gabriel e Rafael.</p>
+        <p>Tradicionalmente, ela é iniciada em <strong>15 de agosto</strong>, solenidade da Assunção de Nossa Senhora, e termina em <strong>29 de setembro</strong>, festa dos Santos Arcanjos Miguel, Gabriel e Rafael.</p>
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
           <p className="font-bold text-amber-800 text-xs uppercase tracking-widest mb-1">Nota importante</p>
           <p className="text-amber-700">São Miguel não ocupa o lugar de Deus. Ele é criatura e servo de Deus. Toda a devoção cristã aos anjos está orientada para a glória de Deus.</p>
@@ -3736,15 +3737,14 @@ function QuaresmaTab() {
       <SectionBlock id="origem" title="ℹ️ Origem">
         <p>A origem tradicional da Quaresma de São Miguel está ligada à profunda espiritualidade penitencial de <strong>São Francisco de Assis</strong>.</p>
         <p>O nome Miguel vem do hebraico <em>"Mi-ka-el?"</em> — <strong>"Quem como Deus?"</strong> — uma profissão de fé. São Miguel representa a fidelidade absoluta a Deus.</p>
-        <div className="bg-[#F5F2ED] rounded-xl p-4 space-y-1.5">
-          <p>• <strong>Origem espiritual:</strong> São Francisco de Assis e a tradição franciscana</p>
+        <div className="bg-[#F5F2ED] rounded-xl p-4 space-y-1">
+          <p>• <strong>Origem:</strong> São Francisco de Assis e a tradição franciscana</p>
           <p>• <strong>Local associado:</strong> Monte Alverne, Itália</p>
-          <p>• <strong>Período tradicional:</strong> da Assunção de Nossa Senhora à festa de São Miguel</p>
-          <p>• <strong>Natureza:</strong> devoção privada/piedade popular, não um tempo litúrgico obrigatório</p>
+          <p>• <strong>Natureza:</strong> devoção privada / piedade popular, não tempo litúrgico obrigatório</p>
         </div>
       </SectionBlock>
 
-      <SectionBlock id="resumida" title="ℹ️ Intenções sugeridas para os 40 dias">
+      <SectionBlock id="intencoes" title="ℹ️ Intenções sugeridas para os 40 dias">
         <div className="space-y-1.5 text-sm text-[#1A1A1A]/70">
           <p>• <strong>Dias 1–5:</strong> Conversão pessoal</p>
           <p>• <strong>Dias 6–10:</strong> Libertação dos pecados e vícios</p>
@@ -3762,6 +3762,7 @@ function QuaresmaTab() {
     </div>
   );
 }
+
 
 // ── Componente Principal ──────────────────────────────────────────────────────
 export default function Prayers() {
@@ -3892,7 +3893,7 @@ export default function Prayers() {
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             placeholder="Buscar por título ou trecho da oração..."
-            className="w-full pl-11 pr-10 py-3.5 bg-white border border-[#1A1A1A]/10 rounded-2xl text-sm focus:ring-2 focus:ring-[#5A5A40]/30 focus:outline-none"
+            className="w-full pl-11 pr-10 py-3.5 bg-white border border-[#1A1A1A]/8 rounded-2xl text-sm focus:ring-2 focus:ring-[#5A5A40]/30 focus:outline-none"
           />
           {searchTerm && (
             <button onClick={() => setSearchTerm('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#1A1A1A]/30 hover:text-[#1A1A1A]/60">
