@@ -3419,10 +3419,10 @@ Obtende-me aqueles auxílios que me são necessários para obter a coroa da eter
 São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém."' },
 ];
 
-// ── Textos fixos das orações (presentes em TODOS os 40 dias) ─────────────────
-const ORACAO_SAO_MIGUEL = `São Miguel Arcanjo, defendei-nos no combate, sede o nosso refúgio contra as maldades e ciladas do demônio. Ordene-lhe Deus, instantemente o pedimos; e vós, Príncipe da Milícia Celeste, pela virtude divina, precipitai no inferno a Satanás e aos outros espíritos malignos que andam pelo mundo para perder as almas. Amém.`;
+// ── Textos fixos das orações (aparecem em TODOS os 40 dias) ──────────────────
+const ORACAO_SAO_MIGUEL_TEXT = `São Miguel Arcanjo, defendei-nos no combate, sede o nosso refúgio contra as maldades e ciladas do demônio. Ordene-lhe Deus, instantemente o pedimos; e vós, Príncipe da Milícia Celeste, pela virtude divina, precipitai no inferno a Satanás e aos outros espíritos malignos que andam pelo mundo para perder as almas. Amém.`;
 
-const LADAINHA_SAO_MIGUEL = `Senhor, tende piedade de nós.
+const LADAINHA_TEXT = `Senhor, tende piedade de nós.
 Jesus Cristo, tende piedade de nós.
 Senhor, tende piedade de nós.
 Jesus Cristo, ouvi-nos.
@@ -3463,7 +3463,7 @@ Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Cristo, para que
 
 Oração: Senhor Jesus, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos da eternidade. Vós que viveis e reinais em todos os séculos dos séculos. Amém.`;
 
-const CONSAGRACAO_SAO_MIGUEL = `Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+const CONSAGRACAO_TEXT = `Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
 
 É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
 
@@ -3471,97 +3471,76 @@ Obtende-me aqueles auxílios que me são necessários para obter a coroa da eter
 
 São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.`;
 
-// ── Helpers: persistência da Quaresma no localStorage ────────────────────────
-function getQuaresmaKey(): string {
+// ── Helpers de persistência ───────────────────────────────────────────────────
+function getQKey(): string {
   try {
     const s = localStorage.getItem('caminho_session');
     const id = s ? JSON.parse(s).user?.id : 'anon';
-    return `quaresma_miguel_${id}`;
-  } catch { return 'quaresma_miguel_anon'; }
+    return `qmiguel_${id}`;
+  } catch { return 'qmiguel_anon'; }
 }
-function loadQuaresmaProgress(): Record<string, boolean> {
-  try {
-    const r = localStorage.getItem(getQuaresmaKey());
-    return r ? JSON.parse(r) : {};
-  } catch { return {}; }
+function loadQProgress(): Record<string, boolean> {
+  try { const r = localStorage.getItem(getQKey()); return r ? JSON.parse(r) : {}; }
+  catch { return {}; }
 }
-function saveQuaresmaProgress(data: Record<string, boolean>) {
-  try { localStorage.setItem(getQuaresmaKey(), JSON.stringify(data)); } catch { /* ok */ }
+function saveQProgress(data: Record<string, boolean>) {
+  try { localStorage.setItem(getQKey(), JSON.stringify(data)); } catch { /* ok */ }
 }
 
-// ── Componente QuaresmaTab ────────────────────────────────────────────────────
+// ── QuaresmaTab ───────────────────────────────────────────────────────────────
 function QuaresmaTab() {
-  const [openDay, setOpenDay] = useState<number | null>(null);
-  const [openInfo, setOpenInfo] = useState<string | null>(null);
-  const [completed, setCompleted] = useState<Record<string, boolean>>(
-    () => loadQuaresmaProgress()
-  );
-  const [showConcluded, setShowConcluded] = useState(false);
+  const [openDay, setOpenDay] = React.useState<number | null>(null);
+  const [openInfo, setOpenInfo] = React.useState<string | null>(null);
+  const [done, setDone] = React.useState<Record<string, boolean>>(loadQProgress);
+  const [showModal, setShowModal] = React.useState(false);
 
   const TOTAL = quaresmaDays.length;
-  const completedCount = Object.values(completed).filter(Boolean).length;
-  const progressPct = Math.round((completedCount / TOTAL) * 100);
+  const doneCount = Object.values(done).filter(Boolean).length;
+  const pct = Math.round((doneCount / TOTAL) * 100);
+  const dKey = (n: number) => `d${String(n).padStart(2, '0')}`;
+  const isDone = (n: number) => !!done[dKey(n)];
 
-  const dayKey = (n: number) => `day${String(n).padStart(2, '0')}`;
-  const isDone = (n: number) => !!completed[dayKey(n)];
+  function toggle(day: number) {
+    const next = { ...done, [dKey(day)]: !done[dKey(day)] };
+    const count = Object.values(next).filter(Boolean).length;
+    setDone(next);
+    saveQProgress(next);
+    if (count === TOTAL) setShowModal(true);
+  }
 
-  const handleToggle = (day: number) => {
-    const updated = { ...completed, [dayKey(day)]: !completed[dayKey(day)] };
-    const newCount = Object.values(updated).filter(Boolean).length;
-    setCompleted(updated);
-    saveQuaresmaProgress(updated);
-    if (newCount === TOTAL) setShowConcluded(true);
-  };
-
-  const handleReset = () => {
+  function resetAll() {
     const empty: Record<string, boolean> = {};
-    saveQuaresmaProgress(empty);
-    setCompleted(empty);
-    setShowConcluded(false);
+    saveQProgress(empty);
+    setDone(empty);
+    setShowModal(false);
     setOpenDay(null);
-  };
+  }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
 
-      {/* Modal de Conclusão */}
-      <AnimatePresence>
-        {showConcluded && (
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-[2rem] p-8 max-w-sm w-full shadow-2xl text-center space-y-5"
-            >
-              <div className="text-5xl">⚔️</div>
-              <h2 className="text-2xl font-bold text-[#5A5A40]">QUARESMA CONCLUÍDA!</h2>
-              <p className="text-sm text-[#1A1A1A]/70 leading-relaxed">
-                Parabéns! Você concluiu os 40 dias da Quaresma de São Miguel Arcanjo.
-              </p>
-              <p className="text-sm text-[#1A1A1A]/70 leading-relaxed">
-                Que este período de oração, penitência e conversão produza frutos de santidade em sua vida. Que São Miguel Arcanjo continue intercedendo por você e sua família.
-              </p>
-              <p className="text-sm text-[#1A1A1A]/70 leading-relaxed">
-                Permaneça firme na fé, na oração, na Palavra de Deus, nos sacramentos e na caridade.
-              </p>
-              <div className="bg-[#5A5A40]/10 rounded-2xl p-4">
-                <p className="font-bold text-[#5A5A40] text-lg">QUEM COMO DEUS?</p>
-                <p className="font-bold text-[#5A5A40]">NINGUÉM COMO DEUS!</p>
-              </div>
-              <button
-                onClick={handleReset}
-                className="w-full py-3 bg-[#5A5A40] text-white rounded-2xl font-bold hover:bg-[#4a4a30] transition-colors"
-              >
-                Iniciar Novo Ciclo
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Modal de conclusão */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="bg-white rounded-[2rem] p-8 max-w-sm w-full shadow-2xl text-center space-y-4">
+            <div className="text-5xl">⚔️</div>
+            <h2 className="text-2xl font-bold text-[#5A5A40]">QUARESMA CONCLUÍDA!</h2>
+            <p className="text-sm text-[#1A1A1A]/70 leading-relaxed">Parabéns! Você concluiu os 40 dias da Quaresma de São Miguel Arcanjo.</p>
+            <p className="text-sm text-[#1A1A1A]/70 leading-relaxed">Que este período de oração, penitência e conversão produza frutos de santidade em sua vida. Que São Miguel Arcanjo continue intercedendo por você e sua família.</p>
+            <p className="text-sm text-[#1A1A1A]/70 leading-relaxed">Permaneça firme na fé, na oração, na Palavra de Deus, nos sacramentos e na caridade.</p>
+            <div className="bg-[#5A5A40]/10 rounded-2xl p-4">
+              <p className="font-bold text-[#5A5A40] text-lg">QUEM COMO DEUS?</p>
+              <p className="font-bold text-[#5A5A40]">NINGUÉM COMO DEUS!</p>
+            </div>
+            <button onClick={resetAll}
+              className="w-full py-3 bg-[#5A5A40] text-white rounded-2xl font-bold hover:bg-[#4a4a30] transition-colors">
+              Iniciar Novo Ciclo
+            </button>
+          </div>
+        </div>
+      )}
 
-      {/* Header com Progresso */}
+      {/* Header com progresso */}
       <div className="bg-[#5A5A40] text-white p-7 rounded-[2rem]">
         <div className="flex items-center gap-3 mb-3">
           <span className="text-3xl">⚔️</span>
@@ -3570,209 +3549,177 @@ function QuaresmaTab() {
             <p className="text-white/60 text-xs italic">15 de agosto → 29 de setembro · 40 dias</p>
           </div>
         </div>
-        <p className="text-white/80 text-sm leading-relaxed mb-5">
-          40 dias de oração, penitência, conversão e combate espiritual.
-        </p>
+        <p className="text-white/80 text-sm leading-relaxed mb-5">40 dias de oração, penitência, conversão e combate espiritual.</p>
         <div>
           <div className="flex items-center justify-between mb-2">
             <span className="text-white/80 text-sm font-bold">Seu progresso</span>
-            <span className="text-white font-bold text-sm">
-              {completedCount} de {TOTAL} dias · {progressPct}%
-            </span>
+            <span className="text-white font-bold text-sm">{doneCount} de {TOTAL} dias · {pct}%</span>
           </div>
           <div className="h-2.5 bg-white/20 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-white rounded-full transition-all duration-500"
-              style={{ width: `${progressPct}%` }}
-            />
+            <div className="h-full bg-white rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
           </div>
         </div>
       </div>
 
       {/* Lista dos 40 dias */}
       <div className="space-y-2">
-        <h4 className="text-xs font-bold uppercase tracking-widest text-[#5A5A40] px-1 mb-3">
+        <p className="text-xs font-bold uppercase tracking-widest text-[#5A5A40] px-1">
           Quarenta dias com São Miguel Arcanjo
-        </h4>
+        </p>
 
-        {quaresmaDays.map(d => (
-          <div
-            key={d.day}
-            className={`rounded-[1.5rem] border overflow-hidden transition-colors ${
-              isDone(d.day)
-                ? 'bg-[#5A5A40]/5 border-[#5A5A40]/20'
-                : 'bg-white border-[#1A1A1A]/5'
-            }`}
-          >
-            {/* Linha do dia */}
-            <button
-              onClick={() => setOpenDay(openDay === d.day ? null : d.day)}
-              className="w-full flex items-center gap-3 p-4 text-left hover:bg-[#F5F2ED]/60 transition-colors"
-            >
-              <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
-                isDone(d.day) ? 'bg-[#5A5A40] text-white' : 'bg-[#F5F2ED] text-[#5A5A40]'
-              }`}>
-                {String(d.day).padStart(2, '0')}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40]/60">
-                  Dia {d.day}
-                </p>
-                <p className={`font-semibold text-sm leading-tight ${
-                  isDone(d.day) ? 'text-[#1A1A1A]/40 line-through' : ''
-                }`}>
-                  {d.title}
-                </p>
-              </div>
-              <div className="flex items-center gap-2 flex-shrink-0">
-                {isDone(d.day) && (
-                  <span className="text-xs text-[#5A5A40] font-bold hidden sm:block">Concluído</span>
-                )}
-                {openDay === d.day
-                  ? <ChevronUp className="w-4 h-4 text-[#5A5A40]" />
-                  : <ChevronDown className="w-4 h-4 text-[#1A1A1A]/30" />}
-              </div>
-            </button>
+        {quaresmaDays.map(function(d) {
+          const isOpen = openDay === d.day;
+          const dayDone = isDone(d.day);
+          return (
+            <div key={d.day}
+              style={{ borderRadius: '1.5rem', overflow: 'hidden', border: dayDone ? '1px solid rgba(90,90,64,0.2)' : '1px solid rgba(26,26,26,0.05)', background: dayDone ? 'rgba(90,90,64,0.05)' : 'white' }}>
 
-            {/* Conteúdo expandido */}
-            <AnimatePresence>
-              {openDay === d.day && (
-                <motion.div
-                  initial={{ height: 0 }}
-                  animate={{ height: 'auto' }}
-                  exit={{ height: 0 }}
-                  className="overflow-hidden"
-                >
-                  <div className="px-5 pb-6 pt-2 space-y-5 border-t border-[#1A1A1A]/10">
+              {/* Cabeçalho clicável */}
+              <button
+                type="button"
+                style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', textAlign: 'left', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                onClick={function() { setOpenDay(isOpen ? null : d.day); }}
+              >
+                <div style={{
+                  width: '36px', height: '36px', borderRadius: '50%', flexShrink: 0,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '12px', fontWeight: 'bold',
+                  background: dayDone ? '#5A5A40' : '#F5F2ED',
+                  color: dayDone ? 'white' : '#5A5A40'
+                }}>
+                  {String(d.day).padStart(2, '0')}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(90,90,64,0.6)', marginBottom: '2px' }}>
+                    Dia {d.day}
+                  </p>
+                  <p style={{ fontSize: '14px', fontWeight: '600', lineHeight: '1.3', color: dayDone ? 'rgba(26,26,26,0.4)' : '#1A1A1A', textDecoration: dayDone ? 'line-through' : 'none' }}>
+                    {d.title}
+                  </p>
+                </div>
+                <span style={{ fontSize: '18px', color: '#5A5A40', flexShrink: 0 }}>
+                  {isOpen ? '▲' : '▼'}
+                </span>
+              </button>
 
-                    {/* Leitura Bíblica */}
-                    <div className="bg-[#F5F2ED] rounded-xl p-4">
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40] mb-1">
-                        📖 Leitura Bíblica
-                      </p>
-                      <p className="text-sm font-semibold">{d.leitura}</p>
-                    </div>
+              {/* Conteúdo expandido — sem animação complexa */}
+              {isOpen && (
+                <div style={{ borderTop: '1px solid rgba(26,26,26,0.08)', padding: '16px 20px 24px 20px' }}>
 
-                    {/* Meditação */}
-                    <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40] mb-2">
-                        🕊️ Meditação
-                      </p>
-                      <p className="text-sm text-[#1A1A1A]/75 leading-relaxed">{d.meditacao}</p>
-                    </div>
-
-                    {/* Reflexão */}
-                    {d.reflexao && (
-                      <div className="border-l-2 border-[#5A5A40]/30 pl-4">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40] mb-1">
-                          💭 Reflexão
-                        </p>
-                        <p className="text-sm text-[#1A1A1A]/70 italic leading-relaxed">{d.reflexao}</p>
-                      </div>
-                    )}
-
-                    {/* Propósito */}
-                    {d.proposito && (
-                      <div>
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40] mb-1">
-                          🎯 Propósito do Dia
-                        </p>
-                        <p className="text-sm text-[#1A1A1A]/75 leading-relaxed">{d.proposito}</p>
-                      </div>
-                    )}
-
-                    {/* Orações */}
-                    <div className="border-t border-[#1A1A1A]/10 pt-4 space-y-4">
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40] text-center">
-                        ⚔️ Orações do Dia
-                      </p>
-
-                      {/* Oração de São Miguel */}
-                      <div className="bg-[#5A5A40]/10 rounded-xl p-4">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40] mb-2">
-                          Oração de São Miguel Arcanjo
-                        </p>
-                        <p className="text-sm italic font-serif text-[#1A1A1A]/80 leading-relaxed">
-                          {ORACAO_SAO_MIGUEL}
-                        </p>
-                      </div>
-
-                      {/* Ladainha */}
-                      <div className="bg-[#F5F2ED] rounded-xl p-4">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40] mb-3">
-                          Ladainha de São Miguel Arcanjo
-                        </p>
-                        <pre className="text-sm leading-relaxed font-serif whitespace-pre-wrap text-[#1A1A1A]/80">
-                          {LADAINHA_SAO_MIGUEL}
-                        </pre>
-                      </div>
-
-                      {/* Consagração */}
-                      <div className="bg-[#5A5A40]/10 rounded-xl p-4">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40] mb-2">
-                          Consagração a São Miguel Arcanjo
-                        </p>
-                        <p className="text-sm italic font-serif text-[#1A1A1A]/80 leading-relaxed whitespace-pre-line">
-                          {CONSAGRACAO_SAO_MIGUEL}
-                        </p>
-                      </div>
-
-                      {/* Orações finais */}
-                      <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
-                        <p className="text-sm font-bold text-amber-800">
-                          Rezar também 1 Pai-Nosso, 1 Ave-Maria e 1 Glória ao Pai.
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Botão Marcar como Concluído */}
-                    <button
-                      onClick={() => handleToggle(d.day)}
-                      className={`w-full py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all ${
-                        isDone(d.day)
-                          ? 'bg-[#5A5A40] text-white'
-                          : 'bg-[#F5F2ED] text-[#5A5A40] hover:bg-[#5A5A40]/15 border-2 border-dashed border-[#5A5A40]/30'
-                      }`}
-                    >
-                      {isDone(d.day)
-                        ? <><CheckCircle2 className="w-5 h-5" /> Dia Concluído — Toque para desmarcar</>
-                        : <><Circle className="w-5 h-5" /> Marcar Dia como Concluído</>}
-                    </button>
-
+                  {/* Leitura */}
+                  <div style={{ background: '#F5F2ED', borderRadius: '12px', padding: '16px', marginBottom: '16px' }}>
+                    <p style={{ fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#5A5A40', marginBottom: '6px' }}>
+                      📖 Leitura Bíblica
+                    </p>
+                    <p style={{ fontSize: '14px', fontWeight: '600' }}>{d.leitura}</p>
                   </div>
-                </motion.div>
+
+                  {/* Meditação */}
+                  <div style={{ marginBottom: '16px' }}>
+                    <p style={{ fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#5A5A40', marginBottom: '6px' }}>
+                      🕊️ Meditação
+                    </p>
+                    <p style={{ fontSize: '14px', color: 'rgba(26,26,26,0.75)', lineHeight: '1.6' }}>{d.meditacao}</p>
+                  </div>
+
+                  {/* Reflexão */}
+                  {d.reflexao && (
+                    <div style={{ borderLeft: '2px solid rgba(90,90,64,0.3)', paddingLeft: '16px', marginBottom: '16px' }}>
+                      <p style={{ fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#5A5A40', marginBottom: '6px' }}>
+                        💭 Reflexão
+                      </p>
+                      <p style={{ fontSize: '14px', color: 'rgba(26,26,26,0.7)', fontStyle: 'italic', lineHeight: '1.6' }}>{d.reflexao}</p>
+                    </div>
+                  )}
+
+                  {/* Propósito */}
+                  {d.proposito && (
+                    <div style={{ marginBottom: '20px' }}>
+                      <p style={{ fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#5A5A40', marginBottom: '6px' }}>
+                        🎯 Propósito do Dia
+                      </p>
+                      <p style={{ fontSize: '14px', color: 'rgba(26,26,26,0.75)', lineHeight: '1.6' }}>{d.proposito}</p>
+                    </div>
+                  )}
+
+                  <div style={{ borderTop: '1px solid rgba(26,26,26,0.08)', paddingTop: '20px', marginBottom: '16px' }}>
+                    <p style={{ fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#5A5A40', textAlign: 'center', marginBottom: '16px' }}>
+                      ⚔️ Orações do Dia
+                    </p>
+
+                    {/* Oração de São Miguel */}
+                    <div style={{ background: 'rgba(90,90,64,0.08)', borderRadius: '12px', padding: '16px', marginBottom: '12px' }}>
+                      <p style={{ fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#5A5A40', marginBottom: '8px' }}>
+                        Oração de São Miguel Arcanjo
+                      </p>
+                      <p style={{ fontSize: '14px', fontStyle: 'italic', lineHeight: '1.7', color: 'rgba(26,26,26,0.8)' }}>
+                        {ORACAO_SAO_MIGUEL_TEXT}
+                      </p>
+                    </div>
+
+                    {/* Ladainha */}
+                    <div style={{ background: '#F5F2ED', borderRadius: '12px', padding: '16px', marginBottom: '12px' }}>
+                      <p style={{ fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#5A5A40', marginBottom: '10px' }}>
+                        Ladainha de São Miguel Arcanjo
+                      </p>
+                      <p style={{ fontSize: '13px', lineHeight: '1.9', color: 'rgba(26,26,26,0.8)', whiteSpace: 'pre-line' }}>
+                        {LADAINHA_TEXT}
+                      </p>
+                    </div>
+
+                    {/* Consagração */}
+                    <div style={{ background: 'rgba(90,90,64,0.08)', borderRadius: '12px', padding: '16px', marginBottom: '12px' }}>
+                      <p style={{ fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#5A5A40', marginBottom: '8px' }}>
+                        Consagração a São Miguel Arcanjo
+                      </p>
+                      <p style={{ fontSize: '14px', fontStyle: 'italic', lineHeight: '1.7', color: 'rgba(26,26,26,0.8)', whiteSpace: 'pre-line' }}>
+                        {CONSAGRACAO_TEXT}
+                      </p>
+                    </div>
+
+                    {/* Pai-Nosso etc */}
+                    <div style={{ background: '#fefce8', border: '1px solid #fde68a', borderRadius: '12px', padding: '16px', textAlign: 'center', marginBottom: '16px' }}>
+                      <p style={{ fontSize: '14px', fontWeight: 'bold', color: '#92400e' }}>
+                        Rezar também 1 Pai-Nosso, 1 Ave-Maria e 1 Glória ao Pai.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Botão marcar como concluído */}
+                  <button
+                    type="button"
+                    onClick={function() { toggle(d.day); }}
+                    style={{
+                      width: '100%', padding: '16px', borderRadius: '16px', fontWeight: 'bold', fontSize: '14px',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                      cursor: 'pointer', transition: 'all 0.2s',
+                      background: dayDone ? '#5A5A40' : '#F5F2ED',
+                      color: dayDone ? 'white' : '#5A5A40',
+                      border: dayDone ? 'none' : '2px dashed rgba(90,90,64,0.4)',
+                    }}
+                  >
+                    {dayDone ? '✅ Dia Concluído — Toque para desmarcar' : '☐ Marcar Dia como Concluído'}
+                  </button>
+
+                </div>
               )}
-            </AnimatePresence>
-          </div>
-        ))}
+            </div>
+          );
+        })}
       </div>
 
-      {/* Seções informativas colapsáveis */}
+      {/* Seções de informação colapsáveis */}
       {[
         {
           id: 'oque',
           title: 'ℹ️ O que é a Quaresma de São Miguel?',
-          content: (
-            <div className="space-y-3 text-sm leading-relaxed text-[#1A1A1A]/80">
-              <p>A Quaresma de São Miguel Arcanjo é uma antiga devoção católica de tradição franciscana, constituída por um período especial de oração, penitência, conversão e combate espiritual em honra de São Miguel Arcanjo.</p>
-              <p>Iniciada em <strong>15 de agosto</strong> (Assunção de Nossa Senhora) e terminando em <strong>29 de setembro</strong> (Festa dos Santos Arcanjos).</p>
-              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
-                <p className="font-bold text-amber-800 text-xs uppercase tracking-widest mb-1">Nota importante</p>
-                <p className="text-amber-700">São Miguel não ocupa o lugar de Deus. Ele é criatura e servo de Deus. Toda devoção aos anjos está orientada para a glória de Deus.</p>
-              </div>
-            </div>
-          )
-        },
-        {
-          id: 'origem',
-          title: 'ℹ️ Origem',
-          content: (
-            <div className="space-y-3 text-sm leading-relaxed text-[#1A1A1A]/80">
-              <p>Ligada à espiritualidade de <strong>São Francisco de Assis</strong>. O nome Miguel vem do hebraico <em>"Mi-ka-el?"</em> — <strong>"Quem como Deus?"</strong> — uma profissão de fé.</p>
-              <div className="bg-[#F5F2ED] rounded-xl p-4 space-y-1">
-                <p>• <strong>Origem:</strong> São Francisco de Assis e a tradição franciscana</p>
-                <p>• <strong>Local associado:</strong> Monte Alverne, Itália</p>
-                <p>• <strong>Natureza:</strong> devoção privada / piedade popular</p>
+          body: (
+            <div style={{ fontSize: '14px', lineHeight: '1.7', color: 'rgba(26,26,26,0.8)' }}>
+              <p style={{ marginBottom: '10px' }}>A Quaresma de São Miguel Arcanjo é uma antiga devoção católica de tradição franciscana — um período de oração, penitência, conversão e combate espiritual em honra de São Miguel Arcanjo.</p>
+              <p style={{ marginBottom: '10px' }}>Iniciada em <strong>15 de agosto</strong> (Assunção de Nossa Senhora) e terminando em <strong>29 de setembro</strong> (Festa dos Santos Arcanjos).</p>
+              <div style={{ background: '#fefce8', border: '1px solid #fde68a', borderRadius: '10px', padding: '12px' }}>
+                <p style={{ fontWeight: 'bold', color: '#92400e', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '4px' }}>Nota importante</p>
+                <p style={{ color: '#78350f', fontSize: '13px' }}>São Miguel não ocupa o lugar de Deus. Ele é criatura e servo de Deus. Toda devoção aos anjos está orientada para a glória de Deus.</p>
               </div>
             </div>
           )
@@ -3780,8 +3727,8 @@ function QuaresmaTab() {
         {
           id: 'intencoes',
           title: 'ℹ️ Intenções sugeridas para os 40 dias',
-          content: (
-            <div className="space-y-1.5 text-sm text-[#1A1A1A]/70">
+          body: (
+            <div style={{ fontSize: '14px', lineHeight: '1.9', color: 'rgba(26,26,26,0.7)' }}>
               <p>• <strong>Dias 1–5:</strong> Conversão pessoal</p>
               <p>• <strong>Dias 6–10:</strong> Libertação dos pecados e vícios</p>
               <p>• <strong>Dias 11–15:</strong> Família</p>
@@ -3795,29 +3742,26 @@ function QuaresmaTab() {
             </div>
           )
         }
-      ].map(sec => (
-        <div key={sec.id} className="bg-white rounded-[1.5rem] border border-[#1A1A1A]/5 shadow-sm overflow-hidden">
-          <button
-            onClick={() => setOpenInfo(openInfo === sec.id ? null : sec.id)}
-            className="w-full flex items-center justify-between p-5 hover:bg-[#F5F2ED]/50 transition-colors text-left gap-3"
-          >
-            <span className="font-bold text-sm text-[#5A5A40]">{sec.title}</span>
-            {openInfo === sec.id
-              ? <ChevronUp className="w-4 h-4 flex-shrink-0 text-[#5A5A40]" />
-              : <ChevronDown className="w-4 h-4 flex-shrink-0 text-[#5A5A40]" />}
-          </button>
-          <AnimatePresence>
-            {openInfo === sec.id && (
-              <motion.div
-                initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }}
-                className="overflow-hidden"
-              >
-                <div className="px-5 pb-6 pt-1">{sec.content}</div>
-              </motion.div>
+      ].map(function(sec) {
+        const isOpenSec = openInfo === sec.id;
+        return (
+          <div key={sec.id} style={{ background: 'white', borderRadius: '1.5rem', border: '1px solid rgba(26,26,26,0.05)', overflow: 'hidden' }}>
+            <button
+              type="button"
+              style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px', background: 'transparent', border: 'none', cursor: 'pointer' }}
+              onClick={function() { setOpenInfo(isOpenSec ? null : sec.id); }}
+            >
+              <span style={{ fontWeight: 'bold', fontSize: '14px', color: '#5A5A40', textAlign: 'left' }}>{sec.title}</span>
+              <span style={{ color: '#5A5A40', flexShrink: 0 }}>{isOpenSec ? '▲' : '▼'}</span>
+            </button>
+            {isOpenSec && (
+              <div style={{ padding: '0 20px 24px 20px' }}>
+                {sec.body}
+              </div>
             )}
-          </AnimatePresence>
-        </div>
-      ))}
+          </div>
+        );
+      })}
 
     </div>
   );
