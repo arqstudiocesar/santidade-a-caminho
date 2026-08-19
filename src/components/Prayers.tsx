@@ -1698,7 +1698,13 @@ Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós.
 Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Jesus Cristo.
 Para que sejamos dignos de suas promessas.
 Oremos: Senhor Jesus Cristo, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos bens eternos. Vós que viveis e reinais pelos séculos dos séculos. Amém.`}</pre>
+</p>
         </div>
+        <div className="bg-[#F5F2ED] rounded-xl p-4">
+          <p className="font-bold text-[#5A5A40] text-xs uppercase tracking-widest mb-2">Consagração a São Miguel Arcanjo</p>
+          <pre className="text-sm leading-relaxed font-serif whitespace-pre-wrap text-[#1A1A1A]/80">{`'Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção. \nÉ pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima. \nObtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu. \nSão Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.'`}</pre>
+</p>
+      </div>
       </SectionBlock>
 
       {/* SEÇÃO 4 — ROTEIRO DOS 40 DIAS */}
