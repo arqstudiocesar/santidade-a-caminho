@@ -1850,51 +1850,103 @@ Oremos: Senhor Jesus Cristo, santificai-nos por uma bênção sempre nova e conc
                   </button>
                 </div>
 
-                {/* Conteúdo expandido */}
-                <AnimatePresence>
-                  {aberto && (
-                    <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} className="overflow-hidden">
-                      <div className="px-4 pb-4 space-y-4 border-t border-[#1A1A1A]/5 pt-3">
-                        {/* Leitura */}
-                        <div>
-                          <p className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40] mb-1">Leitura Bíblica</p>
-                          <p className="text-sm font-medium">{d.leitura}</p>
-                        </div>
-                        {/* Meditação */}
-                        <div>
-                          <p className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40] mb-1">Meditação</p>
-                          <p className="text-sm text-[#1A1A1A]/70">{d.meditacao}</p>
-                        </div>
-                        {/* Reflexão */}
-                        {d.reflexao && (
-                          <div>
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40] mb-1">Reflexão</p>
-                            <p className="text-sm text-[#1A1A1A]/70 italic">{d.reflexao}</p>
-                          </div>
-                        )}
-                        {/* Propósito */}
-                        {d.proposito && (
-                          <div>
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40] mb-1">Propósito do Dia</p>
-                            <p className="text-sm text-[#1A1A1A]/70">{d.proposito}</p>
-                          </div>
-                        )}
-                        {/* Orações (propria + Ladainha + Consagração + Pai-Nosso) */}
-                        <div className="bg-white rounded-xl p-4">
-                          <p className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40] mb-3">Orações</p>
-                          <p className="text-sm font-serif text-[#1A1A1A]/80 leading-relaxed whitespace-pre-line">{d.oracao}</p>
-                        </div>
-                        {/* Botão marcar/desmarcar dentro do dia */}
-                        <button
-                          onClick={() => toggleDia(d.day)}
-                          className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${concluido ? 'bg-[#5A5A40]/10 text-[#5A5A40] hover:bg-[#5A5A40]/20' : 'bg-[#5A5A40] text-white hover:scale-[1.02]'}`}
-                        >
-                          {concluido ? '☑ Dia Concluído — Clique para desmarcar' : '☐ Marcar Dia como Concluído'}
-                        </button>
+                {/* Conteúdo expandido — sem animação aninhada para evitar clipping */}
+                {aberto && (
+                  <div className="px-4 pb-4 space-y-4 border-t border-[#1A1A1A]/5 pt-3">
+                    {/* Leitura */}
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40] mb-1">Leitura Bíblica</p>
+                      <p className="text-sm font-medium">{d.leitura}</p>
+                    </div>
+                    {/* Meditação */}
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40] mb-1">Meditação</p>
+                      <p className="text-sm text-[#1A1A1A]/70">{d.meditacao}</p>
+                    </div>
+                    {/* Reflexão */}
+                    {d.reflexao && (
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40] mb-1">Reflexão</p>
+                        <p className="text-sm text-[#1A1A1A]/70 italic">{d.reflexao}</p>
                       </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                    )}
+                    {/* Propósito */}
+                    {d.proposito && (
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40] mb-1">Propósito do Dia</p>
+                        <p className="text-sm text-[#1A1A1A]/70">{d.proposito}</p>
+                      </div>
+                    )}
+                    {/* Oração própria do dia */}
+                    {d.oracaoPropria && (
+                      <div className="bg-white rounded-xl p-4">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40] mb-2">Oração do Dia</p>
+                        <p className="text-sm italic font-serif text-[#1A1A1A]/80 leading-relaxed">{d.oracaoPropria}</p>
+                      </div>
+                    )}
+                    {/* Ladainha de São Miguel */}
+                    <div className="bg-white rounded-xl p-4">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40] mb-2">Ladainha de São Miguel Arcanjo</p>
+                      <p className="text-sm font-serif text-[#1A1A1A]/80 leading-relaxed whitespace-pre-line">{`Senhor, tende piedade de nós.
+Cristo, tende piedade de nós.
+Senhor, tende piedade de nós.
+Cristo, ouvi-nos. Cristo, atendei-nos.
+Deus Pai Celeste, tende piedade de nós.
+Deus Filho, Redentor do mundo, tende piedade de nós.
+Deus Espírito Santo, tende piedade de nós.
+Santíssima Trindade, que sois um só Deus, tende piedade de nós.
+Santa Maria, Rainha dos Anjos, rogai por nós.
+São Miguel, rogai por nós.
+São Miguel, cheio da graça de Deus, rogai por nós.
+São Miguel, perfeito adorador do Verbo Divino, rogai por nós.
+São Miguel, coroado de honra e glória, rogai por nós.
+São Miguel, poderosíssimo príncipe dos exércitos do Senhor, rogai por nós.
+São Miguel, porta-estandarte da Santíssima Trindade, rogai por nós.
+São Miguel, guardião do Paraíso, rogai por nós.
+São Miguel, guia e consolador do povo de Deus, rogai por nós.
+São Miguel, esplendor e fortaleza da Igreja militante, rogai por nós.
+São Miguel, honra e alegria da Igreja triunfante, rogai por nós.
+São Miguel, luz dos anjos, rogai por nós.
+São Miguel, baluarte da verdadeira fé, rogai por nós.
+São Miguel, força daqueles que combatem pelo estandarte da Cruz, rogai por nós.
+São Miguel, luz e confiança das almas no último momento da vida, rogai por nós.
+São Miguel, socorro muito certo, rogai por nós.
+São Miguel, nosso auxílio em todas as adversidades, rogai por nós.
+São Miguel, arauto da sentença eterna, rogai por nós.
+São Miguel, consolador das almas que estão no Purgatório, rogai por nós.
+São Miguel, nosso príncipe, rogai por nós.
+São Miguel, nosso advogado, rogai por nós.
+Cordeiro de Deus, que tirais o pecado do mundo, perdoai-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, ouvi-nos, Senhor.
+Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós.
+Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Jesus Cristo.
+Para que sejamos dignos de suas promessas.
+Oremos: Senhor Jesus Cristo, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos bens eternos. Vós que viveis e reinais pelos séculos dos séculos. Amém.`}</p>
+                    </div>
+                    {/* Consagração a São Miguel */}
+                    <div className="bg-white rounded-xl p-4">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40] mb-2">Consagração a São Miguel Arcanjo</p>
+                      <p className="text-sm italic font-serif text-[#1A1A1A]/80 leading-relaxed whitespace-pre-line">{`Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.
+
+É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.
+
+Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.
+
+São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.`}</p>
+                    </div>
+                    {/* Pai-Nosso + Ave-Maria + Glória */}
+                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-center">
+                      <p className="text-sm font-bold text-amber-800">Rezar também 1 Pai-Nosso, 1 Ave-Maria e 1 Glória ao Pai.</p>
+                    </div>
+                    {/* Botão marcar/desmarcar */}
+                    <button
+                      onClick={() => toggleDia(d.day)}
+                      className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${concluido ? 'bg-[#5A5A40]/10 text-[#5A5A40] hover:bg-[#5A5A40]/20' : 'bg-[#5A5A40] text-white hover:scale-[1.02]'}`}
+                    >
+                      {concluido ? '☑ Dia Concluído — Clique para desmarcar' : '☐ Marcar Dia como Concluído'}
+                    </button>
+                  </div>
+                )}
               </div>
             );
           })}
