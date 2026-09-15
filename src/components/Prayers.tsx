@@ -3,7 +3,7 @@ import { ChevronDown, ChevronUp, BookOpen, Heart, Star, Search, Plus, X, Save, B
 import { motion, AnimatePresence } from 'motion/react';
 import { cacheGet, cacheSet, mergeServerData } from '../utils/cache';
 
-type SubTab = 'daily' | 'adoration' | 'consecration' | 'quaresma' | 'ritos';
+type SubTab = 'daily' | 'adoration' | 'consecration' | 'quaresma' | 'ritos' | 'novena';
 type PrayerCategory = 'habituais' | 'ladainhas' | 'formais';
 interface PrayerItem { title: string; text: string; }
 interface UserPrayerItem { id: number; title: string; text: string; category: PrayerCategory; }
@@ -123,6 +123,7 @@ const formais: PrayerItem[] = [
   { title: 'Oração de Renúncia', text: 'Senhor Jesus Cristo,\nem vosso Santo Nome e pelo poder da vossa Cruz,\nrenuncio a toda influência do mal,\na toda obra das trevas,\na todo pecado passado e presente.\nRenuncio ao demônio e a todas as suas obras.\nConságro-me a vós completamente.\nSejais meu Senhor e meu Deus agora e sempre.\nAmém.' },
 ];
 
+  { title: 'Coroa do Sagrado Coração', text: '1. Ó meu Jesus, que dissestes: "Em verdade vos digo, pedi e recebereis, buscai e encontrareis, batei e vos será aberto", aqui estou batendo, buscando, pedindo a graça… Pai-nosso, Ave-Maria e Glória.\nSagrado Coração de Jesus, eu confio e espero em Vós.\n\n2. Ó meu Jesus, que dissestes: "Em verdade vos digo, tudo o que pedirdes ao Pai em meu nome, Ele vos concederá", ao vosso Pai, em vosso nome, eu peço a graça… Pai-nosso, Ave-Maria e Glória.\nSagrado Coração de Jesus, eu confio e espero em Vós.\n\n3. Ó meu Jesus, que dissestes: "Em verdade vos digo, passarão o céu e a terra, mas as minhas palavras nunca", apoiando-me na infalibilidade de vossas santas palavras, eu peço a graça… Pai-nosso, Ave-Maria e Glória.\nSagrado Coração de Jesus, eu confio e espero em Vós.\n\nÓ Sagrado Coração de Jesus, a quem é impossível não ter compaixão dos infelizes, tende piedade de nós, míseros pecadores, e concedei-nos as graças que vos pedimos por meio do Imaculado Coração de Maria, vossa e nossa terna Mãe.\nSão José, pai adotivo do Sagrado Coração de Jesus, rogai por nós!\nSalve Rainha, Mãe de misericórdia...' },
 // ── Ordenação alfabética dos grupos ──────────────────────────────────────────
 habituais.sort((a, b) => a.title.localeCompare(b.title, 'pt-BR'));
 ladainhas.sort((a, b) => a.title.localeCompare(b.title, 'pt-BR'));
@@ -1990,6 +1991,153 @@ São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo
   );
 }
 
+
+// ── Dados dos 9 dias da Novena ────────────────────────────────────────────────
+const COROINHA_SAGRADO_CORACAO = `1. Ó meu Jesus, que dissestes: "Em verdade vos digo, pedi e recebereis, buscai e encontrareis, batei e vos será aberto", aqui estou batendo, buscando, pedindo a graça… Pai-nosso, Ave-Maria e Glória.
+Sagrado Coração de Jesus, eu confio e espero em Vós.
+
+2. Ó meu Jesus, que dissestes: "Em verdade vos digo, tudo o que pedirdes ao Pai em meu nome, Ele vos concederá", ao vosso Pai, em vosso nome, eu peço a graça… Pai-nosso, Ave-Maria e Glória.
+Sagrado Coração de Jesus, eu confio e espero em Vós.
+
+3. Ó meu Jesus, que dissestes: "Em verdade vos digo, passarão o céu e a terra, mas as minhas palavras nunca", apoiando-me na infalibilidade de vossas santas palavras, eu peço a graça… Pai-nosso, Ave-Maria e Glória.
+Sagrado Coração de Jesus, eu confio e espero em Vós.
+
+Ó Sagrado Coração de Jesus, a quem é impossível não ter compaixão dos infelizes, tende piedade de nós, míseros pecadores, e concedei-nos as graças que vos pedimos por meio do Imaculado Coração de Maria, vossa e nossa terna Mãe.
+São José, pai adotivo do Sagrado Coração de Jesus, rogai por nós!
+Salve Rainha, Mãe de misericórdia...`;
+
+const ORACAO_FINAL_PIO = `Deus eterno e todo-poderoso, que destes a São Pio, presbítero, a graça singular de tomar parte na crucificação do vosso Filho, e que por seu ministério renovastes as maravilhas de vossa misericórdia, concedei-nos por sua intercessão que, associados continuamente aos sofrimentos de Cristo, sejamos com alegria conduzidos à glória da ressurreição. Pelo mesmo Nosso Senhor Jesus Cristo, vosso Filho, que convosco vive e reina na unidade do Espírito Santo. Amém.`;
+
+const novenaDias = [
+  {
+    dia: 1, titulo: 'Dia 01',
+    meditacao: 'São Pio de Pietrelcina, que trouxestes em vosso corpo os sinais da Paixão de Nosso Senhor Jesus Cristo e carregastes a cruz por todos nós, suportando os sofrimentos físicos e morais que vos flagelavam a alma e o corpo num martírio contínuo: intercedei junto a Deus, para que cada um de nós saiba aceitar as pequenas e as grandes cruzes da vida, transformando cada sofrimento num vínculo inabalável que nos una à vida eterna.',
+    citacao: '"Acostuma-te com os padecimentos que Jesus mandar. O Senhor, que sofre com tua aflição, virá para consolar-te, infundindo muitas graças em tua alma" (Padre Pio).',
+  },
+  {
+    dia: 2, titulo: 'Dia 02',
+    meditacao: 'São Pio de Pietrelcina, que junto a Nosso Senhor Jesus Cristo soubestes resistir às tentações do maligno e sofrestes os golpes e as vexações dos demônios que queriam levar-vos a abandonar vossa estrada de santidade: intercedei junto ao Altíssimo, para que também nós, com o vosso auxílio, encontremos a força necessária para renunciar ao pecado e conservar a fé até o dia de nossa morte.',
+    citacao: '"Na verdade, as tentações a que tenho sido sujeito são muitíssimas; porém, confio na divina Providência em que não cairei nos laços do enganador" (Padre Pio).',
+  },
+  {
+    dia: 3, titulo: 'Dia 03',
+    meditacao: 'São Pio de Pietrelcina, que amastes tanto a Mãe celeste, que dela recebestes diariamente graças e consolações: intercedei por nós junto à Virgem Santa, colocando em suas mãos os nossos pecados e as nossas tíbias orações, a fim de que, assim como em Caná da Galileia, o Filho diga sim à Mãe e o nosso nome seja escrito no livro da vida.',
+    citacao: '"Que Maria seja a estrela que vos aclare o caminho e mostre como ir com segurança ao Pai celeste; que ela seja como uma âncora à qual deveis sempre vos agarrar, sobretudo nos momentos de provação" (Padre Pio).',
+  },
+  {
+    dia: 4, titulo: 'Dia 04',
+    meditacao: 'São Pio de Pietrelcina, que tanto amastes vosso anjo da guarda, o qual foi vosso guia, defensor e mensageiro; a vós os seres angélicos levaram as preces de vossos filhos espirituais: intercedei junto ao Senhor, para que também nós aprendamos a invocar o nosso anjo da guarda, que durante toda a nossa vida está pronto para nos sugerir o caminho do bem e nos dissuadir de fazer o mal.',
+    citacao: '"Invoca o teu anjo da guarda, que te iluminará e conduzirá. O Senhor colocou-o perto de ti justamente para isso. Por isso, serve-te dele" (Padre Pio).',
+  },
+  {
+    dia: 5, titulo: 'Dia 05',
+    meditacao: 'São Pio de Pietrelcina, que nutristes uma grandíssima devoção às almas do purgatório, pelas quais vos oferecestes como vítima expiatória: rogai ao Senhor que infunda em nós o sentimento de compaixão e de amor que vós tínheis por essas almas, para que também nós consigamos reduzir-lhes o tempo de purgação, buscando, com sacrifícios e orações, ganhar para elas as santas indulgências de que necessitam.',
+    citacao: '"A vós, Senhor, suplico-vos que derrameis sobre mim os castigos reservados aos pecadores e às almas do purgatório; multiplicai-os em mim, contanto que convertam e salvem os pecadores e libertem em breve as almas do purgatório" (Padre Pio).',
+  },
+  {
+    dia: 6, titulo: 'Dia 06',
+    meditacao: 'São Pio de Pietrelcina, que amastes os enfermos mais do que a vós mesmo, vendo neles Jesus, e em nome do Senhor operastes milagres de curas no corpo, devolvendo a esperança de vida e a renovação no Espírito: rogai ao Senhor para que todos os enfermos, por intercessão de Maria Santíssima, possam experimentar vosso poderoso patrocínio e, por meio da cura física, possam colher vantagens espirituais que os levem a agradecer ao Senhor e a louvá-lo eternamente.',
+    citacao: '"Se, depois, eu sei que uma pessoa está aflita, seja na alma ou no corpo, o que eu não faria junto com o Senhor para vê-la livre de seus males? Com prazer carregaria sobre mim todas as suas aflições, para vê-la salva, oferecendo em seu favor os frutos de tais sofrimentos, se o Senhor assim me permitisse" (Padre Pio).',
+  },
+  {
+    dia: 7, titulo: 'Dia 07',
+    meditacao: 'São Pio de Pietrelcina, que aderistes ao projeto de salvação do Senhor, oferecendo vossos sofrimentos para libertar os pecadores dos armadilhas de Satanás: intercedei junto a Deus para que os que não creem tenham a fé e se convertam; os pecadores se arrependam do fundo do coração; os tíbios se afervorem na vida cristã; e os justos perseverem no caminho da salvação.',
+    citacao: '"Se o pobre mundo pudesse ver a beleza da alma na graça, todos os pecadores e todos os incrédulos se converteriam no mesmo instante" (Padre Pio).',
+  },
+  {
+    dia: 8, titulo: 'Dia 08',
+    meditacao: 'São Pio de Pietrelcina, que tanto amastes vossos filhos espirituais, muitos dos quais conquistastes para Cristo ao preço de vosso sangue: concedei também a nós, que não vos conhecemos pessoalmente, considerar-nos vossos filhos espirituais. Com a vossa paterna proteção, com a vossa santa guia e com a força que nos obtereis do Senhor, poderemos, no momento da morte, encontrar-vos às portas do Paraíso à espera de nossa chegada.',
+    citacao: '"Felizes aquelas almas inscritas no livro da vida eterna! Mil vezes felizes aquelas almas que em vida conseguem ser as filhas prediletas do divino Coração!" (Padre Pio).',
+  },
+  {
+    dia: 9, titulo: 'Dia 09 — Último Dia',
+    meditacao: 'São Pio de Pietrelcina, que tanto amastes a Santa Mãe Igreja: intercedei junto ao Senhor para que mande operários para sua messe e dê a cada um deles a força e a inspiração dos filhos de Deus. Pedimos-vos também que intercedais junto à Virgem Maria para que ela faça retornar ao seio da verdadeira Igreja os que erram fora dela, abrigados por fim no único redil de Cristo, farol de salvação no mar tempestuoso desta vida.',
+    citacao: '"Permanece sempre agarrado à Santa Igreja Católica, porque só ela pode dar a verdadeira paz, pois só ela possui Jesus sacramentado, o verdadeiro Príncipe da Paz" (Padre Pio).',
+  },
+];
+
+function NovenaTab() {
+  const [openDia, setOpenDia] = React.useState<number | null>(null);
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="bg-[#5A5A40] text-white p-7 rounded-[2rem]">
+        <div className="flex items-center gap-3 mb-3">
+          <span className="text-3xl">✝️</span>
+          <div>
+            <h3 className="text-xl font-bold">Novena a São Padre Pio</h3>
+            <p className="text-white/60 text-xs italic">9 dias de intercessão e oração</p>
+          </div>
+        </div>
+        <p className="text-white/80 text-sm leading-relaxed">
+          Nove dias de oração por intercessão de São Pio de Pietrelcina, o santo dos estigmas.
+          Reze um dia por vez, abrindo o dia correspondente abaixo.
+        </p>
+      </div>
+
+      {/* Lista dos 9 dias */}
+      <div className="space-y-2">
+        {novenaDias.map(d => (
+          <div key={d.dia} className="bg-white rounded-[1.5rem] border border-[#1A1A1A]/5 shadow-sm overflow-hidden">
+            {/* Cabeçalho */}
+            <button
+              onClick={() => setOpenDia(openDia === d.dia ? null : d.dia)}
+              className="w-full flex items-center gap-3 p-5 text-left hover:bg-[#F5F2ED]/50 transition-colors"
+            >
+              <div className="w-9 h-9 rounded-full bg-[#5A5A40] text-white flex items-center justify-center text-xs font-bold flex-shrink-0">
+                {String(d.dia).padStart(2, '0')}
+              </div>
+              <span className="font-bold text-sm flex-1">{d.titulo}</span>
+              {openDia === d.dia
+                ? <ChevronUp className="w-4 h-4 flex-shrink-0 text-[#5A5A40]" />
+                : <ChevronDown className="w-4 h-4 flex-shrink-0 text-[#1A1A1A]/30" />}
+            </button>
+
+            {/* Conteúdo */}
+            {openDia === d.dia && (
+              <div className="px-5 pb-6 border-t border-[#1A1A1A]/5 pt-4 space-y-5">
+                {/* Meditação */}
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40] mb-2">Meditação</p>
+                  <p className="text-sm text-[#1A1A1A]/75 leading-relaxed">{d.meditacao}</p>
+                </div>
+
+                {/* Citação */}
+                <div className="border-l-2 border-[#5A5A40]/30 pl-4">
+                  <p className="text-sm italic text-[#1A1A1A]/65 leading-relaxed">{d.citacao}</p>
+                </div>
+
+                {/* Instrução */}
+                <div className="bg-[#F5F2ED] rounded-xl p-4 text-center">
+                  <p className="text-sm font-bold text-[#5A5A40]">
+                    Rezar a Coroa do Sagrado Coração e a Oração Final abaixo.
+                  </p>
+                </div>
+
+                {/* Coroinha */}
+                <div className="bg-white border border-[#1A1A1A]/5 rounded-xl p-4">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40] mb-3">
+                    Coroinha do Sagrado Coração de Jesus
+                  </p>
+                  <p className="text-sm font-serif text-[#1A1A1A]/80 leading-relaxed whitespace-pre-line">
+                    {COROINHA_SAGRADO_CORACAO}
+                  </p>
+                </div>
+
+                {/* Oração Final */}
+                <div className="bg-[#5A5A40]/8 border border-[#5A5A40]/15 rounded-xl p-4">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40] mb-2">Oração Final</p>
+                  <p className="text-sm italic font-serif text-[#1A1A1A]/80 leading-relaxed">{ORACAO_FINAL_PIO}</p>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ── Componente Principal ──────────────────────────────────────────────────────
 export default function Prayers() {
   const [sub, setSub] = useState<SubTab>('daily');
@@ -2081,6 +2229,7 @@ export default function Prayers() {
     { id: 'consecration' as SubTab, label: 'Consagração a Jesus Cristo', icon: <BookOpen className="w-4 h-4" /> },
     { id: 'quaresma' as SubTab, label: 'Quaresma de São Miguel', icon: <ScrollIcon className="w-4 h-4" /> },
     { id: 'ritos' as SubTab, label: 'Ritos Litúrgicos', icon: <BookMarked className="w-4 h-4" /> },
+    { id: 'novena' as SubTab, label: 'Novena a São Padre Pio', icon: <CrossIcon className="w-4 h-4" /> },
   ];
 
   return (
@@ -2142,6 +2291,7 @@ export default function Prayers() {
           {sub === 'consecration' && <ConsecrationTab />}
           {sub === 'quaresma' && <QuaresmaTab />}
           {sub === 'ritos' && <RitosLiturgicosTab />}
+          {sub === 'novena' && <NovenaTab />}
         </motion.div>
       </AnimatePresence>
 
