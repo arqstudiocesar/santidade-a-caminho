@@ -121,9 +121,9 @@ const formais: PrayerItem[] = [
   { title: 'Oração de Descontaminação', text: 'Senhor Jesus Cristo,\nficai em mim e ao meu redor como um escudo de luz.\nEspírito Santo, penetrai em todo o meu ser,\npurificai meu coração, minha mente, minha alma e meu corpo.\nRemovei de mim tudo aquilo que não vem de Deus.\nCobre-me, Senhor, com o vosso sangue precioso.\nQue a vossa presença seja minha proteção\nagora e sempre. Amém.' },
   { title: 'Oração de Descontaminação Espiritual', text: 'Eu (nome), Em nome de Jesus Cristo, ordeno que saia de mim, de minha casa, de minha família e de meus familiares, todas as forças espirituais do mal que possam ter nos contaminado, e ordeno que vão se prostar aos pés da Cruz de Jesus Cristo e no sangue de Jesus Cristo os proíbo de voltar a nós.\n\nEu (nome), Em nome de Jesus Cristo, ordeno que seja cancelado e aniquilado de mim, de minha casa e de toda a minha família, toda fúria satânica, toda seta maligna, toda opressão diabólica e todo dardo inflamado de Satanás e seus demônios, e ordeno que vão se prostar aos pés da Cruz de Jesus Cristo e no sangue de Jesus Cristo os proíbo de voltar a nós.\n\nEu (nome), Em nome de Jesus Cristo, ordeno que saia de mim, da minha casa, da minha família, de todos os nossos bens espirituais e temporais, de tudo o que está ligado a nós, de forma direta e indireta e até de nossos animais, todo espírito maligno, todo espírito devorador, todo espírito sanguinário, todo espírito de morte, e ordeno que vão se prostar aos pés da Cruz de Jesus Cristo, e no sangue de Jesus Cristo os proíbo de voltar a nós.\n\nAgora Jesus, eu me lavo inteiramente no Teu Sangue precioso, juntamente com toda a minha família. Que o Teu Sangue, Senhor Jesus, seja para nós cobertura e proteção. Revista-nos com a armadura do Espírito Santo.\n\nEu (nome), Declaro que Jesus Cristo é o nosso Senhor e Redentor. No Senhorio e no Poderio de Jesus Cristo consagro e submeto a mim e a toda a minha família.\n\nDivino Espírito Santo renova em cada um de nós a Tua Unção, a Tua Força e o Teu Poder.\n\nVirgem Maria, São Miguel Arcanjo e Anjos do Senhor rogai por nós. Amém.\nRezar a oração ao Espírito Santo e 1 Ave-Maria.' },
   { title: 'Oração de Renúncia', text: 'Senhor Jesus Cristo,\nem vosso Santo Nome e pelo poder da vossa Cruz,\nrenuncio a toda influência do mal,\na toda obra das trevas,\na todo pecado passado e presente.\nRenuncio ao demônio e a todas as suas obras.\nConságro-me a vós completamente.\nSejais meu Senhor e meu Deus agora e sempre.\nAmém.' },
+  { title: 'Coroa do Sagrado Coração', text: `1. Ó meu Jesus, que dissestes: "Em verdade vos digo, pedi e recebereis, buscai e encontrareis, batei e vos será aberto", aqui estou batendo, buscando, pedindo a graça… Pai-nosso, Ave-Maria e Glória.\nSagrado Coração de Jesus, eu confio e espero em Vós.\n\n2. Ó meu Jesus, que dissestes: "Em verdade vos digo, tudo o que pedirdes ao Pai em meu nome, Ele vos concederá", ao vosso Pai, em vosso nome, eu peço a graça… Pai-nosso, Ave-Maria e Glória.\nSagrado Coração de Jesus, eu confio e espero em Vós.\n\n3. Ó meu Jesus, que dissestes: "Em verdade vos digo, passarão o céu e a terra, mas as minhas palavras nunca", apoiando-me na infalibilidade de vossas santas palavras, eu peço a graça… Pai-nosso, Ave-Maria e Glória.\nSagrado Coração de Jesus, eu confio e espero em Vós.\n\nÓ Sagrado Coração de Jesus, a quem é impossível não ter compaixão dos infelizes, tende piedade de nós, míseros pecadores, e concedei-nos as graças que vos pedimos por meio do Imaculado Coração de Maria, vossa e nossa terna Mãe.\nSão José, pai adotivo do Sagrado Coração de Jesus, rogai por nós!\nSalve Rainha, Mãe de misericórdia...` },
 ];
 
-  { title: 'Coroa do Sagrado Coração', text: '1. Ó meu Jesus, que dissestes: "Em verdade vos digo, pedi e recebereis, buscai e encontrareis, batei e vos será aberto", aqui estou batendo, buscando, pedindo a graça… Pai-nosso, Ave-Maria e Glória.\nSagrado Coração de Jesus, eu confio e espero em Vós.\n\n2. Ó meu Jesus, que dissestes: "Em verdade vos digo, tudo o que pedirdes ao Pai em meu nome, Ele vos concederá", ao vosso Pai, em vosso nome, eu peço a graça… Pai-nosso, Ave-Maria e Glória.\nSagrado Coração de Jesus, eu confio e espero em Vós.\n\n3. Ó meu Jesus, que dissestes: "Em verdade vos digo, passarão o céu e a terra, mas as minhas palavras nunca", apoiando-me na infalibilidade de vossas santas palavras, eu peço a graça… Pai-nosso, Ave-Maria e Glória.\nSagrado Coração de Jesus, eu confio e espero em Vós.\n\nÓ Sagrado Coração de Jesus, a quem é impossível não ter compaixão dos infelizes, tende piedade de nós, míseros pecadores, e concedei-nos as graças que vos pedimos por meio do Imaculado Coração de Maria, vossa e nossa terna Mãe.\nSão José, pai adotivo do Sagrado Coração de Jesus, rogai por nós!\nSalve Rainha, Mãe de misericórdia...' },
 // ── Ordenação alfabética dos grupos ──────────────────────────────────────────
 habituais.sort((a, b) => a.title.localeCompare(b.title, 'pt-BR'));
 ladainhas.sort((a, b) => a.title.localeCompare(b.title, 'pt-BR'));
@@ -1583,30 +1583,51 @@ function QuaresmaTab() {
   const toggleSection = (s: string) => setOpenSection(prev => prev === s ? null : s);
 
   const dayKey = (n: number) => `day${String(n).padStart(2, '0')}`;
-  const totalConcluidos = quaresmaDays.filter(d => progresso[dayKey(d.day)]).length;
-  const pct = Math.round((totalConcluidos / 40) * 100);
+  // Conta somente os 40 dias oficiais, evitando que chaves antigas/estranhas
+  // armazenadas no localStorage interfiram no progresso.
+  const totalConcluidos = quaresmaDays.filter(d => progresso[dayKey(d.day)] === true).length;
+  const pct = Math.round((totalConcluidos / quaresmaDays.length) * 100);
 
   const toggleDia = (dayNum: number) => {
     const k = dayKey(dayNum);
     const novo = { ...progresso, [k]: !progresso[k] };
-    const total = Object.values(novo).filter(Boolean).length;
-    if (total === 40) {
-      // Todos concluídos: exibe mensagem e depois reseta
-      salvarProgresso(novo);
-      setProgresso(novo);
+
+    // O total é calculado exclusivamente sobre os 40 dias da Quaresma.
+    const total = quaresmaDays.filter(d => novo[dayKey(d.day)] === true).length;
+
+    if (total === quaresmaDays.length) {
+      // Ao concluir os 40 dias, o ciclo é finalizado e as marcações
+      // são imediatamente zeradas para permitir um novo ciclo.
+      salvarProgresso({});
+      setProgresso({});
       setShowConclusao(true);
+      setOpenDay(null);
     } else {
       salvarProgresso(novo);
       setProgresso(novo);
     }
   };
 
-  const resetarAposConlusao = () => {
+  const resetarAposConclusao = () => {
     salvarProgresso({});
     setProgresso({});
     setShowConclusao(false);
     setOpenDay(null);
   };
+
+  // Proteção para dados antigos: se o usuário já tiver todos os 40 dias
+  // marcados ao abrir o aplicativo, o ciclo também é finalizado.
+  useEffect(() => {
+    const todosConcluidos = quaresmaDays.length === 40 &&
+      quaresmaDays.every(d => progresso[dayKey(d.day)] === true);
+
+    if (todosConcluidos) {
+      salvarProgresso({});
+      setProgresso({});
+      setShowConclusao(true);
+      setOpenDay(null);
+    }
+  }, []);
 
   const SectionBlock = ({ id, title, children }: { id: string; title: string; children: React.ReactNode }) => (
     <div className="bg-white rounded-[1.5rem] border border-[#1A1A1A]/5 shadow-sm overflow-hidden">
@@ -1639,7 +1660,7 @@ function QuaresmaTab() {
         {showConclusao && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={resetarAposConlusao} />
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={resetarAposConclusao} />
             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
               className="relative w-full max-w-md bg-white rounded-[2.5rem] shadow-2xl p-8 text-center z-10">
               <div className="text-5xl mb-4">⚔️✨</div>
@@ -1656,7 +1677,7 @@ function QuaresmaTab() {
                 <p className="font-bold text-lg">QUEM COMO DEUS?</p>
                 <p className="font-bold text-lg">NINGUÉM COMO DEUS!</p>
               </div>
-              <button onClick={resetarAposConlusao}
+              <button onClick={resetarAposConclusao}
                 className="w-full py-4 bg-[#5A5A40] text-white rounded-2xl font-bold hover:scale-[1.02] transition-all">
                 Iniciar Novo Ciclo
               </button>
@@ -1803,12 +1824,10 @@ Cordeiro de Deus, que tirais o pecado do mundo, tende piedade de nós.
 Rogai por nós, ó glorioso São Miguel, príncipe da Igreja de Jesus Cristo.
 Para que sejamos dignos de suas promessas.
 Oremos: Senhor Jesus Cristo, santificai-nos por uma bênção sempre nova e concedei-nos, pela intercessão de São Miguel, essa sabedoria que nos ensina a ajuntar riquezas do céu e a trocar os bens do tempo presente pelos bens eternos. Vós que viveis e reinais pelos séculos dos séculos. Amém.`}</pre>
-</p>
         </div>
         <div className="bg-[#F5F2ED] rounded-xl p-4">
           <p className="font-bold text-[#5A5A40] text-xs uppercase tracking-widest mb-2">Consagração a São Miguel Arcanjo</p>
           <pre className="text-sm leading-relaxed font-serif whitespace-pre-wrap text-[#1A1A1A]/80">{`'Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção. \nÉ pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento, e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima. \nObtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e, com a vossa arma poderosa, lançai para longe, precipitando nos abismos do inferno, aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu. \nSão Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.'`}</pre>
-</p>
       </div>
       </SectionBlock>
 
