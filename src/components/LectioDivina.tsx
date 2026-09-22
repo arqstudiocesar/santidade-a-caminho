@@ -157,7 +157,6 @@ export default function LectioDivina() {
   const [exegesis, setExegesis]     = useState<string | null>(null);
   const [isLoadingExegesis, setIsLoadingExegesis] = useState(false);
   const [exegesisError, setExegesisError] = useState<string | null>(null);
-  const [exegesisError, setExegesisError] = useState<string | null>(null);
   const [isGuided, setIsGuided]     = useState(true);
   const [passage, setPassage]       = useState('');
   const [selectedBook, setSelectedBook] = useState(books[46]);

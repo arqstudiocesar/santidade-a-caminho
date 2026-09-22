@@ -2075,6 +2075,238 @@ const novenaDias = [
   },
 ];
 
+// ─────────────────────────────────────────────────────────────────────────────
+// NOVENA A SANTA TERESINHA DO MENINO JESUS E DA SAGRADA FACE
+// ─────────────────────────────────────────────────────────────────────────────
+
+const NOVENA_TERESINHA_INTRO = `De 23 a 01 de Outubro, você é convidado a participar da Novena das Rosas. Reúna sua família e rezem juntos a Novena em honra de Santa Teresinha. Ela nos deixou, em seus manuscritos autobiográficos, não só as lembranças de sua infância e adolescência, mas também o retrato de sua alma e a descrição de suas experiências mais íntimas com Deus.
+
+A Novena de Santa Teresinha do Menino Jesus, conhecida como a Novena das Rosas, começou em 3 de dezembro de 1925 pelo padre jesuíta Antônio Putigan.
+
+A ORIGEM DA DEVOÇÃO:
+• O padre precisava de uma graça difícil.
+• Ele decidiu rezar uma novena em honra a Santa Teresinha.
+• Durante os nove dias, ele rezou 24 "Glória ao Pai".
+• O número 24 foi uma homenagem aos 24 anos de vida da santa na Terra.
+• Ele pediu à santa um sinal de que seria atendido: receber uma rosa fresca.
+
+O SINAL DAS ROSAS:
+• No terceiro dia, uma amiga apareceu e lhe deu uma rosa vermelha.
+• O padre alcançou a graça pedida.
+• Em 24 de dezembro do mesmo ano, ele começou uma segunda novena e pediu uma rosa branca.
+• No quarto dia, uma enfermeira do hospital lhe trouxe uma linda rosa branca.
+• O padre cumpriu o pedido e espalhou a devoção pelo mundo.`;
+
+const NOVENA_TERESINHA_ORACAO = `Em nome do Pai, do Filho e do Espírito Santo. Amém.
+
+"Santíssima Trindade, Pai, Filho e Espírito Santo, eu Vos agradeço todos os favores, todas as graças com que enriquecestes a alma de Vossa serva Teresa do Menino Jesus durante os 24 anos que passou na Terra.
+
+Pelos méritos de tão querida santinha, concedei-me a graça que ardentemente Vos peço – fazer o pedido –, se for conforme a Vossa Santíssima vontade e para salvação de minha alma.
+
+Ajudai minha fé e minha esperança, ó Santa Teresinha, cumprindo, mais uma vez, sua promessa de que ninguém vos invocaria em vão, fazendo-me ganhar uma rosa, sinal de que alcançarei a graça pedida."
+
+Rezar, em seguida, 24 vezes:
+Glória ao Pai, ao Filho e ao Espírito Santo, como era no princípio agora e sempre. Amém.
+
+Santa Teresinha do Menino Jesus e da Sagrada Face, rogai por nós!`;
+
+const novenaTeresinhaKey = () => {
+  try {
+    const s = localStorage.getItem('caminho_session');
+    const id = s ? JSON.parse(s).user?.id : 'anon';
+    return `novena_teresinha_marcacoes_${id}`;
+  } catch { return 'novena_teresinha_marcacoes_anon'; }
+};
+
+function NovenaTeresinha() {
+  const [openDia, setOpenDia] = React.useState<number | null>(null);
+  const [openIntro, setOpenIntro] = React.useState(false);
+  const [marcados, setMarcados] = React.useState<Set<number>>(() => {
+    try {
+      const raw = localStorage.getItem(novenaTeresinhaKey());
+      return raw ? new Set<number>(JSON.parse(raw)) : new Set<number>();
+    } catch { return new Set<number>(); }
+  });
+
+  const TOTAL_DIAS = 9;
+
+  const toggleMarcado = (dia: number) => {
+    setMarcados(prev => {
+      const next = new Set(prev);
+      if (next.has(dia)) {
+        next.delete(dia);
+      } else {
+        next.add(dia);
+        // Se todos os 9 dias estiverem marcados → reset automático
+        if (next.size >= TOTAL_DIAS) {
+          setTimeout(() => {
+            setMarcados(new Set());
+            try { localStorage.setItem(novenaTeresinhaKey(), JSON.stringify([])); } catch {}
+          }, 800);
+          return next;
+        }
+      }
+      try { localStorage.setItem(novenaTeresinhaKey(), JSON.stringify(Array.from(next))); } catch {}
+      return next;
+    });
+  };
+
+  const titulos = [
+    'Dia 01', 'Dia 02', 'Dia 03', 'Dia 04', 'Dia 05',
+    'Dia 06', 'Dia 07', 'Dia 08', 'Dia 09 — Encerramento da Novena',
+  ];
+
+  const progresso = marcados.size;
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="bg-[#5A5A40] text-white p-7 rounded-[2rem]">
+        <div className="flex items-center gap-3 mb-3">
+          <span className="text-3xl">🌹</span>
+          <div>
+            <h3 className="text-xl font-bold">Novena a Santa Teresinha</h3>
+            <p className="text-white/60 text-xs italic">do Menino Jesus e da Sagrada Face</p>
+          </div>
+        </div>
+        <p className="text-white/80 text-sm leading-relaxed">
+          A Novena das Rosas — 9 dias de oração em honra a Santa Teresinha.
+          Reze um dia por vez, abrindo o dia correspondente abaixo.
+        </p>
+        {/* Progresso */}
+        {progresso > 0 && (
+          <div className="mt-4">
+            <div className="flex items-center justify-between text-xs text-white/70 mb-1">
+              <span>{progresso}/{TOTAL_DIAS} dias concluídos</span>
+              <span>{Math.round((progresso / TOTAL_DIAS) * 100)}%</span>
+            </div>
+            <div className="h-2 bg-white/20 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-white rounded-full transition-all duration-500"
+                style={{ width: `${(progresso / TOTAL_DIAS) * 100}%` }}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Introdução histórica */}
+      <div className="bg-white rounded-[1.75rem] border border-[#1A1A1A]/5 shadow-sm overflow-hidden">
+        <button
+          onClick={() => setOpenIntro(v => !v)}
+          className="w-full flex items-center gap-3 p-5 text-left hover:bg-[#F5F2ED]/50 transition-colors"
+        >
+          <span className="text-xl">📖</span>
+          <div className="flex-1">
+            <p className="font-bold text-sm">Introdução — A Novena das Rosas</p>
+            <p className="text-xs text-[#1A1A1A]/40">Origem e história da devoção</p>
+          </div>
+          {openIntro
+            ? <ChevronUp className="w-4 h-4 flex-shrink-0 text-[#5A5A40]" />
+            : <ChevronDown className="w-4 h-4 flex-shrink-0 text-[#1A1A1A]/30" />}
+        </button>
+        {openIntro && (
+          <div className="px-5 pb-6 border-t border-[#1A1A1A]/5 pt-4">
+            <p className="text-sm text-[#1A1A1A]/75 leading-relaxed whitespace-pre-line">
+              {NOVENA_TERESINHA_INTRO}
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Os 9 dias */}
+      <div className="space-y-2">
+        {titulos.map((titulo, idx) => {
+          const dia = idx + 1;
+          const concluido = marcados.has(dia);
+          return (
+            <div key={dia} className={`rounded-[1.5rem] border shadow-sm overflow-hidden transition-colors ${concluido ? 'border-green-200 bg-green-50/30' : 'border-[#1A1A1A]/5 bg-white'}`}>
+              {/* Cabeçalho do dia */}
+              <div className="flex items-center">
+                {/* Botão de marcar */}
+                <button
+                  type="button"
+                  onClick={e => { e.stopPropagation(); toggleMarcado(dia); }}
+                  title={concluido ? 'Desmarcar' : 'Marcar como concluído'}
+                  className="flex-shrink-0 pl-4 pr-2 py-4 flex items-center"
+                >
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all ${
+                    concluido
+                      ? 'bg-green-500 border-green-500 text-white'
+                      : 'bg-white border-[#5A5A40]/30 text-[#5A5A40]'
+                  }`}>
+                    {concluido ? '✓' : String(dia).padStart(2, '0')}
+                  </div>
+                </button>
+                {/* Botão de expandir */}
+                <button
+                  type="button"
+                  onClick={() => setOpenDia(openDia === dia ? null : dia)}
+                  className="flex items-center gap-2 flex-1 p-4 pl-2 text-left hover:bg-[#F5F2ED]/30 transition-colors"
+                >
+                  <span className={`font-bold text-sm flex-1 ${concluido ? 'text-green-700' : ''}`}>{titulo}</span>
+                  {openDia === dia
+                    ? <ChevronUp className="w-4 h-4 flex-shrink-0 text-[#5A5A40]" />
+                    : <ChevronDown className="w-4 h-4 flex-shrink-0 text-[#1A1A1A]/30" />}
+                </button>
+              </div>
+
+              {/* Conteúdo do dia */}
+              <AnimatePresence>
+                {openDia === dia && (
+                  <motion.div
+                    initial={{ height: 0 }}
+                    animate={{ height: 'auto' }}
+                    exit={{ height: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-5 pb-6 border-t border-[#1A1A1A]/5 pt-4 space-y-4">
+                      {/* Oração */}
+                      <div className="bg-[#F5F2ED] rounded-xl p-4">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-[#5A5A40] mb-3">Oração do Dia</p>
+                        <p className="text-sm font-serif text-[#1A1A1A]/80 leading-relaxed whitespace-pre-line">
+                          {NOVENA_TERESINHA_ORACAO}
+                        </p>
+                      </div>
+                      {/* Instrução de conclusão */}
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs text-[#1A1A1A]/40 italic">
+                          {concluido ? '✅ Dia concluído' : 'Após rezar, marque o dia como concluído →'}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => toggleMarcado(dia)}
+                          className={`text-xs font-bold px-4 py-2 rounded-xl transition-all ${
+                            concluido
+                              ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                              : 'bg-[#5A5A40] text-white hover:scale-105'
+                          }`}
+                        >
+                          {concluido ? 'Desmarcar' : 'Marcar como concluído'}
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Mensagem de conclusão */}
+      {marcados.size >= TOTAL_DIAS && (
+        <div className="bg-green-50 border border-green-200 rounded-[1.5rem] p-5 text-center">
+          <p className="text-2xl mb-2">🌹</p>
+          <p className="font-bold text-green-700">Novena concluída!</p>
+          <p className="text-sm text-green-600 mt-1">Que Santa Teresinha interceda pela sua intenção.</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
 function NovenaTab() {
   const [openDia, setOpenDia] = React.useState<number | null>(null);
   return (
@@ -2249,6 +2481,7 @@ export default function Prayers() {
     { id: 'quaresma' as SubTab, label: 'Quaresma de São Miguel', icon: <ScrollIcon className="w-4 h-4" /> },
     { id: 'ritos' as SubTab, label: 'Ritos Litúrgicos', icon: <BookMarked className="w-4 h-4" /> },
     { id: 'novena' as SubTab, label: 'Novena a São Padre Pio', icon: <CrossIcon className="w-4 h-4" /> },
+  { id: 'teresinha' as SubTab, label: 'Novena a Santa Teresinha', icon: <span className="text-base leading-none">🌹</span> },
   ];
 
   return (
@@ -2311,6 +2544,7 @@ export default function Prayers() {
           {sub === 'quaresma' && <QuaresmaTab />}
           {sub === 'ritos' && <RitosLiturgicosTab />}
           {sub === 'novena' && <NovenaTab />}
+          {sub === 'teresinha' && <NovenaTeresinha />}
         </motion.div>
       </AnimatePresence>
 
