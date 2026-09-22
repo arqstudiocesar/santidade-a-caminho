@@ -156,6 +156,8 @@ export default function LectioDivina() {
   const [activeTab, setActiveTab]   = useState<'exegesis' | 'guided' | 'diy' | 'history'>('guided');
   const [exegesis, setExegesis]     = useState<string | null>(null);
   const [isLoadingExegesis, setIsLoadingExegesis] = useState(false);
+  const [exegesisError, setExegesisError] = useState<string | null>(null);
+  const [exegesisError, setExegesisError] = useState<string | null>(null);
   const [isGuided, setIsGuided]     = useState(true);
   const [passage, setPassage]       = useState('');
   const [selectedBook, setSelectedBook] = useState(books[46]);
@@ -213,6 +215,7 @@ export default function LectioDivina() {
   async function fetchExegesis() {
     setIsLoadingExegesis(true);
     setExegesis(null);
+    setExegesisError(null);
     try {
       const ref = `${selectedBook.name} ${selectedChapter},${startVerse}-${endVerse}`;
       const totalVerses = endVerse - startVerse + 1;
@@ -225,21 +228,36 @@ export default function LectioDivina() {
           messages: [
             {
               role: 'system',
-              content: `Você é exegeta bíblico católico de alto nível, especialista em hermenêutica, teologia bíblica, Padres da Igreja e Catecismo da Igreja Católica (CIC). Responda em português, com profundidade teológica mas linguagem clara. Siga fielmente a interpretação da Igreja Católica, conforme o Magistério, os Padres e Doutores da Igreja. REGRA ABSOLUTA: você deve analisar TODOS os versículos solicitados, sem exceção. Nunca pule, resuma ou agrupe versículos sem análise individual.`,
+              content: 'Você é exegeta bíblico católico, especialista em hermenêutica, teologia bíblica, Padres da Igreja e Catecismo (CIC). Responda em português. Siga fielmente o Magistério da Igreja Católica.',
             },
             {
               role: 'user',
-              content: `Faça uma EXEGESE CATÓLICA COMPLETA de ${ref}.\n\nATENÇÃO CRÍTICA: Esta passagem tem ${totalVerses} versículo(s): ${verseList}.\nVocê DEVE analisar CADA UM DELES individualmente, sem exceção.\n\nESTRUTURA OBRIGATÓRIA:\n\n## CONTEXTO GERAL DO LIVRO/CAPÍTULO\n- Localização no cânon bíblico e tema central do capítulo\n- Contexto narrativo (o que veio antes e o que vem depois)\n- Autor, datação e destinatários\n\n## ANÁLISE VERSÍCULO POR VERSÍCULO\nOBRIGATÓRIO: analise cada versículo da lista abaixo, UM POR UM, nesta ordem exata: ${verseList}\n\nPara CADA versículo, use este formato:\n\n**${selectedChapter}:[nº] "[cite o texto do versículo]"**\nExplicação: contexto imediato, sentido literal, sentido espiritual/alegórico, intenção do autor. Conexões com outras passagens bíblicas. Interpretação de santos e doutores da Igreja quando relevante.\n**Palavras-chave:** 1-3 termos importantes com etimologia (hebraico/grego).\n**CIC:** Cite o(s) parágrafo(s) do Catecismo da Igreja Católica diretamente relacionado(s) ao tema deste versículo (ex: CIC §1234).\n\n---\n\n## MENSAGEM CENTRAL DA PASSAGEM\nSíntese da mensagem principal de ${ref} como um todo.\n\n## INTERPRETAÇÃO DOS SANTOS E DOUTORES\nPelo menos 3 interpretações de Padres/Doutores da Igreja (priorize: Santo Agostinho, São Tomás de Aquino, São João Crisóstomo, São Jerônimo).\n\n## APLICAÇÃO ESPIRITUAL\nComo esta passagem se aplica à vida cristã concreta hoje?\n\n---\n\n## REFERÊNCIAS\n\n### Passagens Bíblicas Correlacionadas\nListe as passagens bíblicas mais relevantes que se relacionam com os temas desta perícope (mínimo 5).\n\n### Catecismo da Igreja Católica (CIC)\nListe todos os parágrafos do CIC citados ou relacionados ao longo desta exegese, com uma breve descrição de cada um.\nFormato: **CIC §[número]** — [tema/descrição]\n\n### Fontes Patrísticas e Doutrinárias\nListe os santos, doutores e obras consultados nesta análise.`,
+              content: `Faça uma exegese católica de ${ref} (versículos: ${verseList}).\n\nESTRUTURA:\n\n## CONTEXTO\nAutor, época, destinatários e contexto narrativo.\n\n## ANÁLISE VERSÍCULO POR VERSÍCULO\nPara cada versículo de ${verseList}, apresente:\n- Texto e explicação (sentido literal e espiritual)\n- Conexões bíblicas\n- Palavras-chave em hebraico/grego\n- Referência ao CIC (ex: CIC §123)\n\n## MENSAGEM CENTRAL\nSíntese da passagem.\n\n## SANTOS E DOUTORES\n2-3 interpretações de Padres/Doutores da Igreja.\n\n## APLICAÇÃO ESPIRITUAL\nAplicação prática para o cristão hoje.\n\n## REFERÊNCIAS\n- Passagens bíblicas relacionadas\n- Parágrafos do CIC citados`,
             },
           ],
-          maxTokens: 4000,
+          maxTokens: 2000,
         }),
       });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error((errData as any).error || `Erro do servidor: ${res.status}`);
+      }
+
       const data = await res.json();
-      if (data.text) setExegesis(data.text);
-    } catch (e) { console.error(e); }
-    finally { setIsLoadingExegesis(false); }
+      if (data.text && data.text.trim()) {
+        setExegesis(data.text);
+      } else {
+        throw new Error('Resposta vazia. Tente novamente em alguns instantes.');
+      }
+    } catch (e: any) {
+      console.error('[Exegese]', e);
+      setExegesisError(e?.message || 'Erro ao gerar a exegese. Verifique a conexão e tente novamente.');
+    } finally {
+      setIsLoadingExegesis(false);
+    }
   }
+
 
   // ── Busca texto bíblico ───────────────────────────────────────────────────
   async function fetchBibleText(): Promise<string> {
@@ -528,6 +546,19 @@ export default function LectioDivina() {
                 <div className="w-10 h-10 border-2 border-[#5A5A40]/20 border-t-[#5A5A40] rounded-full animate-spin" />
                 <p className="italic font-serif text-sm">Consultando fontes exegéticas católicas...</p>
                 <p className="text-xs text-[#1A1A1A]/30">Isso pode levar alguns segundos</p>
+              </div>
+            )}
+            {exegesisError && !isLoadingExegesis && (
+              <div className="bg-red-50 border border-red-200 rounded-2xl p-5 flex items-start gap-3">
+                <span className="text-red-500 text-lg flex-shrink-0">⚠️</span>
+                <div>
+                  <p className="font-bold text-red-700 text-sm mb-1">Erro ao gerar a exegese</p>
+                  <p className="text-red-600 text-sm">{exegesisError}</p>
+                  <button onClick={fetchExegesis}
+                    className="mt-3 px-4 py-2 bg-red-600 text-white rounded-xl text-xs font-bold hover:bg-red-700 transition-colors">
+                    Tentar novamente
+                  </button>
+                </div>
               </div>
             )}
             {exegesis && !isLoadingExegesis && (
